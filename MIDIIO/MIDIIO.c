@@ -327,7 +327,7 @@ MIDIOut* __stdcall MIDIOut_OpenW (const wchar_t* pszDeviceName) {
 	pMIDIOut->m_lMode = MIDIIO_MODEOUT;
 	/* MIDI出力デバイスのオープン */
 	nRet = midiOutOpen ((HMIDIOUT*)&(pMIDIOut->m_pDeviceHandle), i, 
-		(unsigned long)MidiOutProc, (DWORD)pMIDIOut, CALLBACK_FUNCTION);
+		MidiOutProc, pMIDIOut, CALLBACK_FUNCTION);
 	if (nRet != 0) {
 		free (pMIDIOut->m_pBuf);
 		free (pMIDIOut);
@@ -483,7 +483,7 @@ long __stdcall MIDIOut_PutMIDIMessage (MIDIOut* pMIDIOut, unsigned char* pMessag
 	}
 	/* 通常のMIDIメッセージ又はシステムリアルタイムメッセージ又はシステムコモンメッセージ */
 	else if (1 <= lLen && lLen <= 3) {
-		unsigned long lMsg;
+		unsigned long lMsg = 0;
 		switch (lLen) {
 		case 1:
 			lMsg = *(pMessage) ;

@@ -248,6 +248,10 @@ CSekaijuDoc::CSekaijuDoc () {
 	m_pTempMarkerEvent = NULL;
 	m_pTempKeySignatureEvent = NULL;
 	m_pTempProgramChangeEvent = NULL;
+	m_pSALForEachEventArray = NULL;
+	m_nSALForEachEventArrayNum = 0;
+	m_nSALCurTrack = 0;
+	m_lTempTrackIndex = 0;
 }
 
 // デストラクタ
@@ -8768,7 +8772,6 @@ void CSekaijuDoc::OnUpdatePopupPasteUI (CCmdUI* pCmdUI) {
 void CSekaijuDoc::OnPopupInsertTempo () {
 	CSekaijuApp* pSekaijuApp = (CSekaijuApp*)AfxGetApp ();
 	if (pSekaijuApp->m_bRecording ||
-		pSekaijuApp->m_bSALRunning ||
 		pSekaijuApp->m_bSALRunning ||
 		pSekaijuApp->m_bInplaceEditing ||
 		pSekaijuApp->m_bInplaceListing ||
