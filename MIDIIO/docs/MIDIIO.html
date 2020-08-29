@@ -1,0 +1,2653 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML LANG="ja">
+<HEAD>
+<TITLE>MIDIIOライブラリ　公式ガイドブック</TITLE>
+<META http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+<STYLE TYPE="text/css">
+<!--
+H1 {FONT-SIZE:36px; BORDER-WIDTH:1px; BORDER-COLOR:#000000; BORDER-STYLE:SOLID; PADDING:20px; BACKGROUND-COLOR:#E0E0D0; TEXT-ALIGN:CENTER;}
+H2 {FONT-SIZE:28px; BORDER-WIDTH:1px; BORDER-COLOR:#000000; BORDER-STYLE:SOLID; PADDING:20px; BACKGROUND-COLOR:#E0E0D0}
+H3 {FONT-SIZE:24px;}
+H4 {FONT-SIZE:16px;}
+H5 {FONT-SIZE:14px;}
+H6 {FONT-SIZE:12px;}
+P {FONT-SIZE:12px; LINE-HEIGHT:18px;}
+DIV {FONT-SIZE:12px; LINE-HEIGHT:18px;}
+DIV.INDEX {FONT-SIZE:14px; LINE-HEIGHT:18px;}
+DIV.TITLE {FONT-SIZE:12px; LINE-HEIGHT:18px;}
+SPAN.RED {FONT-SIZE:12px; COLOR:#FF0000; LINE-HEIGHT:18px;}
+SPAN.KEYWORD {FONT-SIZE:12px; COLOR:#0000FF; LINE-HEIGHT:18px;}
+SPAN.COMMENT {FONT-SIZE:12px; COLOR:#008000; LINE-HEIGHT:18px;}
+SPAN.STRING {FONT-SIZE:12px; COLOR:#808000; LINE-HEIGHT:18px;}
+LI {FONT-SIZE:12px; LINE-HEIGHT:18px;}
+TABLE {FONT-SIZE:12px; LINE-HEIGHT:18px;}
+TH {BACKGROUND-COLOR:#FFE0B0; FONT-WEIGHT:NORMAL;}
+TR {BACKGROUND-COLOR:#FFFFD0; FONT-WIEGHT:NORMAL;}
+PRE {FONT-SIZE:12px; LINE-HEIGHT:18px; BACKGROUND-COLOR:#E0E0E0; PADDING:1px;}
+-->
+</STYLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFFF" ALINK="#0040FF" VLINK="#0040FF">
+
+<H1>MIDIIOライブラリ<BR>公式ガイドブック<BR><FONT SIZE=3>(C)2002-2020 くず  / おーぷんMIDIぷろじぇくと</FONT></H1>
+
+<H3>はじめに</H3>
+
+<P>　MIDIIOライブラリは、フリーでオープンソースの、MIDIメッセージ入出力用ライブラリである。このライブラリは、MIDIデバイスのオープン・クローズ、MIDIメッセージの送信・受信など、MIDIの入出力を取り扱う上で必要不可欠な機能を提供している。</P>
+
+<P>　MIDIIOライブラリは普通のC言語で書かれているが、ソースのほか、ダイナミックリンクライブラリ(*.dll)の形で提供される。ゆえに、C/C++からはもちろんのこと、Visual BasicやDelphiから使用することもできる。最新のMIDIIOライブラリは、2014年現在<A HREF="http://openmidiproject.sourceforge.jp/index.html">おーぷんMIDIぷろじぇくと</A>からダウンロードできる。</P>
+
+<P>　本書はMIDIIOライブラリの使い方を解説した公式ガイドブックである。本書は、サンプルコードと関数リファレンスを交えつつ、Cマガ風味に仕上げた。<SPAN CLASS="RED">本書はMIDIメッセージの入出力原理を解説したものではない。</SPAN>とは言え、MIDIデバイスやMIDIメッセージに関する知識があれば、この本を簡単に理解できるであろう。</P>
+
+<P>　本書は、基本的なMIDIの知識とC言語の知識があることを前提に書かれている。従って、MIDIとは何かとか、4分音符とは何かとか、構造体とは何かとか、ポインタとは何かとかについては、一切述べていない。MIDIやC言語については、良質な市販の本が多く出版されているので、そちらを参照されたい。</P>
+
+<H3>謝辞</H3>
+
+<P>　MIDIIOライブラリは、録音や演奏など、MIDI入出力を扱うあらゆるアプリケーションの中核となるべく、数年がかりで開発された。当初の開発のきっかけは、リアルタイムで録音や演奏をする際に、<SPAN CLASS="RED">fopenのようにシンプルにMIDIデバイスを開き、fgetsやfputsのようにシンプルにMIDIメッセージが入出力できるライブラリ</SPAN>が欲しかったからである。しかし、sourceforgeを見てもわかるように、画像やオーディオ関係の作成編集ライブラリが充実しているのに比べて、MIDI関係の入出力ライブラリは無いに等しかった。そこで筆者はこのライブラリを製作することを決意した。</P>
+
+<P>　思えば、本ライブラリがリリースできたのは奇跡的である。筆者は会社から帰ってきてから深夜に開発を進めたため、時間は限りなく足りなかった。その上不況は深刻で、金欠病でもあった。そのようなさなか、昔から愛用のノートパソコンがついに壊れた。やがて筆者は疲れていたのか、電車内で失神したのである。幸いにも入院せずに済んだが、今後の人生に暗い影を落とした。</P>
+
+<P>　リリースにあたっては、まず、書庫部の皆様にお礼を述べなければならない。書庫部にはベテランのプログラマがおり、彼らの刺激なくしてはこのライブラリはリリースできなかったであろう。中でもあましんさんは、もともと正常だった筆者をこちらの世界に導いた人物として重要である。彼無くしては、筆者はいまだにC言語やMIDIの存在を知らなかった恐れすらある。そして、あらゆる面においていつも筆者を支えてくださった家族の皆に、深く感謝の意とお礼を申し上げたい。</P>
+
+<H3>もくじ</H3>
+<DIV CLASS="INDEX"><A HREF="#MIDIOverview">第1章　概略</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIOverview_MIDI">1-1.MIDIについて</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIOverview_MIDIIn">1-2.MIDI入力を実現する</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIOverview_MIDIOut">1-3.MIDI出力を実現する</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIOverview_MIDIThru">1-4.MIDIスルーを実現する</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIOverview_ANSI_UNICODE">1-5.ANSIとUNICODEの使い分けについて</A></DIV>
+
+<DIV CLASS="INDEX"><A HREF="#MIDIInReference">第2章　MIDIInリファレンス</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIIn_Struct">2-1.MIDIIn構造体</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIIn_GetDeviceFunction">2-2.MIDI入力デバイスの探索</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIIn_OpenFunction">2-3.MIDI入力デバイスを開く</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIIn_CloseFunction">2-4.MIDI入力デバイスを閉じる</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIIn_ResetFunction">2-5.MIDI入力デバイスのリセット</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIIn_GetFunction">2-6.MIDI入力デバイスからMIDIメッセージを取得</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIIn_GetThisDeviceNameFunction">2-7.MIDI入力デバイスの名前を取得</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIIn_Macro">2-8.MIDI入力に関するマクロ</A></DIV>
+<DIV CLASS="INDEX"><A HREF="#MIDIOutReference">第3章　MIDIOutリファレンス</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIOut_Struct">3-1.MIDIOut構造体</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIOut_GetDeviceFunction">3-2.MIDI出力デバイスの探索</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIOut_OpenFunction">3-3.MIDI出力デバイスを開く</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIOut_CloseFunction">3-4.MIDI出力デバイスを閉じる</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIOut_ResetFunction">3-5.MIDI出力デバイスのリセット</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIOut_PutFunction">3-6.MIDI出力デバイスへMIDIメッセージを送信</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIOut_GetThisDeviceNameFunction">3-7.MIDI出力デバイスの名前を取得</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIOut_Macro">3-8.MIDI出力に関するマクロ</A></DIV>
+<DIV CLASS="INDEX"><A HREF="#APPENDIX_A">付録A　よくある質問(F.A.Q)</A></DIV>
+<DIV CLASS="INDEX"><A HREF="#APPENDIX_B">付録B　キー・ナンバー対応表</A></DIV>
+<DIV CLASS="INDEX"><A HREF="#APPENDIX_C">付録C　MIDIメッセージ早見表</A></DIV>
+<DIV CLASS="INDEX"><A HREF="#APPENDIX_D">付録D　更新履歴</A></DIV>
+
+
+<H2><A NAME="MIDIOverview">第1章：概略</A></H2>
+
+
+<H3><A NAME="MIDIOverview_MIDI">1-1.MIDIについて</A></H3>
+<P>　MIDIとは<U>M</U>usical <U>I</U>nstrument <U>D</U>igital <U>I</U>nterfaceの略で、電子楽器の間で情報を通信するための規格である。その中でも中核となるのが、MIDI音源と呼ばれる機器である。MIDI音源は電子楽器の一種であり、さまざまな音色を内蔵している。MIDI音源は予め内蔵された音色しか使えないが、シンセサイザーを用いれば内蔵された音色を自由に加工・変形・合成して新しい音色を作り出すことができる。</P>
+
+<P>　MIDI音源の基本的な使い方は、MIDI対応キーボードで演奏をして音を鳴らすというものである。最近では、コンピュータの普及により、パソコンで再生してMIDI音源を演奏することもできるようになった。自動演奏をする場合の演奏方法を記述したものがMIDIデータである。</P>
+
+<DIV>▼Fig1-1-1　MIDIの構成</DIV>
+<IMG SRC="MIDIIO02.gif" WIDTH=600 HEIGHT=360 ALT="">
+
+<H3><A NAME="MIDIOverview_MIDIIn">1-2.MIDI入力を実現する</A></H3>
+
+<P>　MIDI入力は、MIDI機器が発するMIDIメッセージをパソコンに取り込むために使う。例えば、鍵盤の真ん中のドをベロシティ100で押すと、{0x90, 0x3C, 0x64}というメッセージが発生し、離すと{0x90, 0x3C, 0x00}というメッセージが発生する。この鍵盤がパソコンのMIDI入力端子につなげられていれば、パソコンはこのMIDIメッセージを取得することができる。</P>
+
+<DIV>▼Fig1-2-1　MIDIメッセージ受信のイメージ</DIV>
+<IMG SRC="MIDIIn.gif" WIDTH=600 HEIGHT=80 ALT="">
+
+
+<P>　次にMIDIメッセージを受信するプログラムの例を示す。このプログラムは、MIDI入力デバイスを開き、MIDIメッセージを受信しそれを画面にプリントすることを10秒間行い、MIDI入力デバイスを閉じる。開くMIDI入力デバイスは、簡便のため、インストールされているMIDI入力デバイスの中で最初のものとした。特に重要な部分は赤字で示した。</P>
+
+<DIV>▼List1-2-1　MIDIメッセージを受信するプログラム</DIV>
+
+<PRE>
+<SPAN CLASS="KEYWORD">#include</SPAN> &lt;stdio.h&gt;
+<SPAN CLASS="KEYWORD">#include</SPAN> &lt;time.h&gt;
+<SPAN CLASS="KEYWORD">#include</SPAN> &lt;windows.h&gt;
+<SPAN CLASS="KEYWORD">#include</SPAN> &lt;MIDIIO.h&gt;
+<SPAN CLASS="KEYWORD">int</SPAN> main () {
+	<SPAN CLASS="RED">MIDIIn* pMIDIIn;</SPAN>
+	<SPAN CLASS="KEYWORD">char</SPAN> szDeviceName[32];
+	<SPAN CLASS="KEYWORD">unsigned char</SPAN> byMessage[256];
+	<SPAN CLASS="KEYWORD">long</SPAN> i, lRet;
+	<SPAN CLASS="COMMENT">/* MIDI入力デバイス(No.0)の名前を調べる */</SPAN>
+	<SPAN CLASS="RED">lRet = MIDIIn_GetDeviceName (0, szDeviceName, 32);</SPAN>
+	<SPAN CLASS="KEYWORD">if</SPAN> (lRet == 0) {
+	 	printf (<SPAN CLASS="STRING">"利用できるMIDI入力デバイスはありません。\n"</SPAN>);
+	 	<SPAN CLASS="KEYWORD">return</SPAN> 0;
+	}
+	<SPAN CLASS="COMMENT">/* MIDI入力デバイスを開く */</SPAN>
+	<SPAN CLASS="RED">pMIDIIn = MIDIIn_Open (szDeviceName);</SPAN>
+	<SPAN CLASS="KEYWORD">if</SPAN> (pMIDIIn == NULL) {
+	 	printf (<SPAN CLASS="STRING">"MIDI入力デバイス「%s」を開けません。\n"</SPAN>, szDeviceName);
+	 	<SPAN CLASS="KEYWORD">return</SPAN> 0;
+	}
+ 	printf (<SPAN CLASS="STRING">"MIDI入力デバイス「%s」を開きました。\n"</SPAN>, szDeviceName);
+	<SPAN CLASS="COMMENT">/* 10秒間 */</SPAN>
+	<SPAN CLASS="KEYWORD">while</SPAN> (clock () &lt; 10000) {
+		<SPAN CLASS="COMMENT">/* MIDI入力デバイスからMIDIメッセージを1つ取得する */</SPAN>
+		<SPAN CLASS="RED">lRet = MIDIIn_GetMIDIMessage (pMIDIIn, byMessage, 256);</SPAN>
+		<SPAN CLASS="COMMENT">/* MIDIメッセージを取得した場合 */</SPAN>
+		<SPAN CLASS="KEYWORD">if</SPAN> (lRet &gt; 0) {
+			<SPAN CLASS="KEYWORD">for</SPAN> (i = 0; i &lt; lRet; i++) {
+				printf (<SPAN CLASS="STRING">"0x%02X "</SPAN>, byMessage[i]);
+			}
+			printf (<SPAN CLASS="STRING">"/ "</SPAN>);
+		}
+		<SPAN CLASS="COMMENT">/* MIDIメッセージを取得しなかった場合 */</SPAN>
+		<SPAN CLASS="KEYWORD">else</SPAN> {
+			Sleep (1);
+		}
+	}
+	<SPAN CLASS="COMMENT">/* MIDI入力デバイスを閉じる */</SPAN>
+	<SPAN CLASS="RED">MIDIIn_Close (pMIDIIn);</SPAN>
+	<SPAN CLASS="KEYWORD">return</SPAN> 1;
+}
+</PRE>
+
+<P>　このプログラムでは、まず最初のMIDI入力デバイスの名前を調べている。ここでは、MIDI入力デバイスの名前を調べるのに<A HREF="#MIDIIn_GetDeviceName">MIDIIn_GetDeviceName</A>関数を使った。MIDI入力デバイスが何もインストールされていない場合、この関数は0を返しプログラムを終了する。現実的には、<A HREF="#MIDIIn_GetDeviceNum">MIDIIn_GetDeviceNum</A>関数を使ってインストールされているMIDI入力デバイスの数を調べ、その中から好きなMIDI入力デバイスを選ぶことができる。今回は簡便のためその処理は省いた。</P>
+<P>　MIDI入力デバイスの名前がわかれば、<A HREF="#MIDIIn_Open">MIDIIn_Open</A>関数を使ってMIDI入力デバイスを開くことができる。もしこの関数がNULLを返せば、MIDI入力デバイスを開くのに失敗したことを意味する。多くの場合は、他のアプリケーションが使用中によるものである。MIDI入力デバイスを開くと直ちにMIDI入力端子のリスニングを始める。受信されたMIDIメッセージは次々にバッファにたまっていくので、直ちにwhileループに突入し、MIDIメッセージを取得し続けなければならない。</P>
+<P>　MIDIメッセージの取得には<A HREF="#MIDIIn_GetMIDIMessage">MIDIIn_GetMIDIMessage</A>関数を使った。この関数はMIDIチャンネルメッセージ、システムエクスクルーシヴメッセージ、システムリアルタイムメッセージなど、あらゆる種類のMIDIメッセージを1つずつ取得する。取得されたMIDIメッセージはbyMessageに格納され、実際に取得したバイト数は戻り値に格納される。MIDIメッセージを何も取得しなかった場合は、直ちに0を返す。1以上の値を返した場合は、取得したMIDIメッセージを画面に16進法でprintfする。0を返した場合は、windows.hのSleep関数を挟むことにより、whileループがCPUを独占しないよう工夫した。</P>
+<P>　最後にMIDI入力デバイスを、<A HREF="#MIDIIn_Close">MIDIIn_Close</A>関数を使って閉じる。これを忘れると、MIDI入力デバイスが開きっぱなしとなってしまい、他のアプリケーションがこのMIDIデバイスを使えなくなってしまう。</P>
+<P>　このプログラムを実行すると、ユーザーがこの10秒の間に、ドの音を押して離した場合、次のような画面が表示されるであろう。なお、MIDI入力デバイスの名前は、各コンピューターの環境により異なるだろう。</P>
+
+<DIV>▼List1-2-2　List1-2-1の実行結果(タイプ1)</DIV>
+<PRE>
+MIDI入力デバイス「In-A USB MidiSport 2x2」を開きました。
+0x90 0x3C 0x64 / 0x90 0x3C 0x00
+</PRE>
+
+<P>　ここで0x90はノートオン(チャンネル0)、0x3Cは真ん中のド(ノートナンバー60)、0x64はベロシティ100を意味する。2番目のMIDIメッセージは、ベロシティ0のノートオンで、ノートオフ(音を消すこと)を意味する。2番目のメッセージは、鍵盤の種類によっては、純粋なノートオフ信号{0x80 0x3C 0x00}となることもある。</P>
+<P>　しかし、鍵盤の種類によっては、次のような実行結果になるかもしれない。</P>
+
+<DIV>▼List1-2-3　List1-2-1の実行結果(タイプ2)</DIV>
+<PRE>
+MIDI入力デバイス「In-A USB MidiSport 2x2」を開きました。
+0xFE / 0xFE / 0xFE / 0xFE / 0xFE / 0xFE / 0xFE / 0xFE / 0xFE / 0xFE / 0xFE / 0xFE /
+0xFE / 0xFE / 0xFE / 0xFE / 0xFE / 0xFE / 0xFE / 0xFE / 0xFE / 0xFE / 0xFE / 0xFE /
+0xFE / 0xFE / 0xFE / 0xFE / 0xFE / 0xFE / 0xFE / 0xFE / 0xFE / 0xFE / 0x90 0x3C 0x64 /
+0xFE / 0xFE / 0xFE / 0xFE / 0xFE / 0xFE / 0xFE / 0xFE / 0xFE / 0xFE / 0x90 0x3C 0x00 /
+0xFE / 0xFE / 0xFE / 0xFE / 0xFE / 0xFE / 0xFE / 0xFE / 0xFE / 0xFE / 0xFE / 0xFE /
+0xFE / 0xFE / 0xFE / 0xFE / 0xFE / 0xFE / 0xFE / 0xFE / 0xFE / 0xFE / 0xFE / 0xFE /
+</PRE>
+
+<P>　ここに多発している0xFEというMIDIメッセージは、アクティブセンシングと呼ばれ、MIDIケーブルの断線をチェックするために約300ミリ秒ごとに断続的に送信されるメッセージである。アクティブセンシングを送出する鍵盤の場合、実行結果はこのようになるが、ノートオン{0x90, 0x3C, 0x64}とノートオフ{0x90, 0x3C, 0x00}は、0xFEにまぎれつつも、ちゃんと観測されている。</P>
+<P>　また、鍵盤の種類によっては、次のような実行結果になるかもしれない。</P>
+
+<DIV>▼List1-2-4　List1-2-1の実行結果(タイプ3)</DIV>
+<PRE>
+MIDI入力デバイス「In-A USB MidiSport 2x2」を開きました。
+0xF8 / 0xF8 / 0xF8 / 0xF8 / 0xF8 / 0xF8 / 0xF8 / 0xF8 / 0xF8 / 0xF8 / 0xF8 / 0xF8 /
+0xF8 / 0xF8 / 0xF8 / 0xF8 / 0xF8 / 0xF8 / 0xF8 / 0xF8 / 0xF8 / 0xF8 / 0xF8 / 0xF8 /
+0xF8 / 0xF8 / 0xF8 / 0xF8 / 0xF8 / 0xF8 / 0xF8 / 0xF8 / 0xF8 / 0xF8 / 0x90 0x3C 0x64 /
+0xF8 / 0xF8 / 0xF8 / 0xF8 / 0xF8 / 0xF8 / 0xF8 / 0xF8 / 0xF8 / 0xF8 / 0x90 0x3C 0x00 /
+0xF8 / 0xF8 / 0xF8 / 0xF8 / 0xF8 / 0xF8 / 0xF8 / 0xF8 / 0xF8 / 0xF8 / 0xF8 / 0xF8 /
+0xF8 / 0xF8 / 0xF8 / 0xF8 / 0xF8 / 0xF8 / 0xF8 / 0xF8 / 0xF8 / 0xF8 / 0xF8 / 0xF8 /
+</PRE>
+
+<P>　ここに多発している0xF8というMIDIメッセージは、MIDIタイミングクロックと呼ばれ、複数の機器を同期させるために4分音符につき24回の割合で断続的に送信されるメッセージである。MIDIタイミングクロックを送出する鍵盤の場合、、実行結果はこのようになるが、ノートオン{0x90, 0x3C, 0x64}とノートオフ{0x90, 0x3C, 0x00}は、0xF8にまぎれつつも、ちゃんと観測されている。</P>
+
+<P>　さらに、鍵盤の種類によっては、アクティブセンシング(0xFE)とMIDIタイミングクロック(0xF8)を両方送出するものや、その他にもさまざまなMIDIメッセージを送出するものがある。そのため、受信バッファには次々にMIDIメッセージが蓄積されてしまう。<SPAN CLASS="RED">プログラマは、受信されたMIDIメッセージをリアルタイムで取得するために、常時whileループ内で<A HREF="#MIDIIn_GetMIDIMessage">MIDIIn_GetMIDIMessage</A>をし続けなければならない。</SPAN>また、受信バッファをいったん空にするには<A HREF="#MIDIIn_Reset">MIDIIn_Reset</A>関数を使う。それぞれのMIDIメッセージの意味については、<A HREF="#APPENDIX_C">付録C　MIDIメッセージ早見表</A>を参照していただきたい。</P>
+
+
+<H3><A NAME="MIDIOverview_MIDIOut">1-3.MIDI出力を実現する</A></H3>
+
+<P>　MIDI出力は、パソコンから他の機器にMIDIメッセージを送信するために使う。例えば、真ん中のドの音をベロシティ100で鳴らすには、{0x90, 0x3C, 0x64}というメッセージを送信し、止めるには{0x90, 0x3C, 0x00}というメッセージを送信する。このMIDI音源がパソコンのMIDI出力端子につながれていれば、パソコンは音源の音を鳴らすことができる。</P>
+
+<DIV>▼Fig1-3-1　MIDIメッセージ送信のイメージ</DIV>
+<IMG SRC="MIDIOut.gif" WIDTH=600 HEIGHT=80 ALT="">
+
+<P>　次にMIDIメッセージを送信するプログラムの例を示す。このプログラムは、MIDI出力デバイスを開き、MIDIメッセージ送信することによってドの音を10秒間発音し、MIDI出力デバイスを閉じる。開くMIDI出力デバイスは、簡便のため、インストールされているMIDI出力デバイスの中で最初のものとした。特に重要な部分は赤字で示した。</P>
+
+<DIV>▼List1-3-1　MIDIメッセージを送信するするプログラム</DIV>
+<PRE>
+<SPAN CLASS="KEYWORD">#include</SPAN> &lt;stdio.h&gt;
+<SPAN CLASS="KEYWORD">#include</SPAN> &lt;time.h&gt;
+<SPAN CLASS="KEYWORD">#include</SPAN> &lt;windows.h&gt;
+<SPAN CLASS="KEYWORD">#include</SPAN> &lt;MIDIIO.h&gt;
+<SPAN CLASS="KEYWORD">int</SPAN> main () {
+	<SPAN CLASS="RED">MIDIOut* pMIDIOut;</SPAN>
+	<SPAN CLASS="KEYWORD">char</SPAN> szDeviceName[32];
+	<SPAN CLASS="KEYWORD">unsigned char</SPAN> byMessage[3];
+	<SPAN CLASS="KEYWORD">long</SPAN> lRet;
+	<SPAN CLASS="COMMENT">/* MIDI出力デバイス(No.0)の名前を調べる */</SPAN>
+	<SPAN CLASS="RED">lRet = MIDIOut_GetDeviceName (0, szDeviceName, 32);</SPAN>
+	<SPAN CLASS="KEYWORD">if</SPAN> (lRet == 0) {
+	 	printf (<SPAN CLASS="STRING">"利用できるMIDI出力デバイスはありません。\n"</SPAN>);
+	 	<SPAN CLASS="KEYWORD">return</SPAN> 0;
+	}
+	<SPAN CLASS="COMMENT">/* MIDI出力デバイスを開く */</SPAN>
+	<SPAN CLASS="RED">pMIDIOut = MIDIOut_Open (szDeviceName);</SPAN>
+	<SPAN CLASS="KEYWORD">if</SPAN> (pMIDIOut == NULL) {
+	 	printf (<SPAN CLASS="STRING">"MIDI出力デバイス「%s」を開けません。\n"</SPAN>, szDeviceName);
+	 	<SPAN CLASS="KEYWORD">return</SPAN> 0;
+	}
+	printf (<SPAN CLASS="STRING">"MIDI出力デバイス「%s」を開きました。\n"</SPAN>, szDeviceName);
+
+	<SPAN CLASS="COMMENT">/* ドの音を発音する。 */</SPAN>
+	byMessage[0] = 0x90;
+	byMessage[1] = 0x3C;
+	byMessage[2] = 0x64;
+	<SPAN CLASS="RED">lRet = MIDIOut_PutMIDIMessage (pMIDIOut, byMessage, 3);</SPAN>
+
+	<SPAN CLASS="COMMENT">/* 10秒間消耗する。 */</SPAN>
+	<SPAN CLASS="KEYWORD">while</SPAN> (clock () &lt; 10000) {
+		Sleep (1);
+	}
+	
+	<SPAN CLASS="COMMENT">/* ドの音を消音する。 */</SPAN>
+	byMessage[0] = 0x90;
+	byMessage[1] = 0x3C;
+	byMessage[2] = 0x00;
+	<SPAN CLASS="RED">lRet = MIDIOut_PutMIDIMessage (pMIDIOut, byMessage, 3);</SPAN>
+	
+	<SPAN CLASS="COMMENT">/* MIDI出力デバイスを閉じる */</SPAN>
+	<SPAN CLASS="RED">MIDIOut_Close (pMIDIOut);</SPAN>
+	<SPAN CLASS="KEYWORD">return</SPAN> 1;
+}
+</PRE>
+
+<P>　このプログラムでは、まず最初のMIDI出力デバイスの名前を調べている。ここでは、MIDI出力デバイスの名前を調べるのに<A HREF="#MIDIOut_GetDeviceName">MIDIOut_GetDeviceName</A>関数を使った。MIDI出力デバイスが何もインストールされていない場合、この関数は0を返しプログラムを終了する。現実的には、<A HREF="#MIDIOut_GetDeviceNum">MIDIOut_GetDeviceNum</A>関数を使ってインストールされているMIDI出力デバイスの数を調べ、その中から好きなMIDI出力デバイスを選ぶことができる。今回は簡便のためその処理は省いた。</P>
+<P>　MIDI出力デバイスの名前がわかれば、<A HREF="#MIDIOut_Open">MIDIOut_Open</A>関数を使ってMIDI出力デバイスを開くことができる。もしこの関数がNULLを返せば、MIDI出力デバイスを開くのに失敗したことを意味する。多くの場合は、他のアプリケーションが使用中によるものである。MIDI出力デバイスを開くと、いつでもMIDIメッセージを送出できる。</P>
+<P>　MIDIメッセージの送出には<A HREF="#MIDIOut_PutMIDIMessage">MIDIOut_PutMIDIMessage</A>関数を使った。この関数はMIDIチャンネルメッセージ、システムエクスクルーシヴメッセージ、システムリアルタイムメッセージなど、あらゆる種類のMIDIメッセージを1つずつ送出する。</P>
+<P>　最後にMIDI出力デバイスを、<A HREF="#MIDIOut_Close">MIDIOut_Close</A>関数を使って閉じる。これを忘れると、MIDI出力デバイスが開きっぱなしとなってしまい、他のアプリケーションがこのMIDIデバイスを使えなくなってしまう。</P>
+<P>　このプログラムを実行すると、下記のような表示がされると同時に、10秒間、真ん中のドの音が再生されるであろう。なお、MIDI出力デバイスの名前は、各コンピュータの環境により異なるだろう。</P>
+
+<PRE>
+MIDI出力デバイス「Microsoft GS Wavetable SW Synth」を開きました。
+</PRE>
+
+
+
+<H3><A NAME="MIDIOverview_MIDIThru">1-4.MIDIスルーを実現する</A></H3>
+
+<P>　MIDIThruとは、MIDIIn端子から入力したメッセージをそのままMIDIOut端子に出力することである。これは、ハードウェア的には、MIDIケーブルを内部的に短絡状態にすることにより難なく実現できるものである。しかし、MIDIIOライブラリを使った場合、コンピューターを介しているという点で、どのようなMIDIメッセージが流れているのか知ることができ、また表示・加工・フィルタリングなどの処理もユーザー次第で行える。</P>
+
+<DIV>▼Fig1-4-1　MIDIスルーのイメージ</DIV>
+<IMG SRC="MIDIThru.gif" WIDTH=600 HEIGHT=80 ALT="">
+
+<P>　MIDIInとMIDIOutの融合として、MIDIThruのプログラムを紹介する。次のプログラムでは、10秒間、MIDIInから入力したMIDIメッセージをそのままMIDIOutに出力する。</P>
+
+<DIV>▼List1-4-1　MIDIThruを実現するプログラム</DIV>
+<PRE>
+<SPAN CLASS="KEYWORD">#include</SPAN> &lt;stdio.h&gt;
+<SPAN CLASS="KEYWORD">#include</SPAN> &lt;time.h&gt;
+<SPAN CLASS="KEYWORD">#include</SPAN> &lt;windows.h&gt;
+<SPAN CLASS="KEYWORD">#include</SPAN> &lt;MIDIIO.h&gt;
+<SPAN CLASS="KEYWORD">int</SPAN> main () {
+	<SPAN CLASS="RED">MIDIIn* pMIDIIn;</SPAN>
+	<SPAN CLASS="RED">MIDIOut* pMIDIOut;</SPAN>
+	<SPAN CLASS="KEYWORD">char</SPAN> szDeviceName[32];
+	<SPAN CLASS="KEYWORD">unsigned char</SPAN> byMessage[256];
+	<SPAN CLASS="KEYWORD">long</SPAN> lRet;
+	<SPAN CLASS="COMMENT">/* MIDI入力デバイス(No.0)の名前を調べる */</SPAN>
+	<SPAN CLASS="RED">lRet = MIDIIn_GetDeviceName (0, szDeviceName, 32);</SPAN>
+	<SPAN CLASS="KEYWORD">if</SPAN> (lRet == 0) {
+	 	printf (<SPAN CLASS="STRING">"利用できるMIDI入力デバイスはありません。\n"</SPAN>);
+	 	<SPAN CLASS="KEYWORD">return</SPAN> 0;
+	}
+	<SPAN CLASS="COMMENT">/* MIDI入力デバイスを開く */</SPAN>
+	<SPAN CLASS="RED">pMIDIIn = MIDIIn_Open (szDeviceName);</SPAN>
+	<SPAN CLASS="KEYWORD">if</SPAN> (pMIDIIn == NULL) {
+	 	printf (<SPAN CLASS="STRING">"MIDI入力デバイス「%s」を開けません。\n"</SPAN>, szDeviceName);
+	 	<SPAN CLASS="KEYWORD">return</SPAN> 0;
+	}
+ 	printf (<SPAN CLASS="STRING">"MIDI入力デバイス「%s」を開きました。\n"</SPAN>, szDeviceName);
+	<SPAN CLASS="COMMENT">/* MIDI出力デバイス(No.0)の名前を調べる */</SPAN>
+	<SPAN CLASS="RED">lRet = MIDIOut_GetDeviceName (0, szDeviceName, 32);</SPAN>
+	<SPAN CLASS="KEYWORD">if</SPAN> (lRet == 0) {
+	 	MIDIIn_Close (pMIDIIn);
+	 	printf (<SPAN CLASS="STRING">"利用できるMIDI出力デバイスはありません。\n"</SPAN>);
+	 	<SPAN CLASS="KEYWORD">return</SPAN> 0;
+	}
+	<SPAN CLASS="COMMENT">/* MIDI出力デバイスを開く */</SPAN>
+	<SPAN CLASS="RED">pMIDIOut = MIDIOut_Open (szDeviceName);</SPAN>
+	<SPAN CLASS="KEYWORD">if</SPAN> (pMIDIOut == NULL) {
+	 	MIDIIn_Close (pMIDIIn);
+	 	printf (<SPAN CLASS="STRING">"MIDI出力デバイス「%s」を開けません。\n"</SPAN>, szDeviceName);
+	 	<SPAN CLASS="KEYWORD">return</SPAN> 0;
+	}
+ 	printf (<SPAN CLASS="STRING">"MIDI出力デバイス「%s」を開きました。\n"</SPAN>, szDeviceName);
+	
+	<SPAN CLASS="COMMENT">/* 10秒間 */</SPAN>
+	<SPAN CLASS="KEYWORD">while</SPAN> (clock () &lt; 10000) {
+		<SPAN CLASS="COMMENT">/* MIDI入力デバイスからメッセージを取得する */</SPAN>
+		<SPAN CLASS="RED">lRet = MIDIIn_GetMIDIMessage (pMIDIIn, byMessage, 256);</SPAN>
+		<SPAN CLASS="COMMENT">/* MIDIメッセージを取得した場合 */</SPAN>
+		<SPAN CLASS="KEYWORD">if</SPAN> (lRet &gt; 0) {
+			<SPAN CLASS="COMMENT">/* MIDI出力デバイスからメッセージを送出する */</SPAN>
+			<SPAN CLASS="RED">MIDIOut_PutMIDIMessage (pMIDIOut, byMessage, lRet);</SPAN>
+		}
+		<SPAN CLASS="COMMENT">/* MIDIメッセージを取得しなかった場合 */</SPAN>
+		<SPAN CLASS="KEYWORD">else</SPAN> {
+			Sleep (1);
+		}
+	}
+	
+	<SPAN CLASS="COMMENT">/* MIDI入力デバイスを閉じる */</SPAN>
+	<SPAN CLASS="RED">MIDIIn_Close (pMIDIIn);</SPAN>
+	<SPAN CLASS="COMMENT">/* MIDI出力デバイスを閉じる */</SPAN>
+	<SPAN CLASS="RED">MIDIOut_Close (pMIDIOut);</SPAN>
+	<SPAN CLASS="KEYWORD">return</SPAN> 1;
+}
+</PRE>
+
+<P>　このプログラムでは、<A HREF="#MIDIOverview_MIDIIn">1-2.MIDI入力を実現する</A>と<A HREF="#MIDIOverview_MIDIOut">1-3.MIDI出力を実現する</A>で紹介した関数だけを使っている。すなわち、まずMIDI入力デバイスとMIDI出力デバイスの名前を調べ、MIDI入力デバイスとMIDI出力デバイスを開き、10秒間MIDIInからメッセージを取得してMIDIOutにメッセージを送出することを繰り返し、最後にMIDI入力デバイスとMIDI出力デバイスを閉じている。複数のMIDIデバイスを開くときに注意したいことは、MIDIデバイスを開くのに失敗した場合、単純にプログラムを終了させるのではなく、今まで開いたMIDIデバイスを閉じるのを忘れないようにすることである。</P>
+
+<P>　このプログラムはりアルタイムでMIDIメッセージを取得しているので、プログラマはリアルタイムでどのようなMIDIメッセージが流れているのかを知ることができる。また、少々の工夫を加えることにより、MIDIメッセージをフィルタリングしたり、加工して出力したりすることができる。</P>
+
+
+<H3><A NAME="MIDIOverview_ANSI_UNICODE">1-5.ANSIとUNICODEの使い分けについて</A></H3>
+
+<P>MIDIDataライブラリ0.7から文字列がANSIとUNICODEの両対応になった。今まではANSIのみに対応していた。今までのC/C++ソースコードはそのまま使用できるが、再コンパイルは必要である。プリプロセッサでUNICODEが定義されているときのみUNICODEとなり、その他の場合はANSIとなる。</P>
+
+<H4>構造体の文字列フィールドはchar*型からvoid*型になった。</H4>
+
+<P>文字列フィールドは<SPAN class="keyword">char</SPAN>*型であったが、ANSIでは<SPAN class="keyword">char</SPAN>*型、UNICODEではwchar_t*型とするために、<SPAN class="keyword">void</SPAN>*型とした。実際、プログラマーはこの点を気にする必要はない。</P>
+
+<H4>関数の文字列はchar*型はTCHAR*型となった。</H4>
+
+<P>関数の文字列は<SPAN class="keyword">char</SPAN>*型であったが、ANSIでは<SPAN class="keyword">char</SPAN>*型、UNICODEではwchar_t型とするために、TCHAR型とした。</P>
+<PRE>
+<SPAN class="keyword">#ifdef</SPAN> UNICODE
+<SPAN class="keyword">typedef</SPAN> TCHAR wchar_t;
+<SPAN class="keyword">#else</SPAN>
+<SPAN class="keyword">typedef</SPAN> TCHAR <SPAN class="keyword">char</SPAN>;
+<SPAN class="keyword">#endif</SPAN>
+</PRE>
+
+
+<P>実際の関数は、次のようにANSI用とUNICODE用の2種類が用意されている。これは、普通のWindowsAPI関数と同じ手法である。</P>
+<PRE>
+<SPAN class="keyword">long</SPAN> MIDIOut_OpenA (<SPAN class="keyword">const char</SPAN>* pszDeviceName);
+<SPAN class="keyword">long</SPAN> MIDIOut_OpenW (<SPAN class="keyword">const</SPAN> wchar_t* pszDeviceName);
+<SPAN class="keyword">#ifdef</SPAN> UNICODE
+MIDIOut_Open MIDIOut_OpenW
+<SPAN class="keyword">#else</SPAN>
+MIDIOut_Open MIDIOut_OpenA
+<SPAN class="keyword">#endif</SPAN>
+</PRE>
+
+<H4>文字列の長さの単位はバイトから文字になった。</H4>
+
+<P>文字列の長さの単位はバイトであったが、文字になった。1文字の長さは、ANSIでは1バイト、UNICODEでは2バイトとなる。</P>
+
+
+
+<H2><A NAME="MIDIInReference">第2章：MIDIInリファレンス</A></H2>
+
+<H3><A NAME="MIDIIn_Struct">2-1.MIDIIn構造体</A></H3>
+
+<P>　MIDIIn構造体は、現在のMIDI入力デバイス名とハンドル、現在の動作モード、バッファリングされたMIDIメッセージなどを常に保持している。これらの値は必要に応じて直接参照できるが、これらの値を直接操作してはならない。通常の場合、ユーザーは、MIDIIn構造体の中身を気にする必要はない。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIIn_FieldTable">▼Table2-1.MIDIIn構造体のフィールドと意味</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH WIDTH="25%">フィールド</TH>
+  <TH WIDTH="75%">使い方</TH>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">void</SPAN>* m_pDeviceHandle</TD>
+  <TD>MIDI入力デバイスへのハンドル。この値を変更してはならない。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">void</SPAN>* m_pDeviceName</TD>
+  <TD>MIDI入力デバイスの名前へのポインタ。このポインタを変更してはならない。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">long</SPAN> m_lMode</TD>
+  <TD>MIDI入力デバイスの動作モード。この値は、入力モードである限り常に0である。この値を変更してはならない。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">unsigned char</SPAN>* m_pBuf</TD>
+  <TD>受信したMIDIメッセージを一時的に保持しておくためのバッファへのポインタ。このバッファの長さは有限長で、リングバッファとして使われる。このバッファ内のデータを直接読み書きしてはならない。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">long</SPAN> m_lBufSize</TD>
+  <TD>受信したMIDIメッセージを一時的に保持しておくためのバッファのサイズ[バイト]。現段階では1024バイト。この値を変更してはならない。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">long</SPAN> m_lReadPosition</TD>
+  <TD>現在のバッファの読み込み位置[バイト]。この値を直接変更してはならない。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">long</SPAN> m_lWritePosition</TD>
+  <TD>現在のバッファの書き込み位置[バイト]。この値を直接変更してはならない。</TD>
+ </TR>
+</TABLE>
+
+<P>　MIDIIn構造体は、オブジェクトを直接宣言してはならない。<SPAN CLASS="RED">必ずMIDIIn構造体へのポインタを宣言すること。</SPAN>そして、このポインタにはデフォルトでNULLを代入しておくことを勧める。このポインタが有効なのは、<A HREF="#MIDIIn_Open">MIDIIn_Open</A>関数によってMIDI入力デバイスが開かれてから、<A HREF="#MIDIIn_Close">MIDIIn_Close</A>関数によってMIDI入力デバイスが閉じられるまでの間だけである。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIIn_StructList">▼List2-1.MIDIInオブジェクトの宣言の仕方</A></DIV>
+<PRE>
+	MIDIIn* pMIDIIn = NULL;
+</PRE>
+
+<H3><A NAME="MIDIIn_GetDeviceFunction">2-2.MIDI入力デバイスの探索</A></H3>
+
+<P>　MIDI入力デバイスを開く前に、まずMIDI入力デバイスの名前を知らなければならない。そのためには、MIDIIn_GetDeviceNum関数とMIDIIn_GetDeviceName関数を使う。これらの関数は、MIDIInオブジェクトを構築しないでも使える特別な関数であり、いつでも使用することができる。</P>
+<P>　次に、インストールされているMIDI入力デバイスを列挙する方法を紹介する。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIIn_GetDeviceFunctionList">▼List2-2.MIDIIn_GetDevice系関数の使い方</A></DIV>
+<PRE>
+	<SPAN CLASS="KEYWORD">long</SPAN> lDeviceNum, i;
+	<SPAN CLASS="KEYWORD">char</SPAN> szDeviceName[256];
+	lDeviceNum = <SPAN CLASS="RED">MIDIIn_GetDeviceNum ()</SPAN>;
+	<SPAN CLASS="KEYWORD">for</SPAN> (i = 0; i &lt; lDeviceNum; i++) {
+		<SPAN CLASS="RED">MIDIIn_GetDeviceName (i, szDeviceName, 256)</SPAN>;
+		printf (<SPAN CLASS="STRING">"%3d : %s\n"</SPAN>, i, szDeviceName);
+	}
+	...
+</PRE>
+
+<P>　このプログラムでは、まず使用可能なMIDI入力デバイスの数を調べ、次にそれぞれのMIDI入力デバイスの名前を調べている。このプログラムを実行すると、例えば次のような表示がされる。この場合、5個のMIDI入力デバイスがインストールされていた。ユーザーはこの中から好きなMIDI入力デバイスを選ぶことができる。</P>
+
+<PRE>
+  0 : In-A USB MidiSport 2x2
+  1 : In-B USB MidiSport 2x2
+  2 : ADSP24 MPU401 Port 1 (1)
+  3 : Roland Serial MIDI Input
+  4 : TTS Virtual Piano In
+</PRE>
+
+<P></P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIIn_GetDeviceFunctionTable">▼Table2-2.MIDIIn_GetDevice系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIIn_GetDeviceNum"><SPAN CLASS="KEYWORD">long</SPAN> MIDIIn_GetDeviceNum <BR>();</A> </TD>
+  <TD>なし</TD>
+  <TD>インストールされているMIDI入力デバイスの数</TD>
+  <TD>インストールされているMIDI入力デバイスの数を調べる。MIDI入力デバイスが何もインストールされていない場合0を返す。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIIn_GetDeviceName"><SPAN CLASS="KEYWORD">long</SPAN> MIDIIn_GetDeviceName <BR>(<SPAN CLASS="KEYWORD">long</SPAN> lIndex, TCHAR* pszDeviceName, <SPAN CLASS="KEYWORD">long</SPAN> lLen);</A> </TD>
+  <TD>lIndex:MIDI入力デバイスのインデックス(0以上)<BR>pszDeviceName:MIDI入力デバイス名を格納するバッファへのポインタ<BR>lLen:MIDI入力デバイス名を格納するバッファの長さ[文字]</TD>
+  <TD>正常終了:MIDI入力デバイス名の文字数[文字]<BR>異常終了:0</TD>
+  <TD>MIDI入力デバイスの名前を調べる。lIndexには0以上、MIDIIn_GetDeviceNumで得られた値-1以下の値を指定すれば、正常にMIDI入力デバイスの名前を取得することができる。その他のインデックスを指定した場合、この関数は失敗し、0を返す。
+なお、MIDI入力デバイスの名前は通常32文字以下(ヌル文字含む)であるので、バッファとしては32文字のTCHAR型配列を用意しておけば十分である。</TD>
+ </TR>
+</TABLE>
+
+
+<H3><A NAME="MIDIIn_OpenFunction">2-3.MIDI入力デバイスを開く</A></H3>
+
+<P>　MIDI入力デバイスを開くには、MIDIIn_Open関数あるいはMIDIIn_Reopen関数を使う。これらの関数はfopen関数あるいはfreopen関数に非常に使い方が似ている。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIIn_OpenFunctionList">▼List2-3.MIDIIn_Open系関数の使い方</A></DIV>
+<PRE>
+	MIDIIn* pMIDIIn = NULL;
+	...
+	<SPAN CLASS="RED">pMIDIIn = MIDIIn_Open (szDeviceName)</SPAN>;
+	<SPAN CLASS="KEYWORD">if</SPAN> (pMIDIIn == NULL) {
+		printf (<SPAN CLASS="STRING">"MIDI入力デバイス%sが開けません。\n"
+		"他のアプリケーションを終了してから再試行してください。\n"</SPAN>, szDeviceName);
+		<SPAN CLASS="KEYWORD">return</SPAN> 0;
+	}
+	...
+</PRE>
+
+<P></P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIIn_OpenFunctionTable">▼Table2-3.MIDIIn_Open系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIIn_Open">MIDIIn* MIDIIn_Open<BR>(<SPAN CLASS="KEYWORD">const</SPAN> TCHAR* pszDeviceName);</A> </TD>
+  <TD>pszDeviceName:MIDI入力デバイス名へのポインタ</TD>
+  <TD>正常終了:MIDI入力デバイスオブジェクトへのポインタ<BR>異常終了:NULL</TD>
+  <TD>MIDI入力デバイスを開く。この関数は、安全にMIDI入力デバイスをオープンし、MIDI入力デバイスに必要なメモリを適切な順序で確保する。MIDI入力デバイス名としては、MIDIIn_GetDeviceName関数で取得したものを使う。MIDI入力デバイスが開けなかった場合はNULLを返す。MIDI入力デバイスが開けない主な理由は、他のアプリケーションが既に指定のMIDI入力デバイスを使っている、他のアプリケーションが指定のMIDI入力デバイスを閉じ忘れている、MIDI入力デバイス名が間違えている(例えば名前の後に見えない'\n'や'\r'が付いている)、インストールされているMIDI入力デバイス(ドライバ)が古すぎる(例えばWindows3.1用のだったりする)などが考えられる。どうしても開けない場合は、Windowsを再起動する、ドライバを最新のものにインストールし直すなどが考えられる。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIIn_Reopen">MIDIIn* MIDIIn_Reopen<BR>(MIDIIn* pMIDIIn,<BR><SPAN CLASS="KEYWORD">const</SPAN> TCHAR* pszDeviceName);</A> </TD>
+  <TD>pMIDIIn:現在使用しているMIDI入力デバイスオブジェクトへのポインタ<BR>pszDeviceName:新しいMIDI入力デバイス名へのポインタ</TD>
+  <TD>正常終了:新しいMIDI入力デバイスオブジェクトへのポインタ<BR>異常終了:NULL</TD>
+  <TD>現在使用しているMIDI入力デバイスを閉じ、新しいMIDI入力デバイスを開く。この関数は、単純にMIDIIn_Close (pMIDIIn)とMIDIIn_Open (pszDeviceName)をするだけのものである。新しいMIDI入力デバイス名としては、MIDIIn_GetDeviceName関数で取得したものを使う。新しいMIDI入力デバイスが開けなかった場合はNULLを返す。また、使用中のMIDI入力デバイスを閉じる際にエラーが発生した場合、新しいMIDI入力デバイスは開かずにNULLを返す。</TD>
+ </TR>
+</TABLE>
+
+
+<H3><A NAME="MIDIIn_CloseFunction">2-4.MIDI入力デバイスを閉じる</A></H3>
+
+<P><SPAN CLASS="RED">　<A HREF="#MIDIIn_OpenFunction">MIDIIn_Open系関数</A>で開いたMIDI入力デバイスは、使用し終わったらMIDIIn_Close関数で閉じなければならない。</SPAN>MIDIIOライブラリではメモリの自動解放(ガベージコレクション)を行わないので、この手続きは常に必要である。もし閉じ忘れれば、メモリリークが発生するばかりでなく、他のアプリケーションがこのMIDIデバイスを二度と使用できなくなるだろう(Windowsを再起動すれば直る)。</P>
+
+<P><SPAN CLASS="RED">　MIDI入力デバイスを閉じた直後には、ポインタにNULLを代入しておくべきである。</SPAN>これをしなければ、このMIDI入力デバイスが既に閉じられているということが外部からわからなくなってしまい、バグの原因となりうる。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIIn_CloseFunctionList">▼List2-4.MIDIIn_Close系関数の使い方</A></DIV>
+<PRE>
+	...
+	<SPAN CLASS="RED">MIDIIn_Close (pMIDIIn)</SPAN>;
+	pMIDIIn = NULL;
+</PRE>
+
+<P></P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIIn_CloseFunctionTable">▼Table2-4.MIDIIn_Close系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIIn_Close"><SPAN CLASS="KEYWORD">long</SPAN> MIDIIn_Close <BR>(MIDIIn* pMIDIIn);</A> </TD>
+  <TD>pMIDIIn:MIDI入力デバイスオブジェクトへのポインタ</TD>
+  <TD>正常終了:1<BR>異常終了:0</TD>
+  <TD>MIDI入力デバイスを閉じる。この関数は、MIDI入力デバイスが確保したメモリを適切な順序で解放し、安全にMIDI入力デバイスをクローズする。この関数は通常1を返すが、エラーが発生した場合0を返す。MIDIIn_Closeに失敗したMIDI入力デバイスは、もはや使用するべきでない。pMIDIInにNULLを渡した場合は何も起こらず1を返す。</TD>
+ </TR>
+</TABLE>
+
+
+<H3><A NAME="MIDIIn_ResetFunction">2-5.MIDI入力デバイスのリセット</A></H3>
+
+<P>　MIDI入力デバイスはいったん開かれると、直ちにMIDIIn端子のリスニングを始める。取得したMIDIメッセージは次々に内部バッファにためられていく。従って、MIDI入力デバイスを開いたら、直ちにかつ断続的に、<A HREF="#MIDIIn_GetFunction">MIDIIn_Get系関数</A>でMIDIメッセージを取得し続けなければならない。しかし、時にはMIDIメッセージを取得できる状況でなく、バッファをあふれさせてしまうこともあるだろう(実際には古いMIDIメッセージから削除されていく)。そのような時、MIDIIn_Reset系関数を使うことで、MIDI入力デバイスを開いた直後の状態に初期化することができる。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIIn_ResetFunctionList">▼List2-5.MIDIIn_Reset系関数の使い方</A></DIV>
+<PRE>
+	...
+	<SPAN CLASS="RED">MIDIIn_Reset (pMIDIIn)</SPAN>;
+	...
+</PRE>
+
+<P></P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIIn_ResetFunctionTable">▼Table2-5.MIDIIn_Reset系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIIn_Reset"><SPAN CLASS="KEYWORD">long</SPAN> MIDIIn_Reset <BR>(MIDIIn* pMIDIIn);</A> </TD>
+  <TD>pMIDIIn:MIDI入力デバイスオブジェクトへのポインタ</TD>
+  <TD>正常終了:1<BR>異常終了:0</TD>
+  <TD>MIDI入力デバイスをリセットし、MIDI入力デバイスを開いた直後の状態に初期化する。具体的には、入力バッファにたまっているMIDIメッセージをすべて削除し、読み込み位置と書き込み位置を0に初期化する。</TD>
+ </TR>
+</TABLE>
+
+<H3><A NAME="MIDIIn_GetFunction">2-6.MIDI入力デバイスからMIDIメッセージを取得</A></H3>
+
+<P>　<SPAN CLASS="RED">MIDI入力デバイスはいったん開かれると、直ちにMIDIIn端子のリスニングを始める。入力されたMIDIメッセージは次々に内部バッファにためられていくので、プログラマは断続的にMIDIメッセージを取得し続けなければならない。</SPAN>MIDIメッセージの取得には、1メッセージずつ取得する<A HREF="#MIDIIn_GetMIDIMessage">MIDIIn_GetMIDIMessage</A>関数が非常に便利である。</P>
+
+<P>　一般的なアプリケーションでは、MIDIメッセージ取得用のwhileループをメインスレッドで使うのではなく、別のスレッドを使うことになるであろう。さもなければ、whileループがユーザー入力を妨げてしまい、『終了』ボタンや『Alt+F4』キーを押したときに、アプリケーションを終了することができなくなってしまう。マルチスレッドプログラミングについては、それだけで1冊の本がかけてしまうほど膨大なものなのでここでは述べないが、重大な注意点がひとつある。MIDIIOライブラリではクリティカルセクションの処理は上層のモジュールに任されている。すなわち、MIDIIn_GetMIDIMessage関数の処理中にMIDIIn_Close関数などが乱入状態で呼び出されることは想定して作られていない。このような乱入状態を避けるには、プログラマがすべてのMIDIIn系関数をEnterCriticalSectionとLeaveCriticalSectionで囲んでおく必要がある。以下に代表的なプログラミング例を示す。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIIn_GetFunctionList1">▼List2-6-1.MIDIIn_Get系関数の使い方(1)</A></DIV>
+<PRE>
+<SPAN CLASS="KEYWORD">void</SPAN> Thread2 (...) {
+	...
+	<SPAN CLASS="KEYWORD">unsigned char</SPAN> byMessage[256];
+	<SPAN CLASS="KEYWORD">long</SPAN> lLen;
+	<SPAN CLASS="COMMENT">/* MIDIメッセージの取得ループ */</SPAN>
+	<SPAN CLASS="KEYWORD">while</SPAN> (g_bContinue) {
+		EnterCriticalSection (&amp;g_csMIDIIn);
+		<SPAN CLASS="RED">lLen = MIDIIn_GetMIDIMessage (pMIDIIn, byMessage, 256);</SPAN>
+		LeaveCriticalSection (&amp;g_csMIDIIn);
+		<SPAN CLASS="COMMENT">/* MIDIメッセージを取得した */</SPAN>
+		<SPAN CLASS="KEYWORD">if</SPAN> (lLen &gt; 0) {
+			<SPAN CLASS="COMMENT">/* 何らかの処理 */</SPAN>
+			...
+		}
+		<SPAN CLASS="COMMENT">/* MIDIメッセージを取得しなかった */</SPAN>
+		<SPAN CLASS="KEYWORD">else</SPAN> {
+			<SPAN CLASS="COMMENT">/* スリープ処理 */</SPAN>
+			Sleep (1);
+		}
+	}
+	...
+}
+</PRE>
+
+<P>　なお、MIDIメッセージを取得した時刻の精度をそれほど追求しない場合は、Windowsタイマーの中で<A HREF="#MIDIIn_GetMIDIMessage">MIDIIn_GetMIDIMessage</A>関数を使うという方法も考えられる。この場合、精度は良くても55ミリ秒単位となるので、リアルタイムレコーディングなどには苦しい。しかし、シングルスレッドで済み、クリティカルセクションに配慮する必要がないので、初心者向きのプログラミングであるといえる。この方法はVisalBasicにおいても特に容易である。以下にプログラミング例を示す。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIIn_GetFunctionList2">▼List2-6-2.MIDIIn_Get系関数の使い方(2)</A></DIV>
+<PRE>
+<SPAN CLASS="KEYWORD">void</SPAN> MainWnd_OnTimer (HWND hWnd, UINT nTimerID) {
+	<SPAN CLASS="KEYWORD">unsigned char</SPAN> byMessage[256];
+	<SPAN CLASS="KEYWORD">long</SPAN> lLen;
+	<SPAN CLASS="COMMENT">/* MIDIメッセージの取得ループ */</SPAN>
+	<SPAN CLASS="KEYWORD">while</SPAN> (1) {
+		<SPAN CLASS="RED">lLen = MIDIIn_GetMIDIMessage (pMIDIIn, byMessage, 256);</SPAN>
+		<SPAN CLASS="KEYWORD">if</SPAN> (lLen &gt; 0) {
+			<SPAN CLASS="COMMENT">/* 何らかの処理 */</SPAN>
+			...
+		}
+		<SPAN CLASS="KEYWORD">else</SPAN> {
+			<SPAN CLASS="KEYWORD">break</SPAN>;
+		}
+	}
+}
+</PRE>
+
+<P></P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIIn_GetFunctionTable">▼Table2-6.MIDIIn_Get系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIIn_GetMIDIMessage"><SPAN CLASS="KEYWORD">long</SPAN> MIDIIn_GetMIDIMessage <BR>(MIDIIn* pMIDIIn,<BR><SPAN CLASS="KEYWORD">unsigned char</SPAN>* pMessage,<BR><SPAN CLASS="KEYWORD">long</SPAN> lLen);</A> </TD>
+  <TD>pMIDIIn:MIDI入力デバイスへのポインタ<BR>pMessage:取得するMIDIメッセージを格納するバッファへのポインタ<BR>lLen:バッファの長さ[バイト]かつ取得するMIDIメッセージの最大バイト数</TD>
+  <TD>実際に取得したMIDIメッセージのバイト数</TD>
+  <TD>MIDIメッセージをひとつ取得し、実際に取得したMIDIメッセージのバイト数を返す。<SPAN CLASS="RED">取得するMIDIメッセージがなかった場合は直ちに0を返す(MIDIメッセージの待機は行わない)。</SPAN>MIDIメッセージが複数個蓄積されている場合があるので、この関数が0を返すまでループ内で繰り返しこの関数を使う必要がある。この関数は、通常のMIDIチャンネルメッセージのほか、システムエクスクルーシヴメッセージ・システムリアルタイムメッセージをも取得しうる。そのため、lLenは256バイト用意しておくべきである。もしpMessageにMIDIメッセージが入りきれなかった場合、入りきれなかった部分のMIDIメッセージは切り捨てられ、二度と取得できなくなる。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIIn_GetByte"><SPAN CLASS="KEYWORD">long</SPAN> MIDIIn_GetByte <BR>(MIDIIn* pMIDIIn,<BR><SPAN CLASS="KEYWORD">unsigned char</SPAN>* pByte);</A> </TD>
+  <TD>pMIDIIn:MIDI入力デバイスへのポインタ<BR>pByte:取得するデータを格納する1バイトのバッファへのポインタ</TD>
+  <TD>実際に取得したMIDIメッセージのバイト数</TD>
+  <TD>MIDIメッセージを1バイト取得し、1を返す。<SPAN CLASS="RED">取得するMIDIメッセージがなかった場合は直ちに0を返す(MIDIメッセージの待機は行わない)。</SPAN>なお、<SPAN CLASS="RED">この関数は危険なので、ほとんど使ってはならない。</SPAN>なぜなら、MIDIメッセージを中途半端に区切って取得することによって、MIDIメッセージとMIDIメッセージの境界がわからなくなってしまうからである。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIIn_GetBytes"><SPAN CLASS="KEYWORD">long</SPAN> MIDIIn_GetBytes <BR>(MIDIIn* pMIDIIn,<BR><SPAN CLASS="KEYWORD">unsigned char</SPAN>* pBuf,<SPAN CLASS="KEYWORD">long</SPAN> lLen);</A> </TD>
+  <TD>pMIDIIn:MIDI入力デバイスへのポインタ<BR>pBuf:取得するデータを格納するバッファへのポインタ<BR>lLen:バッファの長さかつ取得する長さ[バイト]</TD>
+  <TD>実際に取得したMIDIメッセージのバイト数</TD>
+  <TD>MIDIメッセージを指定されたバイト数取得し、実際に取得したバイト数を返す。<SPAN CLASS="RED">取得するMIDIメッセージがなかった場合は直ちに0を返す(MIDIメッセージの待機は行わない)。</SPAN>なお、<SPAN CLASS="RED">この関数は危険なので、ほとんど使ってはならない。</SPAN>なぜなら、MIDIメッセージを中途半端に区切って取得することによって、MIDIメッセージとMIDIメッセージの境界がわからなくなってしまうからである。</TD>
+ </TR>
+</TABLE>
+
+
+<H3><A NAME="MIDIIn_GetThisDeviceNameFunction">2-7.MIDI入力デバイスの名前を取得</A></H3>
+
+<P>　MIDI入力デバイスはいったん開かれると、そのデバイスの名前をいつでも取得できる。これには、<A HREF="#MIDIIn_GetThisDeviceName">MIDIIn_GetThisDeviceName関数</A>を使う。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIIn_GetDeviceFunctionList">▼List2-7.MIDIIn_GetThisDeviceName系関数の使い方</A></DIV>
+<PRE>
+	<SPAN CLASS="KEYWORD">char</SPAN> szDeviceName[256];
+	<SPAN CLASS="RED">MIDIIn_GetThisDeviceName (pMIDIIn, szDeviceName, 256)</SPAN>;
+	printf (<SPAN CLASS="STRING">"%s\n"</SPAN>, szDeviceName);
+	...
+</PRE>
+
+<DIV CLASS="TITLE"><A NAME="MIDIIn_GetDeviceFunctionTable">▼Table2-7.MIDIIn_GetThisDeviceName系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIIn_GetThisDeviceName"><SPAN CLASS="KEYWORD">long</SPAN> MIDIIn_GetThisDeviceName <BR>(MIDIIn* pMIDIIn, TCHAR* pszDeviceName, <SPAN CLASS="KEYWORD">long</SPAN> lLen);</A> </TD>
+  <TD>pMIDIIn:MIDI入力デバイスへのポインタ<BR>pszDeviceName:MIDI入力デバイス名を格納するバッファへのポインタ<BR>lLen:MIDI入力デバイス名を格納するバッファの長さ[文字]</TD>
+  <TD>正常終了:このMIDI入力デバイス名の文字数[文字]<BR>異常終了:0</TD>
+  <TD>このMIDI入力デバイスの名前を調べる。pMIDIInは既に開かれているデバイスでなければならない。なお、MIDI入力デバイスの名前は通常32文字以下(ヌル文字含む)であるので、バッファとしては32文字のTCHAR型配列を用意しておけば十分である。この関数は現在使用しているデバイス名をINIファイルなどに保存しておくのに便利である。</TD>
+ </TR>
+</TABLE>
+
+
+<H3><A NAME="MIDIIn_Macro">2-8.MIDI入力に関するマクロ</A></H3>
+
+<P>　MIDIIOライブラリは、stdioライブラリのように簡単に使えることを意識して作った。すなわち、MIDIIO.hの中で定義されているマクロを利用することにより、普段使い慣れているfopen, fgets, fcloseなどの関数の'f'を'm'に変えるだけで、ファイル入力はMIDI入力に化けてしまうのである。</P>
+
+<P>　なお、これらのマクロはC/C++から使用することはできるが、Visual Basic及びDelphiからは使用することができないので予めご了承いただきたい。</P>
+
+
+<DIV CLASS="TITLE"><A NAME="MIDIIn_MacroList">▼List2-8.MIDI入力に関するマクロの使用例</A></DIV>
+<PRE>
+<SPAN CLASS="KEYWORD">#include</SPAN> &lt;stdio.h&gt;
+<SPAN CLASS="KEYWORD">#include</SPAN> &lt;time.h&gt;
+<SPAN CLASS="KEYWORD">#include</SPAN> &lt;windows.h&gt;
+<SPAN CLASS="KEYWORD">#include</SPAN> &lt;MIDIIO.h&gt;
+<SPAN CLASS="KEYWORD">int</SPAN> main () {
+	<SPAN CLASS="RED">MIDIIn* pMIDIIn;</SPAN>
+	<SPAN CLASS="KEYWORD">unsigned char</SPAN> byMessage[256];
+	<SPAN CLASS="KEYWORD">long</SPAN> i, lRet;
+	<SPAN CLASS="COMMENT">/* MIDI入力デバイスを開く */</SPAN>
+	<SPAN CLASS="RED">pMIDIIn = mopen (<SPAN CLASS="STRING">"In-A USB MidiSport 2x2"</SPAN>, <SPAN CLASS="STRING">"r"</SPAN>);</SPAN>
+	<SPAN CLASS="KEYWORD">if</SPAN> (pMIDIIn == NULL) {
+	 	printf (<SPAN CLASS="STRING">"MIDI入力デバイスを開けません。\n"</SPAN>);
+	 	<SPAN CLASS="KEYWORD">return</SPAN> 0;
+	}
+ 	<SPAN CLASS="COMMENT">/* 10秒間 */</SPAN>
+	<SPAN CLASS="KEYWORD">while</SPAN> (clock () &lt; 10000) {
+		<SPAN CLASS="COMMENT">/* MIDI入力デバイスからMIDIメッセージを1つ取得する */</SPAN>
+		<SPAN CLASS="RED">lRet = mgets (byMessage, 256, pMIDIIn);</SPAN>
+		<SPAN CLASS="COMMENT">/* MIDIメッセージが取得された場合 */</SPAN>
+		<SPAN CLASS="KEYWORD">if</SPAN> (lRet &gt; 0) {
+			<SPAN CLASS="KEYWORD">for</SPAN> (i = 0; i &lt; lRet; i++) {
+				printf (<SPAN CLASS="STRING">"0x%02X "</SPAN>, byMessage[i]);
+			}
+			printf (<SPAN CLASS="STRING">"/ "</SPAN>);
+		}
+		<SPAN CLASS="COMMENT">/* MIDIメッセージが取得されない場合 */</SPAN>
+		<SPAN CLASS="KEYWORD">else</SPAN> {
+			Sleep (1);
+		}
+	}
+	<SPAN CLASS="COMMENT">/* MIDI入力デバイスを閉じる */</SPAN>
+	<SPAN CLASS="RED">mclose (pMIDIIn);</SPAN>
+	<SPAN CLASS="KEYWORD">return</SPAN> 1;
+}
+</PRE>
+
+<P></P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIIn_MacroTable">▼Table2-8.MIDI入力に関するマクロ一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH WIDTH="30%">マクロ定義</TH>
+  <TH WIDTH="30%">同等の関数</TH>
+  <TH WIDTH="40%">解説(類似点と相違点)</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIIn_MIDIIn">MIDIIn* pMIDIIn;<BR></A> </TD>
+  <TD>MIDIIn* pMIDIIn;</TD>
+  <TD>FILE構造体のポインタ宣言と同じ使い方である。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIIn_mopen">mopen <BR>(pszDeviceName, "r");<BR></A> </TD>
+  <TD>MIDIIn_Open <BR>(pszDeviceName);</TD>
+  <TD>fopen関数と同じ使い方である。入力デバイスを開くときは"r"を使う。テキスト・バイナリの区別はない。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIIn_mreopen">mreopen <BR>(pszDeviceName, "r", pMIDIIn);<BR></A> </TD>
+  <TD>MIDIIn_Reopen <BR>(pMIDIIn, pszDeviceName);</TD>
+  <TD>freopen関数と同じ使い方である。入力デバイスを開くときは"r"を使う。テキスト・バイナリの区別はない。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIIn_mclose">mclose <BR>(pMIDIIn);<BR></A> </TD>
+  <TD>MIDIIn_Close <BR>(pMIDIIn);</TD>
+  <TD>fclose関数と同じ使い方である。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIIn_mflush">mflush <BR>(pMIDIIn);<BR></A> </TD>
+  <TD>MIDIIn_Reset <BR>(pMIDIIn);</TD>
+  <TD>fflush関数と同じ使い方である。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIIn_mgets">mgets <BR>(pMessage, lLen, pMIDIIn);<BR></A> </TD>
+  <TD>MIDIIn_GetMIDIMessage <BR>(pMIDIIn, pMessage, lLen);</TD>
+  <TD>fgets関数に類似している。ただし1行ではなく1MIDIメッセージを取得する。また、戻り値は、MIDIメッセージへのポインタではなく実際に取得したバイト数である。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIIn_mgetc">mgetc <BR>(pByte, pMIDIIn);<BR></A> </TD>
+  <TD>MIDIIn_GetByte <BR>(pMIDIIn, pByte);</TD>
+  <TD>fgetc関数に類似している。ただし1文字ではなく1バイトを取得する。結果は戻り値に返すのではなく第1引数に返す。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIIn_mread">mread <BR>(pBuf, lLen, pMIDIIn);<BR></A> </TD>
+  <TD>MIDIIn_GetBytes <BR>(pMIDIIn, pBuf, lLen);</TD>
+  <TD>fread関数に類似している。ただし第2引数と第3引数が統合され、読み出すバイト数となっている。</TD>
+ </TR>
+</TABLE>
+
+
+<H2><A NAME="MIDIOutReference">第3章：MIDIOutリファレンス</A></H2>
+
+<H3><A NAME="MIDIOut_Struct">3-1.MIDIOut構造体</A></H3>
+
+<P>　MIDIOut構造体は、現在のMIDI出力デバイス名とハンドル、現在の動作モード、バッファリングされたMIDIメッセージなどを常に保持している。これらの値は必要に応じて直接参照できるが、これらの値を直接操作してはならない。通常の場合、ユーザーは、MIDIOut構造体の中身を気にする必要はない。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIOut_FieldTable">▼Table3-1.MIDIOut構造体のフィールドと意味</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH WIDTH="25%">フィールド</TH>
+  <TH WIDTH="75%">使い方</TH>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">void</SPAN>* m_pDeviceHandle</TD>
+  <TD>MIDI出力デバイスへのハンドル。この値を変更してはならない。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">void</SPAN>* m_pDeviceName</TD>
+  <TD>MIDI出力デバイスの名前へのポインタ。このポインタを変更してはならない。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">long</SPAN> m_lMode</TD>
+  <TD>MIDI出力デバイスの動作モード。この値は、出力モードである限り常に1である。この値を変更してはならない。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">unsigned char</SPAN>* m_pBuf</TD>
+  <TD>送信したMIDIメッセージを一時的に保持しておくためのバッファへのポインタ。このバッファの長さは有限長で、リングバッファとして使われる。このバッファは現段階では使われていない。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">long</SPAN> m_lBufSize</TD>
+  <TD>送信したMIDIメッセージを一時的に保持しておくためのバッファのサイズ[バイト]。現段階では0バイト。この値を変更してはならない。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">long</SPAN> m_lReadPosition</TD>
+  <TD>現在のバッファの読み込み位置[バイト]。この値は現段階では使われていない。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">long</SPAN> m_lWritePosition</TD>
+  <TD>現在のバッファの書き込み位置[バイト]。この値は現段階では使われていない。</TD>
+ </TR>
+</TABLE>
+
+<P>　MIDIOut構造体は、オブジェクトを直接宣言してはならない。<SPAN CLASS="RED">必ずMIDIOut構造体へのポインタを宣言すること。</SPAN>そして、このポインタにはデフォルトでNULLを代入しておくことを勧める。このポインタが有効なのは、<A HREF="#MIDIOut_Open">MIDIOut_Open</A>関数によってMIDI出力デバイスが開かれてから、<A HREF="#MIDIOut_Close">MIDIOut_Close</A>関数によってMIDI出力デバイスが閉じられるまでの間だけである。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIOut_StructList">▼List3-1.MIDIOutオブジェクトの宣言の仕方</A></DIV>
+<PRE>
+	MIDIOut* pMIDIOut = NULL;
+</PRE>
+
+<H3><A NAME="MIDIOut_GetDeviceFunction">3-2.MIDI出力デバイスの探索</A></H3>
+
+<P>　MIDI出力デバイスを開く前に、まずMIDI出力デバイスの名前を知らなければならない。そのためには、MIDIOut_GetDeviceNum関数とMIDIOut_GetDeviceName関数を使う。これらの関数は、MIDIOutオブジェクトを構築しないでも使える特別な関数であり、いつでも使用することができる。</P>
+<P>　次に、インストールされているMIDI出力デバイスを列挙する方法を紹介する。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIOut_GetDeviceFunctionList">▼List3-2.MIDIOut_GetDevice系関数の使い方</A></DIV>
+<PRE>
+	<SPAN CLASS="KEYWORD">long</SPAN> lDeviceNum, i;
+	<SPAN CLASS="KEYWORD">char</SPAN> szDeviceName[256];
+	lDeviceNum = <SPAN CLASS="RED">MIDIOut_GetDeviceNum ()</SPAN>;
+	<SPAN CLASS="KEYWORD">for</SPAN> (i = 0; i &lt; lDeviceNum; i++) {
+		<SPAN CLASS="RED">MIDIOut_GetDeviceName (i, szDeviceName, 256)</SPAN>;
+		printf (<SPAN CLASS="STRING">"%3d : %s\n"</SPAN>, i, szDeviceName);
+	}
+	...
+</PRE>
+
+<P>　このプログラムでは、まず使用可能なMIDI出力デバイスの数を調べ、次にそれぞれのMIDI出力デバイスの名前を調べている。このプログラムを実行すると、例えば次のような表示がされる。この場合、6個のMIDI出力デバイスがインストールされていた。ユーザーはこの中から好きなMIDI出力デバイスを選ぶことができる。</P>
+<P>　0番目の「Microsoft GS Wavetable SW Synth」は、ほとんどのWindowsパソコンにもともとインストールされているソフトウェア音源で、ハードウェア音源を持っていなくても鳴らすことができるが、とても音質が悪い。また、GSと唄っておきながら、GM程度のデータしか再生能力はない。</P>
+
+<PRE>
+  0 : Microsoft GS Wavetable SW Synth
+  1 : Out-A USB MidiSport 2x2
+  2 : Out-B USB MidiSport 2x2
+  3 : ADSP24 MPU401 Port 1 (1)
+  4 : Roland Serial MIDI Out A
+  5 : Roland Serial MIDI Out B
+</PRE>
+
+<P></P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIOut_GetDeviceFunctionTable">▼Table3-2.MIDIOut_GetDevice系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIOut_GetDeviceNum"><SPAN CLASS="KEYWORD">long</SPAN> MIDIOut_GetDeviceNum <BR>();</A> </TD>
+  <TD>なし</TD>
+  <TD>インストールされているMIDI出力デバイスの数</TD>
+  <TD>インストールされているMIDI出力デバイスの数を調べる。MIDI出力デバイスが何もインストールされていない場合0を返す。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIOut_GetDeviceName"><SPAN CLASS="KEYWORD">long</SPAN> MIDIOut_GetDeviceName <BR>(<SPAN CLASS="KEYWORD">long</SPAN> lIndex, TCHAR* pszDeviceName, <SPAN CLASS="KEYWORD">long</SPAN> lLen);</A> </TD>
+  <TD>lIndex:MIDI出力デバイスのインデックス(0以上)<BR>pszDeviceName:MIDI出力デバイス名を格納するバッファへのポインタ<BR>lLen:MIDI出力デバイス名を格納するバッファの長さ[文字]</TD>
+  <TD>正常終了:MIDI出力デバイス名の文字数[文字]<BR>異常終了:0</TD>
+  <TD>MIDI出力デバイスの名前を調べる。lIndexには0以上、MIDIOut_GetDeviceNumで得られた値-1以下の値を指定すれば、正常にMIDI出力デバイスの名前を取得することができる。その他のインデックスを指定した場合、この関数は失敗し、0を返す。
+なお、MIDI出力デバイスの名前は通常32文字以下(ヌル文字含む)であるので、バッファとしては32文字のTCHAR型配列を用意しておけば十分である。</TD>
+ </TR>
+</TABLE>
+
+
+<H3><A NAME="MIDIOut_OpenFunction">3-3.MIDI出力デバイスを開く</A></H3>
+
+<P>　MIDI出力デバイスを開くには、MIDIOut_Open関数あるいはMIDIOut_Reopen関数を使う。これらの関数はfopen関数あるいはfreopen関数に非常に使い方が似ている。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIOut_OpenFunctionList">▼List3-3.MIDIIn_Open系関数の使い方</A></DIV>
+<PRE>
+	MIDIOut* pMIDIOut = NULL;
+	...
+	<SPAN CLASS="RED">pMIDIOut = MIDIOut_Open (szDeviceName);</SPAN>
+	<SPAN CLASS="KEYWORD">if</SPAN> (pMIDIOut == NULL) {
+		printf (<SPAN CLASS="STRING">"MIDI出力デバイス%sが開けません。\n"
+		"他のアプリケーションを終了してから再試行してください。\n"</SPAN>, szDeviceName);
+		<SPAN CLASS="KEYWORD">return</SPAN> 0;
+	}
+	...
+</PRE>
+
+<P></P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIOut_OpenFunctionTable">▼Table3-3.MIDIOut_Open系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR CLASS="TITLE">
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIOut_Open">MIDIOut* MIDIOut_Open<BR>(<SPAN CLASS="KEYWORD">const</SPAN> TCHAR* pszDeviceName);</A> </TD>
+  <TD>pszDeviceName:MIDI出力デバイス名へのポインタ</TD>
+  <TD>正常終了:MIDI出力デバイスオブジェクトへのポインタ<BR>異常終了:NULL</TD>
+  <TD>MIDI出力デバイスを開く。この関数は、安全にMIDI出力デバイスをオープンし、MIDI出力デバイスに必要なメモリを適切な順序で確保する。MIDI出力デバイス名としては、MIDIOut_GetDeviceName関数で取得したものを使う。MIDI出力デバイスが開けなかった場合はNULLを返す。MIDI出力デバイスが開けない主な理由は、他のアプリケーションが既に指定のMIDI出力デバイスを使っている、他のアプリケーションが指定のMIDI出力デバイスを閉じ忘れている、MIDI出力デバイス名が間違えている(例えば名前の後に見えない'\n'や'\r'が付いている)、インストールされているMIDI出力デバイス(ドライバ)が古すぎる(例えばWindows3.1用のだったりする)などが考えられる。どうしても開けない場合は、Windowsを再起動する、ドライバを最新のものにインストールし直すなどが考えられる。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIOut_Reopen">MIDIOut* MIDIOut_Reopen<BR>(MIDIIn* pMIDIOut,<BR><SPAN CLASS="KEYWORD">const</SPAN> TCHAR* pszDeviceName);</A> </TD>
+  <TD>pMIDIOut:現在使用しているMIDI出力デバイスオブジェクトへのポインタ<BR>pszDeviceName:新しいMIDI出力デバイス名へのポインタ</TD>
+  <TD>正常終了:新しいMIDI出力デバイスオブジェクトへのポインタ<BR>異常終了:NULL</TD>
+  <TD>現在使用しているMIDI出力デバイスを閉じ、新しいMIDI出力デバイスを開く。この関数は、単純にMIDIOut_Close (pMIDIOut)とMIDIOut_Open (pszDeviceName)をするだけのものである。新しいMIDI出力デバイス名としては、MIDIOut_GetDeviceName関数で取得したものを使う。新しいMIDI出力デバイスが開けなかった場合はNULLを返す。また、使用中のMIDI出力デバイスを閉じる際にエラーが発生した場合、新しいMIDI出力デバイスは開かずにNULLを返す。</TD>
+ </TR>
+</TABLE>
+
+
+<H3><A NAME="MIDIOut_CloseFunction">3-4.MIDI出力デバイスを閉じる</A></H3>
+
+<P><SPAN CLASS="RED">　<A HREF="#MIDIOut_OpenFunction">MIDIOut_Open系関数</A>で開いたMIDI出力デバイスは、使用し終わったらMIDIOut_Close関数で閉じなければならない。</SPAN>MIDIIOライブラリではメモリの自動解放(ガベージコレクション)を行わないので、この手続きは常に必要である。もし閉じ忘れれば、メモリリークが発生するばかりでなく、他のアプリケーションがこのMIDIデバイスを二度と使用できなくなるだろう(Windowsを再起動すれば直る)。</P>
+
+<P><SPAN CLASS="RED">　MIDI出力デバイスを閉じた直後には、ポインタにNULLを代入しておくべきである。</SPAN>これをしなければ、このMIDI出力デバイスが既に閉じられているということが外部からわからなくなってしまい、バグの原因となりうる。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIOut_CloseFunctionList">▼List3-4.MIDIOut_Close系関数の使い方</A></DIV>
+<PRE>
+	...
+	<SPAN CLASS="RED">MIDIOut_Close (pMIDIOut)</SPAN>;
+	pMIDIOut = NULL;
+</PRE>
+
+<P></P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIOut_CloseFunctionTable">▼Table3-4.MIDIOut_Close系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR CLASS="TITLE">
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIOut_Close"><SPAN CLASS="KEYWORD">long</SPAN> MIDIOut_Close <BR>(MIDIOut* pMIDIOut);</A> </TD>
+  <TD>pMIDIOut:MIDI出力デバイスオブジェクトへのポインタ</TD>
+  <TD>正常終了:1<BR>異常終了:0</TD>
+  <TD>MIDI出力デバイスを閉じる。この関数は、MIDI出力デバイスが確保したメモリを適切な順序で解放し、安全にMIDI出力デバイスをクローズする。この関数は通常1を返すが、エラーが発生した場合0を返す。MIDIOut_Closeに失敗したMIDI出力デバイスは、もはや使用するべきでない。pMIDIOutにNULLを渡した場合は何も起こらず1を返す。</TD>
+ </TR>
+</TABLE>
+
+
+<H3><A NAME="MIDIOut_ResetFunction">3-5.MIDI出力デバイスのリセット</A></H3>
+
+<P>　MIDI出力デバイスはいったん開かれると、直ちにMIDIOut端子にデータを送信することができるが、一度に大量のデータを送信したり、送信時にデータ誤りが発生したりすると、バッファがあふれたり、音が鳴り止まなくなったりすることがある。そのような時、MIDIOut_Reset系関数を使うことで、MIDI出力デバイスを開いた直後の状態に初期化することができる。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIOut_ResetFunctionList">▼List3-5.MIDIOut_Reset系関数の使い方</A></DIV>
+<PRE>
+	...
+	<SPAN CLASS="RED">MIDIOut_Reset (pMIDIOut)</SPAN>;
+	...
+</PRE>
+
+<P></P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIOut_ResetFunctionTable">▼Table3-5.MIDIOut_Reset系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIOut_Reset"><SPAN CLASS="KEYWORD">long</SPAN> MIDIOut_Reset <BR>(MIDIIn* pMIDIOut);</A> </TD>
+  <TD>pMIDIOut:MIDI出力デバイスオブジェクトへのポインタ</TD>
+  <TD>正常終了:1<BR>異常終了:0</TD>
+  <TD>MIDI出力デバイスをリセットし、MIDI出力デバイスを開いた直後の状態に初期化する。具体的には、出力バッファにたまっているMIDIメッセージをすべて削除し、読み込み位置と書き込み位置を0に初期化する。また、すべてのチャンネルの音を消音する。</TD>
+ </TR>
+</TABLE>
+
+
+
+<H3><A NAME="MIDIOut_PutFunction">3-6.MIDI出力デバイスからMIDIメッセージを送信</A></H3>
+
+<P>　<SPAN CLASS="RED">MIDI出力デバイスはいったん開かれると、直ちにMIDIOut端子にMIDIメッセージを送信することができる。</SPAN>MIDIメッセージの送信には、1メッセージずつ送信する<A HREF="#MIDIOut_PutMIDIMessage">MIDIOut_PutMIDIMessage</A>関数が非常に便利である。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIOut_PutFunctionList">▼List3-6.MIDIOut_Put系関数の使い方(1)</A></DIV>
+<PRE>
+	...
+	<SPAN CLASS="COMMENT">/* ドの音を発音する。 */</SPAN>
+	<SPAN CLASS="KEYWORD">unsigned char</SPAN> byMessage[256];
+	byMessage[0] = 0x90;
+	byMessage[1] = 0x3C;
+	byMessage[2] = 0x64;
+	<SPAN CLASS="RED">lRet = MIDIOut_PutMIDIMessage (pMIDIOut, byMessage, 3);</SPAN>
+	...
+</PRE>
+
+
+<P></P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIOut_PutFunctionTable">▼Table3-6.MIDIOut_Put系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIOut_PutMIDIMessage"><SPAN CLASS="KEYWORD">long</SPAN> MIDIOut_PutMIDIMessage <BR>(MIDIOut* pMIDIOut,<BR><SPAN CLASS="KEYWORD">unsigned char</SPAN>* pMessage,<BR><SPAN CLASS="KEYWORD">long</SPAN> lLen);</A> </TD>
+  <TD>pMIDIOut:MIDI出力デバイスへのポインタ<BR>pMessage:送信するMIDIメッセージを格納するバッファへのポインタ<BR>lLen:送信するMIDIメッセージのバイト数</TD>
+  <TD>実際に送信したMIDIメッセージのバイト数</TD>
+  <TD>MIDIメッセージをひとつ送信し、実際に送信したMIDIメッセージのバイト数を返す。この関数は、通常のMIDIチャンネルメッセージのほか、システムエクスクルーシヴメッセージ・システムリアルタイムメッセージをも送信することができる。一度に送信できるMIDIメッセージのバイト数、すなわちlLenの最大値は256である。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIOut_PutByte"><SPAN CLASS="KEYWORD">long</SPAN> MIDIOut_PutByte <BR>(MIDIOut* pMIDIOut,<BR><SPAN CLASS="KEYWORD">unsigned char</SPAN> ucByte);</A> </TD>
+  <TD>pMIDIOut:MIDI出力デバイスへのポインタ<BR>ucByte:送信するデータ</TD>
+  <TD>実際に取得したMIDIメッセージのバイト数</TD>
+  <TD>MIDIメッセージを1バイト送信し、1を返す。なお、<SPAN CLASS="RED">この関数は危険なので、ほとんど使ってはならない。</SPAN>なぜなら、MIDIメッセージを中途半端に区切って送信することによって、MIDIメッセージとMIDIメッセージの境界がわからなくなってしまうからである。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIOut_PutBytes"><SPAN CLASS="KEYWORD">long</SPAN> MIDIOut_PutBytes <BR>(MIDIOut* pMIDIOut,<BR><SPAN CLASS="KEYWORD">unsigned char</SPAN>* pBuf,<SPAN CLASS="KEYWORD">long</SPAN> lLen);</A> </TD>
+  <TD>pMIDIOut:MIDI出力デバイスへのポインタ<BR>pBuf:送信するデータを格納するバッファへのポインタ<BR>lLen:バッファの長さかつ送信する長さ[バイト]</TD>
+  <TD>実際に送信したMIDIメッセージのバイト数</TD>
+  <TD>MIDIメッセージを指定されたバイト数送信し、実際に送信したバイト数を返す。なお、<SPAN CLASS="RED">この関数は危険なので、ほとんど使ってはならない。</SPAN>なぜなら、MIDIメッセージを中途半端に区切って送信することによって、MIDIメッセージとMIDIメッセージの境界がわからなくなってしまうからである。</TD>
+ </TR>
+</TABLE>
+
+
+<H3><A NAME="MIDIOut_GetThisDeviceNameFunction">3-7.MIDI出力デバイスの名前を取得</A></H3>
+
+<P>　MIDI出力デバイスはいったん開かれると、そのデバイスの名前をいつでも取得できる。これには、<A HREF="#MIDIOut_GetThisDeviceName">MIDIOut_GetThisDeviceName関数</A>を使う。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIOut_GetDeviceFunctionList">▼List3-7.MIDIOut_GetThisDeviceName系関数の使い方</A></DIV>
+<PRE>
+	<SPAN CLASS="KEYWORD">char</SPAN> szDeviceName[256];
+	<SPAN CLASS="RED">MIDIOut_GetThisDeviceName (pMIDIOut, szDeviceName, 256)</SPAN>;
+	printf (<SPAN CLASS="STRING">"%s\n"</SPAN>, szDeviceName);
+	...
+</PRE>
+
+<DIV CLASS="TITLE"><A NAME="MIDIOut_GetDeviceFunctionTable">▼Table3-7.MIDIOut_GetThisDeviceName系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIOut_GetThisDeviceName"><SPAN CLASS="KEYWORD">long</SPAN> MIDIOut_GetThisDeviceName <BR>(MIDIOut* pMIDIOut, TCHAR* pszDeviceName, <SPAN CLASS="KEYWORD">long</SPAN> lLen);</A> </TD>
+  <TD>pMIDIOut:MIDI出力デバイスへのポインタ<BR>pszDeviceName:MIDI出力デバイス名を格納するバッファへのポインタ<BR>lLen:MIDI出力デバイス名を格納するバッファの長さ[文字]</TD>
+  <TD>正常終了:このMIDI出力デバイス名の文字数[文字]<BR>異常終了:0</TD>
+  <TD>このMIDI出力デバイスの名前を調べる。pMIDIOutは既に開かれているデバイスでなければならない。なお、MIDI出力デバイスの名前は通常32文字以下(ヌル文字含む)であるので、バッファとしては32文字のTCHAR型配列を用意しておけば十分である。この関数は現在使用しているデバイス名をINIファイルなどに保存しておくのに便利である。</TD>
+ </TR>
+</TABLE>
+
+
+<H3><A NAME="MIDIOut_Macro">3-8.MIDI出力に関するマクロ</A></H3>
+
+<P>　MIDIIOライブラリは、stdioライブラリのように簡単に使えることを意識して作った。すなわち、MIDIIO.hの中で定義されているマクロを利用することにより、普段使い慣れているfopen, fputs, fcloseなどの関数の'f'を'm'に変えるだけで、ファイル出力はMIDI出力に化けてしまうのである。</P>
+
+<P>　なお、これらのマクロはC/C++から使用することはできるが、Visual Basic及びDelphiからは使用することができないので予めご了承いただきたい。</P>
+
+
+<DIV CLASS="TITLE"><A NAME="MIDIOut_MacroList">▼List3-8.MIDI出力に関するマクロの使用例</A></DIV>
+<PRE>
+<SPAN CLASS="KEYWORD">#include</SPAN> &lt;stdio.h&gt;
+<SPAN CLASS="KEYWORD">#include</SPAN> &lt;time.h&gt;
+<SPAN CLASS="KEYWORD">#include</SPAN> &lt;windows.h&gt;
+<SPAN CLASS="KEYWORD">#include</SPAN> &lt;MIDIIO.h&gt;
+<SPAN CLASS="KEYWORD">int</SPAN> main () {
+	<SPAN CLASS="RED">MIDIOut* pMIDIOut;</SPAN>
+	<SPAN CLASS="KEYWORD">unsigned char</SPAN> byMIDIMessage1[3]= {0x90, 0x3C, 0x64}; <SPAN CLASS="COMMENT">/* NoteOn Ch=0 Key=60 Vel=100 */</SPAN>
+	<SPAN CLASS="KEYWORD">unsigned char</SPAN> byMIDIMessage2[3]= {0x90, 0x3C, 0x00}; <SPAN CLASS="COMMENT">/* NoteOn Ch=0 Key=60 Vel=0 */</SPAN>
+	<SPAN CLASS="COMMENT">/* MIDI出力デバイスを開く */</SPAN>
+	<SPAN CLASS="RED">pMIDIOut = mopen (<SPAN CLASS="STRING">"Microsoft GS Wavetable Synth"</SPAN>, <SPAN CLASS="STRING">"w"</SPAN>);</SPAN>
+	<SPAN CLASS="KEYWORD">if</SPAN> (pMIDIOut == NULL) {
+	 	printf (<SPAN CLASS="STRING">"MIDI出力デバイスを開けません。\n"</SPAN>);
+	 	<SPAN CLASS="KEYWORD">return</SPAN> 0;
+	}
+	<SPAN CLASS="RED">mputs (byMIDIMessage1, 3, pMIDIOut);</SPAN> <SPAN CLASS="COMMENT">/* ドの音を押す */</SPAN>
+	Sleep (3000); <SPAN CLASS="COMMENT">/* 約3秒待機 */</SPAN>
+	<SPAN CLASS="RED">mputs (byMIDIMessage2, 3, pMIDIOut);</SPAN> <SPAN CLASS="COMMENT">/* ドの音を離す */</SPAN>
+	<SPAN CLASS="COMMENT">/* MIDI出力デバイスを閉じる */</SPAN>
+	<SPAN CLASS="RED">mclose (pMIDIOut);</SPAN>
+	<SPAN CLASS="KEYWORD">return</SPAN> 1;
+}
+</PRE>
+
+<P></P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIOut_MacroTable">▼Table3-8.MIDI出力に関するマクロ一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH WIDTH="30%">マクロ定義</TH>
+  <TH WIDTH="30%">同等の関数</TH>
+  <TH WIDTH="40%">解説(類似点と相違点)</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIOut_MIDIOut">MIDIOut* pMIDIOut;<BR></A> </TD>
+  <TD>MIDIOut* pMIDIOut;</TD>
+  <TD>FILE構造体のポインタ宣言と同じ使い方である。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIOut_mopen">mopen <BR>(pszDeviceName, "w");<BR></A> </TD>
+  <TD>MIDIOut_Open <BR>(pszDeviceName);</TD>
+  <TD>fopen関数と同じ使い方である。出力デバイスを開くときは"w"を使う。テキスト・バイナリの区別はない。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIOut_mreopen">mreopen <BR>(pszDeviceName, "w", pMIDIOut);<BR></A> </TD>
+  <TD>MIDIOut_Reopen <BR>(pMIDIIn, pszDeviceName);</TD>
+  <TD>freopen関数と同じ使い方である。出力デバイスを開くときは"w"を使う。テキスト・バイナリの区別はない。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIOut_mclose">mclose <BR>(pMIDIOut);<BR></A> </TD>
+  <TD>MIDIOut_Close <BR>(pMIDIOut);</TD>
+  <TD>fclose関数と同じ使い方である。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIOut_mflush">mflush <BR>(pMIDIOut);<BR></A> </TD>
+  <TD>MIDIOut_Reset <BR>(pMIDIOut);</TD>
+  <TD>fflush関数と同じ使い方である。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIOut_mputs">mputs <BR>(pMessage, lLen, pMIDIOut);<BR></A> </TD>
+  <TD>MIDIOut_PutMIDIMessage <BR>(pMIDIOut, pMessage, lLen);</TD>
+  <TD>fputs関数に類似している。ただし1行ではなく1MIDIメッセージを送信する。また、戻り値は、MIDIメッセージへのポインタではなく実際に送信したバイト数である。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIOut_mputc">mputc <BR>(ucByte, pMIDIOut);<BR></A> </TD>
+  <TD>MIDIOut_PutByte <BR>(pMIDIOut, pByte);</TD>
+  <TD>fputc関数に類似している。ただし1文字ではなく1バイトを送信する。結果は戻り値に返すのではなく第1引数に返す。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIOut_mwrite">mwrite <BR>(pBuf, lLen, pMIDIOut);<BR></A> </TD>
+  <TD>MIDIOut_PutBytes <BR>(pMIDIIn, pBuf, lLen);</TD>
+  <TD>fwrite関数に類似している。ただし第2引数と第3引数が統合され、書き出すバイト数となっている。</TD>
+ </TR>
+</TABLE>
+
+
+
+
+
+
+
+<H2><A NAME="APPENDIX_A">付録A　よくある質問(F.A.Q)</A></H2>
+
+<P>この項目は非常に古くなったので廃止します。</P>
+
+<H2><A NAME="APPENDIX_B">付録B　キー・ナンバー対応表</A></H2>
+
+<P>ノートキー：ノートオンイベント・ノートオフイベント・キーアフタータッチの2バイト目(key)の値。チャンネル10以外(n!=9)の場合。</P>
+
+<P>ドラムキー：ノートオンイベント・ノートオフイベント・キーアフタータッチの2バイト目(key)の値。チャンネル10(n=9)の場合。ただし、音源によってはチャンネル10以外もドラムにできるものがある。</P>
+
+<P>コントロールチェンジ：コントロールチェンジの2バイト目(num)の値。</P>
+
+<P>プログラムチェンジ：プログラムチェンジの2バイト目(num)の値。</P>
+
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH>値</TH>
+  <TH>16進</TH>
+  <TH>ノートキー</TH>
+  <TH>ドラムキー</TH>
+  <TH>コントロールチェンジ</TH>
+  <TH>プログラムチェンジ</TH>
+ </TR>
+ <TR>
+  <TD>0</TD>
+  <TD>0x00</TD>
+  <TD>C0</TD>
+  <TD>-</TD>
+  <TD>Bank Select MSB</TD>
+  <TD>Acoustic Grand Piano</TD>
+ </TR>
+ <TR>
+  <TD>1</TD>
+  <TD>0x01</TD>
+  <TD>C#0=Db0</TD>
+  <TD>-</TD>
+  <TD>Modulation MSB</TD>
+  <TD>Bright Acoustic Piano</TD>
+ </TR>
+ <TR>
+  <TD>2</TD>
+  <TD>0x02</TD>
+  <TD>D0</TD>
+  <TD>-</TD>
+  <TD>Breath Controller MSB</TD>
+  <TD>Electric Grand Piano</TD>
+ </TR>
+ <TR>
+  <TD>3</TD>
+  <TD>0x03</TD>
+  <TD>D#0=Eb0</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Honky-tonk Piano</TD>
+ </TR>
+ <TR>
+  <TD>4</TD>
+  <TD>0x04</TD>
+  <TD>E0</TD>
+  <TD>-</TD>
+  <TD>Foot Controller MSB</TD>
+  <TD>Electric Piano 1</TD>
+ </TR>
+ <TR>
+  <TD>5</TD>
+  <TD>0x05</TD>
+  <TD>F0</TD>
+  <TD>-</TD>
+  <TD>Portamento Time MSB</TD>
+  <TD>Electric Piano 2</TD>
+ </TR>
+ <TR>
+  <TD>6</TD>
+  <TD>0x06</TD>
+  <TD>F#0=Gb0</TD>
+  <TD>-</TD>
+  <TD>Data Entry MSB</TD>
+  <TD>Harpsichord</TD>
+ </TR>
+ <TR>
+  <TD>7</TD>
+  <TD>0x07</TD>
+  <TD>G0</TD>
+  <TD>-</TD>
+  <TD>Channel Volume MSB</TD>
+  <TD>Clavi</TD>
+ </TR>
+ <TR>
+  <TD>8</TD>
+  <TD>0x08</TD>
+  <TD>G#0=Ab0</TD>
+  <TD>-</TD>
+  <TD>Balance MSB</TD>
+  <TD>Celesta</TD>
+ </TR>
+ <TR>
+  <TD>9</TD>
+  <TD>0x09</TD>
+  <TD>A0</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Glockenspiel</TD>
+ </TR>
+ <TR>
+  <TD>10</TD>
+  <TD>0x0A</TD>
+  <TD>A#0=Bb0</TD>
+  <TD>-</TD>
+  <TD>Pan MSB</TD>
+  <TD>Music Box</TD>
+ </TR>
+ <TR>
+  <TD>11</TD>
+  <TD>0x0B</TD>
+  <TD>B0</TD>
+  <TD>-</TD>
+  <TD>Expression MSB</TD>
+  <TD>Vibraphone</TD>
+ </TR>
+ <TR>
+  <TD>12</TD>
+  <TD>0x0C</TD>
+  <TD>C1</TD>
+  <TD>-</TD>
+  <TD>Effect Control 1 MSB</TD>
+  <TD>Marimba</TD>
+ </TR>
+ <TR>
+  <TD>13</TD>
+  <TD>0x0D</TD>
+  <TD>C#1=Db1</TD>
+  <TD>-</TD>
+  <TD>Effect Control 2 MSB</TD>
+  <TD>Xylophone</TD>
+ </TR>
+ <TR>
+  <TD>14</TD>
+  <TD>0x0E</TD>
+  <TD>D1</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Tubular Bells</TD>
+ </TR>
+ <TR>
+  <TD>15</TD>
+  <TD>0x0F</TD>
+  <TD>D#1=Eb1</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Dulcimer</TD>
+ </TR>
+ <TR>
+  <TD>16</TD>
+  <TD>0x10</TD>
+  <TD>E1</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Drawbar Organ</TD>
+ </TR>
+ <TR>
+  <TD>17</TD>
+  <TD>0x11</TD>
+  <TD>F1</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Percussive Organ</TD>
+ </TR>
+ <TR>
+  <TD>18</TD>
+  <TD>0x12</TD>
+  <TD>F#1=Gb1</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Rock Organ</TD>
+ </TR>
+ <TR>
+  <TD>19</TD>
+  <TD>0x13</TD>
+  <TD>G1</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Church Organ</TD>
+ </TR>
+ <TR>
+  <TD>20</TD>
+  <TD>0x14</TD>
+  <TD>G#1=Ab1</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Reed Organ</TD>
+ </TR>
+ <TR>
+  <TD>21</TD>
+  <TD>0x15</TD>
+  <TD>A1</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Accordion</TD>
+ </TR>
+ <TR>
+  <TD>22</TD>
+  <TD>0x16</TD>
+  <TD>A#1=Bb1</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Harmonica</TD>
+ </TR>
+ <TR>
+  <TD>23</TD>
+  <TD>0x17</TD>
+  <TD>B1</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Tango Accordion</TD>
+ </TR>
+ <TR>
+  <TD>24</TD>
+  <TD>0x18</TD>
+  <TD>C2</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Acoustic Guitar (nylon)</TD>
+ </TR>
+ <TR>
+  <TD>25</TD>
+  <TD>0x19</TD>
+  <TD>C#2=Db2</TD>
+  <TD>Snare Roll</TD>
+  <TD>-</TD>
+  <TD>Acoustic Guitar (steel)</TD>
+ </TR>
+ <TR>
+  <TD>26</TD>
+  <TD>0x1A</TD>
+  <TD>D2</TD>
+  <TD>Finger Snap</TD>
+  <TD>-</TD>
+  <TD>Electric Guitar (jazz)</TD>
+ </TR>
+ <TR>
+  <TD>27</TD>
+  <TD>0x1B</TD>
+  <TD>D#2=Eb2</TD>
+  <TD>High Q</TD>
+  <TD>-</TD>
+  <TD>Electric Guitar (clean)</TD>
+ </TR>
+ <TR>
+  <TD>28</TD>
+  <TD>0x1C</TD>
+  <TD>E2</TD>
+  <TD>Slap</TD>
+  <TD>-</TD>
+  <TD>Electric Guitar (muted)</TD>
+ </TR>
+ <TR>
+  <TD>29</TD>
+  <TD>0x1D</TD>
+  <TD>F2</TD>
+  <TD>Scratch Push</TD>
+  <TD>-</TD>
+  <TD>Overdriven Guitar</TD>
+ </TR>
+ <TR>
+  <TD>30</TD>
+  <TD>0x1E</TD>
+  <TD>F#2=Gb2</TD>
+  <TD>Scratch Pull</TD>
+  <TD>-</TD>
+  <TD>Distortion Guitar</TD>
+ </TR>
+ <TR>
+  <TD>31</TD>
+  <TD>0x1F</TD>
+  <TD>G2</TD>
+  <TD>Sticks</TD>
+  <TD>-</TD>
+  <TD>Guitar Harmonics</TD>
+ </TR>
+ <TR>
+  <TD>32</TD>
+  <TD>0x20</TD>
+  <TD>G#2=Ab2</TD>
+  <TD>Square Click</TD>
+  <TD>Bank Select LSB</TD>
+  <TD>Acoustic Bass</TD>
+ </TR>
+ <TR>
+  <TD>33</TD>
+  <TD>0x21</TD>
+  <TD>A2</TD>
+  <TD>Metronome Click</TD>
+  <TD>Modulation LSB</TD>
+  <TD>Electric Bass (finger)</TD>
+ </TR>
+ <TR>
+  <TD>34</TD>
+  <TD>0x22</TD>
+  <TD>A#2=Bb2</TD>
+  <TD>Metronome Bell</TD>
+  <TD>Breath Controller LSB</TD>
+  <TD>Electric Bass (pick)</TD>
+ </TR>
+ <TR>
+  <TD>35</TD>
+  <TD>0x23</TD>
+  <TD>B2</TD>
+  <TD>Standard Kick 2</TD>
+  <TD>-</TD>
+  <TD>Fretless Bass</TD>
+ </TR>
+ <TR>
+  <TD>36</TD>
+  <TD>0x24</TD>
+  <TD>C3</TD>
+  <TD>Standard Kick 1</TD>
+  <TD>Foot Controller LSB</TD>
+  <TD>Slap Bass 1</TD>
+ </TR>
+ <TR>
+  <TD>37</TD>
+  <TD>0x25</TD>
+  <TD>C#3=Db3</TD>
+  <TD>Side Stick</TD>
+  <TD>Portamento Time LSB</TD>
+  <TD>Slap Bass 2</TD>
+ </TR>
+ <TR>
+  <TD>38</TD>
+  <TD>0x26</TD>
+  <TD>D3</TD>
+  <TD>Standard Snare 1</TD>
+  <TD>Data Entry LSB</TD>
+  <TD>Synth Bass 1</TD>
+ </TR>
+ <TR>
+  <TD>39</TD>
+  <TD>0x27</TD>
+  <TD>D#3=Eb3</TD>
+  <TD>Hand Clap</TD>
+  <TD>Channel Volume LSB</TD>
+  <TD>Synth Bass 2</TD>
+ </TR>
+ <TR>
+  <TD>40</TD>
+  <TD>0x28</TD>
+  <TD>E3</TD>
+  <TD>Standard Snare 2</TD>
+  <TD>Balance LSB</TD>
+  <TD>Violin</TD>
+ </TR>
+ <TR>
+  <TD>41</TD>
+  <TD>0x29</TD>
+  <TD>F3</TD>
+  <TD>Low Tom 2</TD>
+  <TD>-</TD>
+  <TD>Viola</TD>
+ </TR>
+ <TR>
+  <TD>42</TD>
+  <TD>0x2A</TD>
+  <TD>F#3=Gb3</TD>
+  <TD>Closed Hi-hat</TD>
+  <TD>Pan LSB</TD>
+  <TD>Cello</TD>
+ </TR>
+ <TR>
+  <TD>43</TD>
+  <TD>0x2B</TD>
+  <TD>G3</TD>
+  <TD>Low Tom 1</TD>
+  <TD>Expression LSB</TD>
+  <TD>Contrabass</TD>
+ </TR>
+ <TR>
+  <TD>44</TD>
+  <TD>0x2C</TD>
+  <TD>G#3=Ab3</TD>
+  <TD>Pedal Hi-hat</TD>
+  <TD>Effect Control 1 LSB</TD>
+  <TD>Tremolo Strings</TD>
+ </TR>
+ <TR>
+  <TD>45</TD>
+  <TD>0x2D</TD>
+  <TD>A3</TD>
+  <TD>Mid Tom 2</TD>
+  <TD>Effect Control 2 LSB</TD>
+  <TD>Pizzicato Strings</TD>
+ </TR>
+ <TR>
+  <TD>46</TD>
+  <TD>0x2E</TD>
+  <TD>A#3=Bb3</TD>
+  <TD>Open Hi-hat</TD>
+  <TD>-</TD>
+  <TD>Orchestral Harp</TD>
+ </TR>
+ <TR>
+  <TD>47</TD>
+  <TD>0x2F</TD>
+  <TD>B3</TD>
+  <TD>Mid Tom 1</TD>
+  <TD>-</TD>
+  <TD>Timpani</TD>
+ </TR>
+ <TR>
+  <TD>48</TD>
+  <TD>0x30</TD>
+  <TD>C4</TD>
+  <TD>High Tom 2</TD>
+  <TD>-</TD>
+  <TD>String Ensemble 1</TD>
+ </TR>
+ <TR>
+  <TD>49</TD>
+  <TD>0x31</TD>
+  <TD>C#4=Db4</TD>
+  <TD>Crash Cymbal 1</TD>
+  <TD>-</TD>
+  <TD>String Ensemble 2</TD>
+ </TR>
+ <TR>
+  <TD>50</TD>
+  <TD>0x32</TD>
+  <TD>D4</TD>
+  <TD>High Tom 1</TD>
+  <TD>-</TD>
+  <TD>SynthStrings 1</TD>
+ </TR>
+ <TR>
+  <TD>51</TD>
+  <TD>0x33</TD>
+  <TD>D#4=Eb4</TD>
+  <TD>Ride Cymbal 1</TD>
+  <TD>-</TD>
+  <TD>SynthStrings 2</TD>
+ </TR>
+ <TR>
+  <TD>52</TD>
+  <TD>0x34</TD>
+  <TD>E4</TD>
+  <TD>Chinese Cymbal</TD>
+  <TD>-</TD>
+  <TD>Choir Aahs</TD>
+ </TR>
+ <TR>
+  <TD>53</TD>
+  <TD>0x35</TD>
+  <TD>F4</TD>
+  <TD>Ride Bell</TD>
+  <TD>-</TD>
+  <TD>Voice Oohs</TD>
+ </TR>
+ <TR>
+  <TD>54</TD>
+  <TD>0x36</TD>
+  <TD>F#4=Gb4</TD>
+  <TD>Tambourine</TD>
+  <TD>-</TD>
+  <TD>Synth Vox</TD>
+ </TR>
+ <TR>
+  <TD>55</TD>
+  <TD>0x37</TD>
+  <TD>G4</TD>
+  <TD>Splash Cymbal</TD>
+  <TD>-</TD>
+  <TD>Orchestra Hit</TD>
+ </TR>
+ <TR>
+  <TD>56</TD>
+  <TD>0x38</TD>
+  <TD>G#4=Ab4</TD>
+  <TD>Cowbell</TD>
+  <TD>-</TD>
+  <TD>Trumpet</TD>
+ </TR>
+ <TR>
+  <TD>57</TD>
+  <TD>0x39</TD>
+  <TD>A4</TD>
+  <TD>Crash Cymbal 2</TD>
+  <TD>-</TD>
+  <TD>Trombone</TD>
+ </TR>
+ <TR>
+  <TD>58</TD>
+  <TD>0x3A</TD>
+  <TD>A#4=Bb4</TD>
+  <TD>Vibra-slap</TD>
+  <TD>-</TD>
+  <TD>Tuba</TD>
+ </TR>
+ <TR>
+  <TD>59</TD>
+  <TD>0x3B</TD>
+  <TD>B4</TD>
+  <TD>Ride Cymbal 2</TD>
+  <TD>-</TD>
+  <TD>Muted Trumpet</TD>
+ </TR>
+ <TR>
+  <TD>60</TD>
+  <TD>0x3C</TD>
+  <TD>C5</TD>
+  <TD>High Bongo</TD>
+  <TD>-</TD>
+  <TD>French Horn</TD>
+ </TR>
+ <TR>
+  <TD>61</TD>
+  <TD>0x3D</TD>
+  <TD>C#5=Db5</TD>
+  <TD>Low Bongo</TD>
+  <TD>-</TD>
+  <TD>Brass Section</TD>
+ </TR>
+ <TR>
+  <TD>62</TD>
+  <TD>0x3E</TD>
+  <TD>D5</TD>
+  <TD>Mute High Conga</TD>
+  <TD>-</TD>
+  <TD>Synth Brass 1</TD>
+ </TR>
+ <TR>
+  <TD>63</TD>
+  <TD>0x3F</TD>
+  <TD>D#5=Eb5</TD>
+  <TD>Open High Conga</TD>
+  <TD>-</TD>
+  <TD>Synth Brass 2</TD>
+ </TR>
+ <TR>
+  <TD>64</TD>
+  <TD>0x40</TD>
+  <TD>E5</TD>
+  <TD>Low Conga</TD>
+  <TD>Hold Pedal 1</TD>
+  <TD>Soprano Sax</TD>
+ </TR>
+ <TR>
+  <TD>65</TD>
+  <TD>0x41</TD>
+  <TD>F5</TD>
+  <TD>High Timbale</TD>
+  <TD>Portament Pedal</TD>
+  <TD>Alto Sax</TD>
+ </TR>
+ <TR>
+  <TD>66</TD>
+  <TD>0x42</TD>
+  <TD>F#5=Gb5</TD>
+  <TD>Low Timbale</TD>
+  <TD>Sostenuto Pedal</TD>
+  <TD>Tenor Sax</TD>
+ </TR>
+ <TR>
+  <TD>67</TD>
+  <TD>0x43</TD>
+  <TD>G5</TD>
+  <TD>High Agogo</TD>
+  <TD>Soft Pedal</TD>
+  <TD>Baritone Sax</TD>
+ </TR>
+ <TR>
+  <TD>68</TD>
+  <TD>0x44</TD>
+  <TD>G#5=Ab5</TD>
+  <TD>Low Agogo</TD>
+  <TD>Legato Pedal</TD>
+  <TD>Oboe</TD>
+ </TR>
+ <TR>
+  <TD>69</TD>
+  <TD>0x45</TD>
+  <TD>A5</TD>
+  <TD>Cabasa</TD>
+  <TD>Hold Pedal 2</TD>
+  <TD>English Horn</TD>
+ </TR>
+ <TR>
+  <TD>70</TD>
+  <TD>0x46</TD>
+  <TD>A#5=Bb5</TD>
+  <TD>Maracas</TD>
+  <TD>Sound Variation</TD>
+  <TD>Bassoon</TD>
+ </TR>
+ <TR>
+  <TD>71</TD>
+  <TD>0x47</TD>
+  <TD>B5</TD>
+  <TD>Short Hi Whistle</TD>
+  <TD>Harmonic Contents</TD>
+  <TD>Clarinet</TD>
+ </TR>
+ <TR>
+  <TD>72</TD>
+  <TD>0x48</TD>
+  <TD>C6</TD>
+  <TD>Long Low Whistle</TD>
+  <TD>Release Time</TD>
+  <TD>Piccolo</TD>
+ </TR>
+ <TR>
+  <TD>73</TD>
+  <TD>0x49</TD>
+  <TD>C#6=Db6</TD>
+  <TD>Short Gurio</TD>
+  <TD>Attack Time</TD>
+  <TD>Flute</TD>
+ </TR>
+ <TR>
+  <TD>74</TD>
+  <TD>0x4A</TD>
+  <TD>D6</TD>
+  <TD>Long Gurio</TD>
+  <TD>Brightness</TD>
+  <TD>Recorder</TD>
+ </TR>
+ <TR>
+  <TD>75</TD>
+  <TD>0x4B</TD>
+  <TD>D#6=Eb6</TD>
+  <TD>Claves</TD>
+  <TD>Decay Time</TD>
+  <TD>Pan Flute</TD>
+ </TR>
+ <TR>
+  <TD>76</TD>
+  <TD>0x4C</TD>
+  <TD>E6</TD>
+  <TD>High Wood Block</TD>
+  <TD>Vibrato rate</TD>
+  <TD>Blown Bottle</TD>
+ </TR>
+ <TR>
+  <TD>77</TD>
+  <TD>0x4D</TD>
+  <TD>F6</TD>
+  <TD>Low Wood Block</TD>
+  <TD>Vibrato deapth</TD>
+  <TD>Shakuhachi</TD>
+ </TR>
+ <TR>
+  <TD>78</TD>
+  <TD>0x4E</TD>
+  <TD>F#6=Gb6</TD>
+  <TD>Mute Cuica</TD>
+  <TD>Vibrato deray</TD>
+  <TD>Whistle</TD>
+ </TR>
+ <TR>
+  <TD>79</TD>
+  <TD>0x4F</TD>
+  <TD>G6</TD>
+  <TD>Open Cuica</TD>
+  <TD>Sound Controller 10</TD>
+  <TD>Ocarina</TD>
+ </TR>
+ <TR>
+  <TD>80</TD>
+  <TD>0x50</TD>
+  <TD>G#6=Ab6</TD>
+  <TD>Mute Triangle</TD>
+  <TD>-</TD>
+  <TD>Lead 1 (square)</TD>
+ </TR>
+ <TR>
+  <TD>81</TD>
+  <TD>0x51</TD>
+  <TD>A6</TD>
+  <TD>Open Triangle</TD>
+  <TD>-</TD>
+  <TD>Lead 2 (sawtooth)</TD>
+ </TR>
+ <TR>
+  <TD>82</TD>
+  <TD>0x52</TD>
+  <TD>A#6=Bb6</TD>
+  <TD>Shaker</TD>
+  <TD>-</TD>
+  <TD>Lead 3 (calliope)</TD>
+ </TR>
+ <TR>
+  <TD>83</TD>
+  <TD>0x53</TD>
+  <TD>B6</TD>
+  <TD>Jingle Bell</TD>
+  <TD>-</TD>
+  <TD>Lead 4 (chiff)</TD>
+ </TR>
+ <TR>
+  <TD>84</TD>
+  <TD>0x54</TD>
+  <TD>C7</TD>
+  <TD>Bell Tree</TD>
+  <TD>Portament Control</TD>
+  <TD>Lead 5 (charang)</TD>
+ </TR>
+ <TR>
+  <TD>85</TD>
+  <TD>0x55</TD>
+  <TD>C#7=Db7</TD>
+  <TD>Castanets</TD>
+  <TD>-</TD>
+  <TD>Lead 6 (voice)</TD>
+ </TR>
+ <TR>
+  <TD>86</TD>
+  <TD>0x56</TD>
+  <TD>D7</TD>
+  <TD>Mute Surdo</TD>
+  <TD>-</TD>
+  <TD>Lead 7 (fifths)</TD>
+ </TR>
+ <TR>
+  <TD>87</TD>
+  <TD>0x57</TD>
+  <TD>D#7=Eb7</TD>
+  <TD>Open Surdo</TD>
+  <TD>-</TD>
+  <TD>Lead 8 (bass + lead)</TD>
+ </TR>
+ <TR>
+  <TD>88</TD>
+  <TD>0x58</TD>
+  <TD>E7</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Pad 1 (new age)</TD>
+ </TR>
+ <TR>
+  <TD>89</TD>
+  <TD>0x59</TD>
+  <TD>F7</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Pad 2 (warm)</TD>
+ </TR>
+ <TR>
+  <TD>90</TD>
+  <TD>0x5A</TD>
+  <TD>F#7=Gb7</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Pad 3 (polysynth)</TD>
+ </TR>
+ <TR>
+  <TD>91</TD>
+  <TD>0x5B</TD>
+  <TD>G7</TD>
+  <TD>-</TD>
+  <TD>Reverb</TD>
+  <TD>Pad 4 (choir)</TD>
+ </TR>
+ <TR>
+  <TD>92</TD>
+  <TD>0x5C</TD>
+  <TD>G#7=Ab7</TD>
+  <TD>-</TD>
+  <TD>Effect 2 Depth</TD>
+  <TD>Pad 5 (bowed)</TD>
+ </TR>
+ <TR>
+  <TD>93</TD>
+  <TD>0x5D</TD>
+  <TD>A7</TD>
+  <TD>-</TD>
+  <TD>Chorus</TD>
+  <TD>Pad 6 (metallic)</TD>
+ </TR>
+ <TR>
+  <TD>94</TD>
+  <TD>0x5E</TD>
+  <TD>A#7=Bb7</TD>
+  <TD>-</TD>
+  <TD>Effect 4 Depth</TD>
+  <TD>Pad 7 (halo)</TD>
+ </TR>
+ <TR>
+  <TD>95</TD>
+  <TD>0x5F</TD>
+  <TD>B7</TD>
+  <TD>-</TD>
+  <TD>Effect 5 Depth</TD>
+  <TD>Pad 8 (sweep)</TD>
+ </TR>
+ <TR>
+  <TD>96</TD>
+  <TD>0x60</TD>
+  <TD>C8</TD>
+  <TD>-</TD>
+  <TD>Data Increment</TD>
+  <TD>FX 1 (rain)</TD>
+ </TR>
+ <TR>
+  <TD>97</TD>
+  <TD>0x61</TD>
+  <TD>C#8=Db8</TD>
+  <TD>-</TD>
+  <TD>Data Decrement</TD>
+  <TD>FX 2 (soundtrack)</TD>
+ </TR>
+ <TR>
+  <TD>98</TD>
+  <TD>0x62</TD>
+  <TD>D8</TD>
+  <TD>-</TD>
+  <TD>NRPN LSB</TD>
+  <TD>FX 3 (crystal)</TD>
+ </TR>
+ <TR>
+  <TD>99</TD>
+  <TD>0x63</TD>
+  <TD>D#8=Eb8</TD>
+  <TD>-</TD>
+  <TD>NRPN MSB</TD>
+  <TD>FX 4 (atmosphere)</TD>
+ </TR>
+ <TR>
+  <TD>100</TD>
+  <TD>0x64</TD>
+  <TD>E8</TD>
+  <TD>-</TD>
+  <TD>RPN LSB</TD>
+  <TD>FX 5 (brightness)</TD>
+ </TR>
+ <TR>
+  <TD>101</TD>
+  <TD>0x65</TD>
+  <TD>F8</TD>
+  <TD>-</TD>
+  <TD>RPN MSB</TD>
+  <TD>FX 6 (goblins)</TD>
+ </TR>
+ <TR>
+  <TD>102</TD>
+  <TD>0x66</TD>
+  <TD>F#8=Gb8</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>FX 7 (echoes)</TD>
+ </TR>
+ <TR>
+  <TD>103</TD>
+  <TD>0x67</TD>
+  <TD>G8</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>FX 8 (sci-fi)</TD>
+ </TR>
+ <TR>
+  <TD>104</TD>
+  <TD>0x68</TD>
+  <TD>G#8=Ab8</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Sitar</TD>
+ </TR>
+ <TR>
+  <TD>105</TD>
+  <TD>0x69</TD>
+  <TD>A8</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Banjo</TD>
+ </TR>
+ <TR>
+  <TD>106</TD>
+  <TD>0x6A</TD>
+  <TD>A#8=Bb8</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Shamisen</TD>
+ </TR>
+ <TR>
+  <TD>107</TD>
+  <TD>0x6B</TD>
+  <TD>B8</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Koto</TD>
+ </TR>
+ <TR>
+  <TD>108</TD>
+  <TD>0x6C</TD>
+  <TD>C9</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Kalimba</TD>
+ </TR>
+ <TR>
+  <TD>109</TD>
+  <TD>0x6D</TD>
+  <TD>C#9=Db9</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Bag pipe</TD>
+ </TR>
+ <TR>
+  <TD>110</TD>
+  <TD>0x6E</TD>
+  <TD>D9</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Fiddle</TD>
+ </TR>
+ <TR>
+  <TD>111</TD>
+  <TD>0x6F</TD>
+  <TD>D#9=Eb9</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Shanai</TD>
+ </TR>
+ <TR>
+  <TD>112</TD>
+  <TD>0x70</TD>
+  <TD>E9</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Tinkle Bell</TD>
+ </TR>
+ <TR>
+  <TD>113</TD>
+  <TD>0x71</TD>
+  <TD>F9</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Agogo</TD>
+ </TR>
+ <TR>
+  <TD>114</TD>
+  <TD>0x72</TD>
+  <TD>F#9=Gb9</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Steel Drums</TD>
+ </TR>
+ <TR>
+  <TD>115</TD>
+  <TD>0x73</TD>
+  <TD>G9</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Woodblock</TD>
+ </TR>
+ <TR>
+  <TD>116</TD>
+  <TD>0x74</TD>
+  <TD>G#9=Ab9</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Taiko</TD>
+ </TR>
+ <TR>
+  <TD>117</TD>
+  <TD>0x75</TD>
+  <TD>A9</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Melodic Tom</TD>
+ </TR>
+ <TR>
+  <TD>118</TD>
+  <TD>0x76</TD>
+  <TD>A#9=Bb9</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Synth Drum</TD>
+ </TR>
+ <TR>
+  <TD>119</TD>
+  <TD>0x77</TD>
+  <TD>B9</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Reverse Cymbal</TD>
+ </TR>
+ <TR>
+  <TD>120</TD>
+  <TD>0x78</TD>
+  <TD>C10</TD>
+  <TD>-</TD>
+  <TD>All Sound Off</TD>
+  <TD>Guitar Fret Noise</TD>
+ </TR>
+ <TR>
+  <TD>121</TD>
+  <TD>0x79</TD>
+  <TD>C#10=Db10</TD>
+  <TD>-</TD>
+  <TD>Reset All Controller</TD>
+  <TD>Breath Noise</TD>
+ </TR>
+ <TR>
+  <TD>122</TD>
+  <TD>0x7A</TD>
+  <TD>D10</TD>
+  <TD>-</TD>
+  <TD>Local Control</TD>
+  <TD>Seashore</TD>
+ </TR>
+ <TR>
+  <TD>123</TD>
+  <TD>0x7B</TD>
+  <TD>D#10=Eb10</TD>
+  <TD>-</TD>
+  <TD>All Note Off</TD>
+  <TD>Bird Tweet</TD>
+ </TR>
+ <TR>
+  <TD>124</TD>
+  <TD>0x7C</TD>
+  
+  <TD>E10</TD>
+  <TD>-</TD>
+  <TD>Omni Mode Off</TD>
+  <TD>Telephone Ring</TD>
+ </TR>
+ <TR>
+  <TD>125</TD>
+  <TD>0x7D</TD>
+  <TD>F10</TD>
+  <TD>-</TD>
+  <TD>Omni Mode On</TD>
+  <TD>Helicopter</TD>
+ </TR>
+ <TR>
+  <TD>126</TD>
+  <TD>0x7E</TD>
+  <TD>F#10=Gb10</TD>
+  <TD>-</TD>
+  <TD>Mono Mode On</TD>
+  <TD>Applause</TD>
+ </TR>
+ <TR>
+  <TD>127</TD>
+  <TD>0x7F</TD>
+  <TD>G10</TD>
+  <TD>-</TD>
+  <TD>Poly Mode On</TD>
+  <TD>Gunshot</TD>
+ </TR>
+</TABLE>
+
+
+
+<H2><A NAME="APPENDIX_C">付録C　MIDIメッセージ早見表</A></H2>
+
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH VALIGN="MIDDLE">　
+  </TH>
+  <TH WIDTH="20%" VALIGN="MIDDLE">
+   1バイト目<BR>
+   ステータスバイト(0x80以上)
+  </TH>
+  <TH WIDTH="20%" VALIGN="MIDDLE">
+   2バイト目<BR>
+   データバイト(0x7F以下)
+  </TH>
+  <TH WIDTH="20%" VALIGN="MIDDLE">
+   3バイト目<BR>
+   データバイト(0x7F以下)
+  </TH>
+  <TH WIDTH="20%" VALIGN="MIDDLE">
+   特記事項<BR>
+  </TH>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE" ROWSPAN=7>
+   <FONT COLOR="#000000">チャンネルボイスメッセージ</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">ノートオフ：0x8n<BR>(nはチャンネル、以下同様)</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">キー：0x00(C0)～0x7F(G9)</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">ベロシティ：0x00(0)～0x7F(127)</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE" BGCOLOR="#E0E0E0">
+   <FONT COLOR="#000000">指定した音の発音を止める。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">ノートオン：0x9n</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">キー：0x00(C0)～0x7F(G9)</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">ベロシティ：0x00(0)～0x7F(127)</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE" BGCOLOR="#E0E0E0">
+   <FONT COLOR="#000000">指定した音を発音する。ただしベロシティが0の場合はノートオフと解釈する。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#800080">キーアフター：0xAn</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#800080">キー：0x00(C0)～0x7F(G9)</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#800080">値：0x00(0)～0x7F(127)</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE" BGCOLOR="#E0E0E0">
+   <FONT COLOR="#800080">指定した音を発音した後、鍵盤を押さえる圧力を上下左右に変化させると送信され、そのキーの音質が変化する。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#008000">コントローラー：0xBn</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#008000">番号：0x00(CC#0)～0x7F(CC#127)</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#008000">値：0x00(0)～0x7F(127)</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE" BGCOLOR="#E0E0E0">
+   <FONT COLOR="#008000">モジュレーション(CC#1)、ヴォリューム(CC#7)、パン(CC#10)、エクスプレッション(CC#11)、サスティンペダル(CC#64)、リバーブ(CC#91)、コーラス(CC#93)、ディレイ(CC#94)などを設定する。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#808000">パッチチェンジ：0xCn</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#808000">番号：0x00(Piano1)～0x7F(GunShot)</FONT>
+  </TD>
+  <TD WIDTH=400 VALIGN="MIDDLE" COLSPAN=2 BGCOLOR="#E0E0E0">
+   <FONT COLOR="#808000">楽器を選択する。ただし10チャンネル(n=9)の場合は、ドラムセットを選択する。バンクも指定したい場合はこのメッセージの前にバンクセレクト(CC#0とCC#32)を使うことにより、最大2097152種類の音色を選択することができる。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#0000FF">チャンネルアフタータッチ：0xDn</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#0000FF">値：0x00(0)～0x7F(127)</FONT>
+  </TD>
+  <TD WIDTH=400 VALIGN="MIDDLE" BGCOLOR="#E0E0E0" COLSPAN=2>
+   <FONT COLOR="#0000FF">ある音を発音した後、鍵盤を押さえる圧力を上下左右に変化させると送信され、そのチャンネル全体の音質が変化する。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#F000F0">ピッチベンド：0xEn</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#F000F0">LSB(下位7ビット)：0x00～0x7F</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#F000F0">MSB(上位7ビット)：0x00～0x7F</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE" BGCOLOR="#E0E0E0">
+   <FONT COLOR="#F000F0">ピッチを変化させるのに使う。値は0～8192～16383で表す。中央はLSB=0x00, MSB=0x40、最低値はLSB=0x00, MSB=0x00、最高値はLSB=0x7F, MSB=0x7Fである。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD WIDTH=100 VALIGN="MIDDLE">
+   <FONT COLOR="#000000">システムエクスクルーシヴメッセージ</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#800080">スタートオブエクスクルーシヴ：0xF0</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#800080">2バイト目以降には任意の長さのデータ配列(0x00～0x7F)が続く。データはエンドオブエクスクルーシヴ(0xF7)で終了する。</FONT>
+  </TD>
+  <TD WIDTH=400 VALIGN="MIDDLE" BGCOLOR="#E0E0E0" COLSPAN=2>
+   <FONT COLOR="#800080">音源の設定を操作する場合に使う。例えばGMリセットは{0xF0, 0x7E, 0x7F, 0x09, 0x01, 0xF7}である。システムエクスクルーシヴメッセージは、音源により意味が異なるため、互換性が乏しい。また、SMPTE/MTCによる同期を行うためにも使える。{0xF0, 0x7F, 0x7F, 0x01, 0x01, 0xhr, 0xmn, 0xsc, 0xfr, 0xF7}という10バイトのシステムエクスクルーシヴメッセージは、1メッセージで1つの時刻を表すことができる。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD WIDTH=100 VALIGN="MIDDLE" ROWSPAN=4>
+   <FONT COLOR="#000000">システムコモンメッセージ</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">MIDIタイムコードクォーターフレーム：0xF1</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">値：0x00～0x7F</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE" BGCOLOR="#E0E0E0" COLSPAN=2>
+   <FONT COLOR="#000000">SMPTE/MTCによる同期を行うために使う。このMIDIメッセージは8メッセージで1つの時刻を表す。値を2進法で表したものを0abcdefgとすると、abc=0のときdefgはフレームカウント下位4ビット、abc=1のときdefgはフレームカウント上位4ビット、abc=2のときdefgは秒カウント下位4ビット、abc=3のときdefgは秒カウント上位4ビット、abc=4のときdefgは分カウント下位4ビット、nnn=5のときdefgは分カウント上位4ビット、abc=6のときdefgは時カウント下位4ビット、abc=7のときdeは時カウント上位2ビット、fgはフレームレート(00は24fps、01は25fps、02は29.97fps、03は30fps)を、それぞれ意味する。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">ソングポジションセレクタ：0xF2</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">LSB(下位7ビット)：0x00～0x7F</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">MSB(上位7ビット)：0x00～0x7F</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE" BGCOLOR="#E0E0E0">
+   <FONT COLOR="#000000">再生開始位置を指定するのに使う。値は0～16383で、6MIDIタイミングクロックを1(つまり16分音符の長さを1)として計測する。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">ソングセレクト：0xF3</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">ソングナンバー：0x00(0)～0x7F(127)</FONT>
+  </TD>
+  <TD WIDTH=400 VALIGN="MIDDLE" BGCOLOR="#E0E0E0" COLSPAN=2>
+   <FONT COLOR="#000000">受信デバイスが複数のシーケンスやドラムパターンを扱える場合、それらを選択するのに使う。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">チェーンリクエスト</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE" BGCOLOR="#E0E0E0" COLSPAN=3>
+   <FONT COLOR="#000000">アナログシンセサイザーのチューニングのために用いられる。現在ではほとんど使われない。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE" ROWSPAN=6>
+   <FONT COLOR="#000000">システムリアルタイムメッセージ</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">MIDIタイミングクロック：0xF8</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE" BGCOLOR="#E0E0E0" COLSPAN=3>
+   <FONT COLOR="#000000">MIDIタイミングクロックによる同期を行うときに使う。送信間隔はテンポに依存し、4分音符あたり24回の速度で流す。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">スタート：0xFA</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE" BGCOLOR="#E0E0E0" COLSPAN=3 ROWSPAN=3>
+   <FONT COLOR="#000000">MIDIメッセージでシーケンサーの再生／停止を制御するのに使う。スタートは、シーケンスの先頭から再生開始することを意味する。ストップは停止することを意味する。コンティニューは前回停止した位置から再生を開始することを意味する。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">コンティニュー：0xFB</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">ストップ：0xFC</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">アクティブセンシング：0xFE</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE" BGCOLOR="#E0E0E0" COLSPAN=3>
+   <FONT COLOR="#000000">ケーブルの接続をチェックするため、約300ミリ秒毎に断続的に流される。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">システムリセット：0xFF</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE" BGCOLOR="#E0E0E0" COLSPAN=3>
+   <FONT COLOR="#000000">音源を初期化するのに使う。めったに使われない。</FONT>
+  </TD>
+ </TR>
+</TABLE>
+
+<H2><A NAME="APPENDIX_D">付録D　更新履歴</A></H2>
+
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH>
+   ヴァージョン番号
+  </TH>
+  <TH>
+   リリース年月日
+  </TH>
+  <TH>
+   修正事項
+  </TH>
+ </TR>
+ <TR>
+  <TD>
+   β0.1
+  </TD>
+  <TD>
+   2005年9月18日
+  </TD>
+  <TD>
+   <UL>
+    <LI>多くのバグを抱えながらもとりあえず初リリース</LI>
+   </UL>
+  </TD>
+ </TR>
+ <TR>
+  <TD>
+   β0.2
+  </TD>
+  <TD>
+   2007年1月18日
+  </TD>
+  <TD>
+   <UL>
+    <LI>MIDIOut_PutMIDIMessageでシステムエクスクルーシブメッセージを送信したときにデッドロックすることがあるバグを修正。</LI>
+    <LI>公式ガイドブックの修正。</LI>
+    <LI>プロジェクトホームページを<A HREF="http://www.
+geocities.jp/ee65051/index.html">おーぷんMIDIぷろじぇくと</A>に変更</LI>
+   </UL>
+  </TD>
+ </TR>
+ <TR>
+  <TD>
+   β0.3
+  </TD>
+  <TD>
+   2007年12月28日
+  </TD>
+  <TD>
+   <UL>
+    <LI>公式ガイドブックのHTMLタグ不整合訂正、及びW3C HTML4.01の基準に適合化</LI>
+   </UL>
+  </TD>
+ </TR>
+ <TR>
+  <TD>
+   β0.4
+  </TD>
+  <TD>
+   2008年3月31日
+  </TD>
+  <TD>
+   <UL>
+    <LI>プロジェクトホームページを<A HREF="http://openmidiproject.sourceforge.jp/index.html">http://openmidiproject.sourceforge.jp/index.html</A>に変更</LI>
+    <LI>MIN,MAX,CLIPマクロを新たに定義</LI>
+   </UL>
+  </TD>
+ </TR>
+ <TR>
+  <TD>
+   0.5
+  </TD>
+  <TD>
+   2009年4月07日
+  </TD>
+  <TD>
+   <UL>
+    <LI>公式ガイドブックの誤記修正。</LI>
+   </UL>
+  </TD>
+ </TR>
+ <TR>
+  <TD>
+   0.6
+  </TD>
+  <TD>
+   2009年7月05日
+  </TD>
+  <TD>
+   <UL>
+    <LI>MIDIタイムコードクォーターフレーム(0xF1)が正常に取得できないバグを修正。</LI>
+    <LI>ソングポジションセレクタ(0xF2)が正常に取得できないバグを修正。</LI>
+    <LI>ソングセレクト(0xF3)が正常に取得できないバグを修正。</LI>
+    <LI>チューンリクエスト(0xF6)が正常に取得できないバグを修正。</LI>
+    <LI><A HREF="#MIDIOut_Close">MIDIOut_Close</A>にNULLを渡してもエラーが起こらないように修正。</LI>
+    <LI><A HREF="#MIDIIn_Close">MIDIIn_Close</A>にNULLを渡してもエラーが起こらないように修正。</LI>
+    <LI><A HREF="#APPENDIX_A">付録A</A>のQ.VisualBasicから使うにはのサンプルプログラムがかなり間違えていたので訂正。</LI>
+   </UL>
+  </TD>
+ </TR>
+ <TR>
+  <TD>
+   0.7
+  </TD>
+  <TD>
+   2012年2月19日
+  </TD>
+  <TD>
+   <UL>
+    <LI>文字列がANSIとUNICODEの両方に対応。なお、今までのC/C++ソースコードはそのまま使えるが、再コンパイルは必要である。</LI>
+    <LI>上記に伴い、公式ガイドブックに<A HREF="#MIDIOverview_ANSI_UNICODE">1-5.ANSIとUNICODEの使い分けについて</A>を追加。</LI>
+    <LI>上記に伴い、<A HREF="#MIDIIn_Struct">MIDIIn</A>構造体のm_pDeviceNameの型を<SPAN CLASS="KEYWORD">char</SPAN>*型から<SPAN CLASS="KEYWORD">void</SPAN>*型に変更。</LI>
+    <LI>上記に伴い、<A HREF="#MIDIIn_GetDeviceName">MIDIIn_GetDeviceName</A>のpszDeviceNameを<SPAN CLASS="KEYWORD">char</SPAN>*型からTCHAR*型に変更、lLenの単位をバイトから文字に変更。</LI>
+    <LI>上記に伴い、<A HREF="#MIDIIn_Open">MIDIIn_Open</A>のpszDeviceNameを<SPAN CLASS="KEYWORD">const char</SPAN>*型から<SPAN CLASS="KEYWORD">const</SPAN> TCHAR*型に変更。</LI>
+    <LI>上記に伴い、<A HREF="#MIDIIn_Reopen">MIDIIn_Reopen</A>のpszDeviceNameを<SPAN CLASS="KEYWORD">const char</SPAN>*型から<SPAN CLASS="KEYWORD">const</SPAN> TCHAR*型に変更。</LI>
+
+    <LI>上記に伴い、<A HREF="#MIDIOut_Struct">MIDIOut</A>構造体のm_pDeviceNameの型を<SPAN CLASS="KEYWORD">char</SPAN>*型から<SPAN CLASS="KEYWORD">void</SPAN>*型に変更。</LI>
+    <LI>上記に伴い、<A HREF="#MIDIOut_GetDeviceName">MIDIOut_GetDeviceName</A>のpszDeviceNameを<SPAN CLASS="KEYWORD">char</SPAN>*型からTCHAR*型に変更、lLenの単位をバイトから文字に変更。</LI>
+    <LI>上記に伴い、<A HREF="#MIDIOut_Open">MIDIOut_Open</A>のpszDeviceNameを<SPAN CLASS="KEYWORD">const char</SPAN>*型から<SPAN CLASS="KEYWORD">const</SPAN> TCHAR*型に変更。</LI>
+    <LI>上記に伴い、<A HREF="#MIDIOut_Reopen">MIDIOut_Reopen</A>のpszDeviceNameを<SPAN CLASS="KEYWORD">const char</SPAN>*型から<SPAN CLASS="KEYWORD">const</SPAN> TCHAR*型に変更。</LI>
+   </UL>
+  </TD>
+ </TR>
+ <TR>
+  <TD>
+   0.8
+  </TD>
+  <TD>
+   2012年4月15日
+  </TD>
+  <TD>
+   <UL>
+    <LI>tchar.hをincludeしないと使えなくなるバグを修正。</LI>
+    <LI><A HREF="#MIDIIn_Open">MIDIIn_Open</A>のUNICODE版関数で、指定されたデバイス名が見つからなくなるバグを修正。</LI>
+    <LI><A HREF="#MIDIIn_Reopen">MIDIIn_Reopen</A>のUNICODE版関数で、指定されたデバイス名が見つからなくなるバグを修正。</LI>
+    <LI><A HREF="#MIDIOut_Open">MIDIOut_Open</A>のUNICODE版関数で、指定されたデバイス名が見つからなくなるバグを修正。</LI>
+    <LI><A HREF="#MIDIOut_Reopen">MIDIOut_Reopen</A>のUNICODE版関数で、指定されたデバイス名が見つからなくなるバグを修正。</LI>
+    <LI><A HREF="#MIDIIn_GetThisDeviceName">MIDIIn_GetThisDeviceName</A>関数を追加。</LI>
+    <LI><A HREF="#MIDIOut_GetThisDeviceName">MIDIOut_GetThisDeviceName</A>関数を追加。</LI>
+   </UL>
+  </TD>
+ </TR>
+ <TR>
+  <TD>
+   0.9
+  </TD>
+  <TD>
+   2013年4月15日
+  </TD>
+  <TD>
+   <UL>
+    <LI>公式ガイドブックの誤記修正(List3-8.MIDI出力に関するマクロの使用例)。</LI>
+   </UL>
+  </TD>
+ </TR>
+ <TR>
+  <TD>
+   1.0
+  </TD>
+  <TD>
+   2014年4月29日
+  </TD>
+  <TD>
+   <UL>
+    <LI>開発環境を、古いVisualC++ 4.0から新しいVisualC++ 2008 Service Pack1に移行した。</LI>
+   </UL>
+  </TD>
+ </TR>
+ <TR>
+  <TD>
+   1.1
+  </TD>
+  <TD>
+   2016年4月17日
+  </TD>
+  <TD>
+   <UL>
+    <LI>Windows10に対応した。</LI>
+   </UL>
+  </TD>
+ </TR>
+ <TR>
+  <TD>
+   1.2
+  </TD>
+  <TD>
+   2020年1月05日
+  </TD>
+  <TD>
+   <UL>
+    <LI>システムエクスクルーシヴメッセージの最大入出力サイズを1024バイト→4096バイトに拡張。</LI>
+   </UL>
+  </TD>
+ </TR>
+</TABLE>
+
+</BODY>
+</HTML>
+
+
+
+
+
+

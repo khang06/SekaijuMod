@@ -1,0 +1,2587 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML LANG="ja">
+<HEAD>
+<TITLE>MIDIClockライブラリ　公式ガイドブック</TITLE>
+<META http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+<STYLE TYPE="text/css">
+<!--
+H1 {FONT-SIZE:36px; BORDER-WIDTH:1px; BORDER-COLOR:#000000; BORDER-STYLE:SOLID; PADDING:20px; BACKGROUND-COLOR:#E0E0D0; TEXT-ALIGN:CENTER;}
+H2 {FONT-SIZE:28px; BORDER-WIDTH:1px; BORDER-COLOR:#000000; BORDER-STYLE:SOLID; PADDING:20px; BACKGROUND-COLOR:#E0E0D0}
+H3 {FONT-SIZE:24px;}
+H4 {FONT-SIZE:16px;}
+H5 {FONT-SIZE:14px;}
+H6 {FONT-SIZE:12px;}
+P {FONT-SIZE:12px; LINE-HEIGHT:18px;}
+DIV {FONT-SIZE:12px; LINE-HEIGHT:18px;}
+DIV.INDEX {FONT-SIZE:14px; LINE-HEIGHT:18px;}
+DIV.TITLE {FONT-SIZE:12px; LINE-HEIGHT:18px;}
+SPAN.RED {FONT-SIZE:12px; COLOR:#FF0000; LINE-HEIGHT:18px;}
+SPAN.KEYWORD {FONT-SIZE:12px; COLOR:#0000FF; LINE-HEIGHT:18px;}
+SPAN.COMMENT {FONT-SIZE:12px; COLOR:#008000; LINE-HEIGHT:18px;}
+SPAN.STRING {FONT-SIZE:12px; COLOR:#808000; LINE-HEIGHT:18px;}
+LI {FONT-SIZE:12px; LINE-HEIGHT:18px;}
+TABLE {FONT-SIZE:12px; LINE-HEIGHT:18px;}
+TH {BACKGROUND-COLOR:#FFE0B0; FONT-WEIGHT:NORMAL;}
+TR {BACKGROUND-COLOR:#FFFFD0; FONT-WIEGHT:NORMAL;}
+PRE {FONT-SIZE:12px; LINE-HEIGHT:18px; BACKGROUND-COLOR:#E0E0E0; PADDING:1px;}
+-->
+</STYLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFFF" ALINK="#0040FF" VLINK="#0040FF">
+
+<H1>MIDIClockライブラリ<BR>公式ガイドブック<BR><FONT SIZE=3>(C)2002-2014 くず  / おーぷんMIDIぷろじぇくと</FONT></H1>
+
+<H3>はじめに</H3>
+
+<P>　MIDIClockライブラリは、フリーでオープンソースの、MIDIクロック計測用ライブラリである。このライブラリは、MIDIクロックのスタート・ストップ、テンポの取得・設定、経過時刻や経過ティック数の取得・設定など、MIDIのタイミングを取り扱う上で必要不可欠な機能を提供している。</P>
+
+<P>　MIDIClockライブラリは普通のC言語で書かれているが、ソースのほか、ダイナミックリンクライブラリ(*.dll)の形で提供される。ゆえに、C/C++からはもちろんのこと、Visual BasicやDelphiから使用することもできる。最新のMIDIClockライブラリは、2014年現在<A HREF="http://openmidiproject.sourceforge.jp/index.html">おーぷんMIDIぷろじぇくと</A>からダウンロードできる。</P>
+
+<P>　本書はMIDIClockライブラリの使い方を解説した公式ガイドブックである。本書は、サンプルコードと関数リファレンスを交えつつ、Cマガ風味に仕上げた。<SPAN CLASS="RED">本書はティックジェネレーターの動作原理を解説したものではない。</SPAN>とは言え、ティックジェネレーターやテンポや分解能の知識があれば、この本を簡単に理解できるであろうし、そうでなくても、ここに書かれている内容はMIDIのタイミングを取り扱う上で大いに役に立つであろう。</P>
+
+<P>　本書は、基本的なMIDIの知識とC言語の知識があることを前提に書かれている。従って、MIDIとは何かとか、4分音符とは何かとか、構造体とは何かとか、ポインタとは何かとかについては、一切述べていない。MIDIやC言語については、良質な市販の本が多く出版されているので、そちらを参照されたい。</P>
+
+<H3>謝辞</H3>
+
+<P>　MIDIClockライブラリは、録音や演奏など、MIDIクロックを扱うあらゆるアプリケーションの中核となるべく、数年がかりで開発された。当初の開発のきっかけは、リアルタイムで録音や演奏をする際に、現在の経過時刻や現在の経過ティック数を簡単に取得できるライブラリが欲しかったからである。しかし、sourceforgeを見てもわかるように、画像やオーディオ関係の作成編集ライブラリが充実しているのに比べて、MIDI関係の時刻計測ライブラリは無いに等しかった。そこで筆者はこのライブラリを製作することを決意した。</P>
+
+<P>　思えば、本ライブラリがリリースできたのは奇跡的である。筆者は会社から帰ってきてから深夜に開発を進めたため、時間は限りなく足りなかった。その上不況は深刻で、金欠病でもあった。そのようなさなか、昔から愛用のノートパソコンがついに壊れた。やがて筆者は疲れていたのか、電車内で失神したのである。幸いにも入院せずに済んだが、今後の人生に暗い影を落とした。</P>
+
+<P>　リリースにあたっては、まず、書庫部の皆様にお礼を述べなければならない。書庫部にはベテランのプログラマがおり、彼らの刺激なくしてはこのライブラリはリリースできなかったであろう。中でもあましんさんは、もともと正常だった筆者をこちらの世界に導いた人物として重要である。彼無くしては、筆者はいまだにC言語やMIDIの存在を知らなかった恐れすらある。そして最後に、あらゆる面においていつも筆者を支えてくださった家族の皆に、深く感謝の意とお礼を申し上げたい。</P>
+
+<H3>もくじ</H3>
+<DIV CLASS="INDEX"><A HREF="#MIDIOverview">第1章　概略</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIOverview_MIDI">1-1.MIDIについて</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIOverview_TimeBase">1-2.タイムベースについて</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIOverview_SyncMode">1-3.同期モードについて</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIOverview_MasterMode">1-4.マスターモードのMIDIクロックを使う</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIOverview_SlaveMode">1-5.スレーブモードのMIDIクロックを使う</A></DIV>
+<DIV CLASS="INDEX"><A HREF="#MIDIClockReference">第2章　MIDIクロックリファレンス</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIClock_Struct">2-1.MIDIクロックの構造</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIClock_CreateFunction">2-2.MIDIクロックの生成</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIClock_DeleteFunction">2-3.MIDIクロックの削除</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIClock_StartFunction">2-4.MIDIクロックの作動と停止</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIClock_GetFunction">2-5.MIDIクロックの情報取得</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIClock_SetFunction">2-6.MIDIクロックの情報設定</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIClock_OtherFunction">2-7.MIDIクロックにMIDIメッセージを認識させる</A></DIV>
+<DIV CLASS="INDEX"><A HREF="#APPENDIX_A">付録A　よくある質問(F.A.Q)</A></DIV>
+<DIV CLASS="INDEX"><A HREF="#APPENDIX_B">付録B　キー・ナンバー対応表</A></DIV>
+<DIV CLASS="INDEX"><A HREF="#APPENDIX_C">付録C　MIDIメッセージ早見表</A></DIV>
+<DIV CLASS="INDEX"><A HREF="#APPENDIX_D">付録D　更新履歴</A></DIV>
+
+
+<H2><A NAME="MIDIOverview">第1章：概略</A></H2>
+
+
+<H3><A NAME="MIDIOverview_MIDI">1-1.MIDIについて</A></H3>
+<P>　MIDIとは<U>M</U>usical <U>I</U>nstrument <U>D</U>igital <U>I</U>nterfaceの略で、電子楽器の間で情報を通信するための規格である。その中でも中核となるのが、MIDI音源と呼ばれる機器である。MIDI音源は電子楽器の一種であり、さまざまな音色を内蔵している。MIDI音源は予め内蔵された音色しか使えないが、シンセサイザーを用いれば内蔵された音色を自由に加工・変形・合成して新しい音色を作り出すことができる。</P>
+
+<P>　MIDI音源の基本的な使い方は、MIDI対応キーボードで演奏をして音を鳴らすというものである。最近では、コンピュータの普及により、パソコンで再生してMIDI音源を演奏することもできるようになった。自動演奏をする場合の演奏方法を記述したものがMIDIデータである。</P>
+
+<DIV>▼Fig1-1-1　MIDIの構成</DIV>
+<IMG SRC="MIDIDR02.gif" WIDTH=600 HEIGHT=360 ALT="">
+
+<H3><A NAME="MIDIOverview_TimeBase">1-2.タイムベースについて</A></H3>
+
+<P>タイムベースとは1ティックの長さを定義するものであり、タイムモードと分解能の2つの値から成る。タイムモードには、TPQNベースとSMPTEベースの2種類がある。分解能は、TPQNベースにおいては、4分音符あたりのティック数を表し、SMPTEベースにおいては、1フレームあたりのティック数を表す。</P>
+
+<H5><A NAME="MIDIClock_TPQNBase">a) TPQNベース</A></H5>
+
+<P>　TPQNベースでは、4分音符の長さを基準として、経過ティック数を管理する。TPQNベースでは、与えられた分解能とMIDIテンポから現在のティック値を求める。TPQNベースは、MIDIデータの位置を、楽曲の記述に適した[小節:拍:ティック]の単位で表せるので、楽曲の製作に大変便利である。従って、ほとんどのMIDIデータはTPQNベースで、各イベントの時刻はTPQNベースの単位で記述されている。</P>
+
+<P>　TPQNベースにおける<A NAME="MIDIClock_Resolution">分解能</A>とは、4分音符あたりの分解能であり、同時に4分音符の長さを定義する値でもある。単位は[ティック／4分音符]である。分解能には一般的に、48, 72, 96, 120, 144, 168, 192, 216, 240, 360, 384, 480, 960などの値が用いられる。この値が大きいほど、精密なタイミングを表現することができるが、反面、データが重くなる。従って分解能は、通常120、多くとも480もあれば十分である。MIDIクロックの分解能は、録音や演奏をするMIDIデータの分解能に合わせることになるであろう。</P>
+
+<DIV>▼Table1-2-1.分解能による各音符の長さ</DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR ALIGN="CENTER">
+  <TH>分解能</TH>
+  <TH><IMG SRC="MIDIClock_o32.gif" WIDTH=16 HEIGHT=32 ALT="32分音符"></TH>
+  <TH><IMG SRC="MIDIClock_o16.gif" WIDTH=16 HEIGHT=32 ALT="16分音符"></TH>
+  <TH><IMG SRC="MIDIClock_o16f.gif" WIDTH=16 HEIGHT=32 ALT="付点16分音符"></TH>
+  <TH><IMG SRC="MIDIClock_o08.gif" WIDTH=16 HEIGHT=32 ALT="8分音符"></TH>
+  <TH><IMG SRC="MIDIClock_o08f.gif" WIDTH=16 HEIGHT=32 ALT="付点8分音符"></TH>
+  <TH><IMG SRC="MIDIClock_o04.gif" WIDTH=16 HEIGHT=32 ALT="4分音符"></TH>
+  <TH><IMG SRC="MIDIClock_o04f.gif" WIDTH=16 HEIGHT=32 ALT="付点4分音符"></TH>
+  <TH><IMG SRC="MIDIClock_o02.gif" WIDTH=16 HEIGHT=32 ALT="2分音符"></TH>
+  <TH><IMG SRC="MIDIClock_o02f.gif" WIDTH=16 HEIGHT=32 ALT="付点2分音符"></TH>
+  <TH><IMG SRC="MIDIClock_o01.gif" WIDTH=16 HEIGHT=32 ALT="全音符"></TH>
+ </TR>
+ <TR ALIGN="CENTER">
+  <TD>48</TD>
+  <TD>6</TD>
+  <TD>12</TD>
+  <TD>18</TD>
+  <TD>24</TD>
+  <TD>36</TD>
+  <TD>48</TD>
+  <TD>64</TD>
+  <TD>96</TD>
+  <TD>128</TD>
+  <TD>192</TD>
+ </TR>
+ <TR ALIGN="CENTER">
+  <TD>72</TD>
+  <TD>9</TD>
+  <TD>18</TD>
+  <TD>27</TD>
+  <TD>36</TD>
+  <TD>54</TD>
+  <TD>72</TD>
+  <TD>96</TD>
+  <TD>144</TD>
+  <TD>192</TD>
+  <TD>288</TD>
+ </TR>
+ <TR ALIGN="CENTER">
+  <TD>96</TD>
+  <TD>12</TD>
+  <TD>24</TD>
+  <TD>36</TD>
+  <TD>48</TD>
+  <TD>72</TD>
+  <TD>96</TD>
+  <TD>128</TD>
+  <TD>192</TD>
+  <TD>256</TD>
+  <TD>384</TD>
+ </TR>
+ <TR ALIGN="CENTER">
+  <TD>120</TD>
+  <TD>15</TD>
+  <TD>30</TD>
+  <TD>45</TD>
+  <TD>60</TD>
+  <TD>90</TD>
+  <TD>120</TD>
+  <TD>180</TD>
+  <TD>240</TD>
+  <TD>360</TD>
+  <TD>480</TD>
+ </TR>
+ <TR ALIGN="CENTER">
+  <TD>144</TD>
+  <TD>18</TD>
+  <TD>36</TD>
+  <TD>54</TD>
+  <TD>72</TD>
+  <TD>108</TD>
+  <TD>144</TD>
+  <TD>192</TD>
+  <TD>288</TD>
+  <TD>384</TD>
+  <TD>576</TD>
+ </TR>
+ <TR ALIGN="CENTER">
+  <TD>192</TD>
+  <TD>24</TD>
+  <TD>48</TD>
+  <TD>72</TD>
+  <TD>96</TD>
+  <TD>144</TD>
+  <TD>192</TD>
+  <TD>256</TD>
+  <TD>384</TD>
+  <TD>512</TD>
+  <TD>768</TD>
+ </TR>
+ <TR ALIGN="CENTER">
+  <TD>240</TD>
+  <TD>30</TD>
+  <TD>60</TD>
+  <TD>90</TD>
+  <TD>120</TD>
+  <TD>180</TD>
+  <TD>240</TD>
+  <TD>360</TD>
+  <TD>480</TD>
+  <TD>720</TD>
+  <TD>960</TD>
+ </TR>
+ <TR ALIGN="CENTER">
+  <TD>360</TD>
+  <TD>45</TD>
+  <TD>90</TD>
+  <TD>135</TD>
+  <TD>180</TD>
+  <TD>270</TD>
+  <TD>360</TD>
+  <TD>540</TD>
+  <TD>720</TD>
+  <TD>1080</TD>
+  <TD>1440</TD>
+ </TR>
+ <TR ALIGN="CENTER">
+  <TD>384</TD>
+  <TD>48</TD>
+  <TD>96</TD>
+  <TD>144</TD>
+  <TD>192</TD>
+  <TD>288</TD>
+  <TD>384</TD>
+  <TD>512</TD>
+  <TD>768</TD>
+  <TD>1024</TD>
+  <TD>1536</TD>
+ </TR>
+ <TR ALIGN="CENTER">
+  <TD>480</TD>
+  <TD>60</TD>
+  <TD>120</TD>
+  <TD>180</TD>
+  <TD>240</TD>
+  <TD>360</TD>
+  <TD>480</TD>
+  <TD>720</TD>
+  <TD>960</TD>
+  <TD>1440</TD>
+  <TD>1920</TD>
+ </TR>
+ <TR ALIGN="CENTER">
+  <TD>960</TD>
+  <TD>120</TD>
+  <TD>240</TD>
+  <TD>360</TD>
+  <TD>480</TD>
+  <TD>720</TD>
+  <TD>960</TD>
+  <TD>1440</TD>
+  <TD>1920</TD>
+  <TD>2880</TD>
+  <TD>3840</TD>
+ </TR>
+</TABLE>
+<DIV>※注：全音符の長さは、4分の4拍子の場合を表した。</DIV>
+
+<P>　TPQNベースでは、<A NAME="MIDITempo">MIDIテンポ</A>の値が重要になる。MIDIテンポとは、その名の通り、演奏速度のことを示すが、MIDIでは単位は[マイクロ秒／4分音符]となる。これは、通常楽譜に表記されているテンポの単位[4分音符の数／1分]とは異なるので注意されたい。なお、これらのテンポの単位を変換するには、MIDIテンポ = 60000000 ÷ 楽譜テンポ　の関係式を使えば良い。</P>
+
+<DIV>▼Table1-2-2.楽譜上のテンポ表記とMIDI上の内部表現</DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR ALIGN="CENTER">
+  <TH>楽譜上のテンポ表記<BR>[4分音符の数／分]</TH>
+  <TH><IMG SRC="MIDIClock_o04.gif" WIDTH=16 HEIGHT=32 ALT="4分音符">=40</TH>
+  <TH><IMG SRC="MIDIClock_o04.gif" WIDTH=16 HEIGHT=32 ALT="4分音符">=50</TH>
+  <TH><IMG SRC="MIDIClock_o04.gif" WIDTH=16 HEIGHT=32 ALT="4分音符">=60</TH>
+  <TH><IMG SRC="MIDIClock_o04.gif" WIDTH=16 HEIGHT=32 ALT="4分音符">=80</TH>
+  <TH><IMG SRC="MIDIClock_o04.gif" WIDTH=16 HEIGHT=32 ALT="4分音符">=100</TH>
+  <TH><IMG SRC="MIDIClock_o04.gif" WIDTH=16 HEIGHT=32 ALT="4分音符">=120</TH>
+  <TH><IMG SRC="MIDIClock_o04.gif" WIDTH=16 HEIGHT=32 ALT="4分音符">=150</TH>
+  <TH><IMG SRC="MIDIClock_o04.gif" WIDTH=16 HEIGHT=32 ALT="4分音符">=200</TH>
+  <TH><IMG SRC="MIDIClock_o04.gif" WIDTH=16 HEIGHT=32 ALT="4分音符">=240</TH>
+  <TH><IMG SRC="MIDIClock_o04.gif" WIDTH=16 HEIGHT=32 ALT="4分音符">=300</TH>
+ </TR>
+ <TR ALIGN="CENTER">
+  <TD>MIDI上の内部表現<BR>[μ秒／4分音符]</TD>
+  <TD>1500000</TD>
+  <TD>1200000</TD>
+  <TD>1000000</TD>
+  <TD>750000</TD>
+  <TD>600000</TD>
+  <TD>500000</TD>
+  <TD>400000</TD>
+  <TD>300000</TD>
+  <TD>250000</TD>
+  <TD>200000</TD>
+ </TR>
+</TABLE>
+
+<H5><A NAME="MIDIClock_SMPTEBase">b) SMPTEベース</A></H5>
+
+<P>　SMPTEベースでは、1フレームの長さを基準として、経過ティック数を管理する。1フレームの長さは、1/24秒(24フレーム/秒)、1/25秒(25フレーム/秒)、1/29.97秒(29.97フレーム/秒)、1/30秒(30フレーム/秒)の4種類がある。SMPTEベースでは、与えられた1秒あたりのフレーム数と分解能から現在のティック値を求める。テンポの値は無視される。</P>
+
+<P>　SMPTEベースにおける<A NAME="MIDIClock_Resolution">分解能</A>とは、1フレームあたりの分解能であり、同時に1フレームの長さを定義する値でもある。単位は[ティック／1フレーム]である。分解能には一般的に、10, 20, 40, 60, 100などの値が用いられる。この値が大きいほど、精密なタイミングを表現することができるが、反面、データが重くなる。従って分解能はは、通常40、多くとも100もあれば十分である。実際には、録音や演奏をするMIDIデータの分解能に合わせることになるであろう。ちなみに、SMPTEベースで25フレーム/秒を選び、1フレーム当たりの分解能を40に設定すると、ちょうど1ミリ秒単位のMIDIデータを作成することができる。</P>
+
+
+<H3><A NAME="MIDIOverview_SyncMode">1-3.同期モードについて</A></H3>
+
+<P>　MIDIクロックの同期モードには、マスターモードとスレーブモードの2種類がある。普通のMIDIプレイヤーやMIDIシーケンサーソフトではマスターモードで動作しているが、高度なものになるとスレーブモードで動作できるものもある。以下にマスターモードとスレーブモードの根本的な違いを説明する。</P>
+
+<H4><A NAME="MIDIClock_Master">1-3-1.マスターモード</A></H4>
+
+<P>　マスターモードでは、MIDIクロックが自分自身で時計を進行させ、経過時刻[ミリ秒]と経過ティックカウント[tick]を管理する。これは、1台のマシンを用いてMIDIデータの演奏位置を進行させるのに使われるモードである。従って、MIDIプレイヤーやMIDIシーケンサーなどのMIDIアプリケーションは、少なくともマスターモードのMIDIクロックを内蔵している。また、自己演奏機能を持つシンセサイザーやリズムマシンなどのMIDI機器も、マスターモードのMIDIクロックを内蔵している。このように、マスターモードのMIDIクロックは、MIDIの録音や演奏においては不可欠なものである。</P>
+
+<DIV>▼Fig1-3-1.マスターモードの概念</DIV>
+<IMG SRC="MIDIClock_master.gif" WIDTH=600 HEIGHT=90 BORDER=1 ALT="マスターモード">
+
+
+<H4><A NAME="MIDIClock_Slave">1-3-2 スレーブモード</A></H4>
+
+<P>　マスターモードは、1台だけのMIDI機器を動かす場合には問題にならないが、複数のMIDI機器を動かす場合には同期の問題が出てくる。すなわち、それぞれの機器が勝手に時刻を計測していたのでは、お互いに誤差を生じ、演奏をうまく同期させることができないのである。このような場合には、どれか1台の機器のMIDIクロックをマスターモードとして、他の機器は自分で時刻を計測せずにマスター機器に追従するという方法をとる。これをスレーブモードという。</P>
+
+<DIV>▼Fig1-3-2.スレーブモードの概念</DIV>
+<IMG SRC="MIDIClock_slave.gif" WIDTH=600 HEIGHT=144 BORDER=1 ALT="スレーブモード">
+
+<P>　マスター機器がスレーブ機器に時刻情報を伝える手段としては、MIDIタイミングクロックによる方法とSMPTE/MTCによる方法の2種類が存在する。</P>
+
+<H5><A NAME="MIDIClock_MIDITimingClock">a) MIDIタイミングクロック</A></H5>
+
+<P>　<SPAN CLASS="RED">MIDIタイミングクロック(0xF8)は、4分音符あたり24回の割合で断続的に送信されるMIDIメッセージである。</SPAN>例えば、分解能が120に設定されていれば、1回MIDIタイミングクロック(0xF8)を受信するごとに5ティック進むということになる。この方法では、スレーブ機器は、現在時刻をミリ秒単位で知ることはできないが、MIDIデータ上のどの位置を進行しているのかをティック値知ることができる。この方法の利点は、リアルタイムでのテンポの変更に強いということである。マスター機器のテンポを速くしたり遅くしたりすれば、それに合わせてスレーブ機器のテンポも速くなったり遅くなったりし、互いにずれることはない。従って、この方法はシンセサイザーやリズムマシンでよく使われる。</P>
+
+<H5><A NAME="MIDIClock_SMPTE/MTC">b) SMPTE/MTC</A></H5>
+
+<P>　SMPTE/MTC(<U>M</U>IDI <U>T</U>ime <U>C</U>ode)は、現在の時刻[時：分：秒：フレーム]を、8つのMIDIメッセージに分けて断続的に送信されるMIDIメッセージである。8つに分割されるのは、1つのMIDIメッセージでは情報量が多くて入りきれないからである。従って、SMPTE/MTCは常に8メッセージで1セットである。この方法では、スレーブ機器は演奏のテンポを知ることができないが、現在の経過時刻をフレーム単位で正確に知ることができる。従って、この方法は映画のフレームなどに演奏を合わせるのによく使われる。</P>
+
+<P>　マスターモード・スレーブモードをまとめると次のようになる。</P>
+<DIV>▼Table1-3-3.MIDIクロックのタイムモードの違い</DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH WIDTH="20%" COLSPAN=2>モード</TH>
+  <TH WIDTH="20%">分解能[tick／4分音符]又は[tick/1フレーム]</TH>
+  <TH WIDTH="20%">テンポ[μ秒／4分音符]</TH>
+  <TH WIDTH="20%">現在の経過時刻[ミリ秒]</TH>
+  <TH WIDTH="20%">現在の経過ティック数[tick]</TH>
+ </TR>
+ <TR>
+  <TD COLSPAN=2>マスターモード</TD>
+  <TD>ユーザーが指定する。</TD>
+  <TD>ユーザーが指定する。</TD>
+  <TD>自動的に進む。</TD>
+  <TD>分解能・テンポ・時刻から自動計算される。</TD>
+ </TR>
+ <TR>
+  <TD ROWSPAN=2>スレーブモード</TD>
+  <TD>MIDIタイミングクロック受信方式</TD>
+  <TD>ユーザーが指定する。</TD>
+  <TD>ユーザーが指定するが、MIDIタイミングクロックにおいてテンポの値は無視される。真のテンポはマスター機器が保持している場合がある。</TD>
+  <TD>MIDIタイミングクロックを受信したときの実際の経過時刻[ミリ秒]が適用される。MIDIタイミングクロックを受信しない限り経過時刻[ミリ秒]は進まない。</TD>
+  <TD>分解能とMIDIタイミングクロックの受信回数から決定される。MIDIタイミングクロック24回受信につき4分音符の割合でティックカウントが進む。</TD>
+ </TR>
+ <TR>
+  <TD>SMPTE/MTC受信方式</TD>
+  <TD>ユーザーが指定するが、この値は経過ティック数を求めるためにしか使われない。真の分解能はマスター機器が保持している場合がある。</TD>
+  <TD>ユーザーが指定するが、この値は経過ティック数を求めるためにしか使われない。真のテンポはマスター機器が保持している場合がある。</TD>
+  <TD>受信したタイムコードが現在の時刻となる。タイムコードを受信しない限り経過時刻[ミリ秒]は進まない。</TD>
+  <TD>不明であるが、参考までに、現在の経過ミリ秒と分解能とタイムベースとテンポから自動計算される。真の経過ティック数はマスター機器が保持している場合がある。</TD>
+ </TR>
+</TABLE>
+
+
+<H3><A NAME="MIDIOverview_MasterMode">1-4.マスターモードのMIDIクロックを使う</A></H3>
+
+<P>　では早速、どのアプリケーションにも必要不可欠なマスターモード・TPQNベースのMIDIクロックを使った短いプログラムを紹介する。MIDIクロックライブラリには、任意のタイミングでのスタート、ストップ、テンポ変更などの機能を持つが、それについてはここでは触れない。下記のプログラムは、MIDIクロックを生成し、TPQNベース、分解能は120[tick／4分音符]、テンポは100[4分音符／分]のもと、3秒間だけ現在の経過ティック値を計測する。</P>
+
+<DIV>▼List1-4-1　マスターモードで現在の経過時刻と経過ティック値を取得するプログラム</DIV>
+<PRE>
+<SPAN CLASS="KEYWORD">#include</SPAN> &lt;stdio.h&gt;
+<SPAN CLASS="KEYWORD">#include</SPAN> &lt;MIDIClock.h&gt;
+<SPAN CLASS="KEYWORD">int</SPAN> main () {
+	<SPAN CLASS="KEYWORD">long</SPAN> lMillisec = 0;
+	<SPAN CLASS="KEYWORD">long</SPAN> lTickCount = 0;
+	MIDIClock* pMIDIClock = NULL;
+	<SPAN CLASS="COMMENT">/* MIDIクロックの生成(TPQNベース, 分解能=120, テンポ:4分音符=100) */</SPAN>
+	<SPAN CLASS="RED">pMIDIClock = MIDIClock_Create (MIDICLOCK_TPQNBASE, 120, 60000000/100);</SPAN>
+	<SPAN CLASS="KEYWORD">if</SPAN> (pMIDIClock == NULL) {
+		printf (<SPAN CLASS="STRING">"MIDIクロックの生成に失敗しました。\n"</SPAN>);
+		<SPAN CLASS="KEYWORD">return</SPAN> 0;
+	}
+	<SPAN CLASS="COMMENT">/* MIDIクロックのリセットとスタート */</SPAN>
+	<SPAN CLASS="RED">MIDIClock_Reset (pMIDIClock);</SPAN>
+	<SPAN CLASS="RED">MIDIClock_Start (pMIDIClock);</SPAN>
+	<SPAN CLASS="COMMENT">/* 3秒間計測 */</SPAN>
+	<SPAN CLASS="KEYWORD">while</SPAN> (lMillisec &lt; 3000) {
+		lMillisec = <SPAN CLASS="RED">MIDIClock_GetMillisec (pMIDIClock);</SPAN>
+		lTickCount = <SPAN CLASS="RED">MIDIClock_GetTickCount (pMIDIClock);</SPAN>
+		printf (<SPAN CLASS="STRING">"%6d[ミリ秒]、%6d[tick]\n"</SPAN>, lMillisec, lTickCount);
+	}
+	<SPAN CLASS="COMMENT">/* MIDIクロックのストップ */</SPAN>
+	<SPAN CLASS="RED">MIDIClock_Stop (pMIDIClock);</SPAN>
+	<SPAN CLASS="COMMENT">/* MIDIクロックをメモリ上から削除 */</SPAN>
+	<SPAN CLASS="RED">MIDIClock_Delete (pMIDIClock);</SPAN>
+	pMIDIClock = NULL;
+	<SPAN CLASS="KEYWORD">return</SPAN> 1;
+}
+</PRE>
+
+<P>　このプログラムでは、まず1つのMIDIクロックを生成している。MIDIクロックの生成には、<A HREF="#MIDIClock_Create">MIDIClock_Create</A>関数を使っている。そして、MIDIクロックをリセットした後、MIDIクロックをスタートする。これにはそれぞれ<A HREF="#MIDIClock_Reset">MIDIClock_Reset</A>関数、<A HREF="#MIDIClock_Start">MIDIClock_Start</A>関数を使った。そしていよいよwhileループに突入する。実際のアプリケーションでは、このwhileループが演奏用コードや録音用コードに相当するであろう。ループ内では、現在の経過時刻[ミリ秒]と経過ティック数[tick]を調べ、断続的に画面に出力する。現在の経過時刻を得るには<A HREF="#MIDIClock_GetMillisec">MIDIClock_GetMillisec</A>関数を、現在の経過ティック数[tick]を得るには<A HREF="#MIDIClock_GetTickCount">MIDIClock_GetTickCount</A>関数を使った。そして、3秒経過すると、whileループを抜ける。最後に、MIDIクロックを停止し、MIDIクロックをメモリ上から削除して終了する。MIDIクロックの停止には<A HREF="#MIDIClock_Stop">MIDIClock_Stop</A>関数を、メモリ上からの削除には<A HREF="#MIDIClock_Delete">MIDIClock_Delete</A>関数を使用した。</P>
+
+<P>　このプログラムの実行により、DOSプロンプト画面に次のような表示がされる(遅いパソコンを使用した場合の例)。実際にはwhileループは非常に高速なので、ほとんど1ミリ秒おきにティック数が取得できるであろう。</P>
+
+<DIV CLASS="TITLE">▼List1-4-2.上のプログラムの実行結果</DIV>
+<PRE>
+     0[ミリ秒]、     0[tick]
+    28[ミリ秒]、     5[tick]
+    55[ミリ秒]、    11[tick]
+    81[ミリ秒]、    16[tick]
+   110[ミリ秒]、    22[tick]
+   136[ミリ秒]、    27[tick]
+   163[ミリ秒]、    32[tick]
+   189[ミリ秒]、    37[tick]
+   216[ミリ秒]、    43[tick]
+   243[ミリ秒]、    48[tick]
+   269[ミリ秒]、    53[tick]
+   297[ミリ秒]、    59[tick]
+   324[ミリ秒]、    64[tick]
+   351[ミリ秒]、    70[tick]
+   377[ミリ秒]、    75[tick]
+   404[ミリ秒]、    80[tick]
+   430[ミリ秒]、    86[tick]
+   457[ミリ秒]、    91[tick]
+   483[ミリ秒]、    96[tick]
+   509[ミリ秒]、   101[tick]
+   538[ミリ秒]、   107[tick]
+   564[ミリ秒]、   112[tick]
+   591[ミリ秒]、   118[tick]
+   617[ミリ秒]、   123[tick]
+   644[ミリ秒]、   128[tick]
+   670[ミリ秒]、   134[tick]
+   697[ミリ秒]、   139[tick]
+   723[ミリ秒]、   144[tick]
+   750[ミリ秒]、   150[tick]
+   778[ミリ秒]、   155[tick]
+   805[ミリ秒]、   161[tick]
+   831[ミリ秒]、   166[tick]
+   858[ミリ秒]、   171[tick]
+   884[ミリ秒]、   176[tick]
+   911[ミリ秒]、   182[tick]
+   937[ミリ秒]、   187[tick]
+   963[ミリ秒]、   192[tick]
+   991[ミリ秒]、   198[tick]
+  1017[ミリ秒]、   203[tick]
+  1045[ミリ秒]、   209[tick]
+  1072[ミリ秒]、   214[tick]
+  1098[ミリ秒]、   219[tick]
+  1125[ミリ秒]、   225[tick]
+  1151[ミリ秒]、   230[tick]
+  1177[ミリ秒]、   235[tick]
+  1205[ミリ秒]、   241[tick]
+  1232[ミリ秒]、   246[tick]
+  1258[ミリ秒]、   251[tick]
+  1286[ミリ秒]、   257[tick]
+  1315[ミリ秒]、   263[tick]
+  1342[ミリ秒]、   268[tick]
+  1368[ミリ秒]、   273[tick]
+  1395[ミリ秒]、   279[tick]
+  1422[ミリ秒]、   284[tick]
+  1448[ミリ秒]、   289[tick]
+  1475[ミリ秒]、   295[tick]
+  1501[ミリ秒]、   300[tick]
+  1528[ミリ秒]、   305[tick]
+  1555[ミリ秒]、   311[tick]
+  1582[ミリ秒]、   316[tick]
+  1608[ミリ秒]、   321[tick]
+  1637[ミリ秒]、   327[tick]
+  1663[ミリ秒]、   332[tick]
+  1689[ミリ秒]、   337[tick]
+  1716[ミリ秒]、   343[tick]
+  1742[ミリ秒]、   348[tick]
+  1768[ミリ秒]、   353[tick]
+  1796[ミリ秒]、   359[tick]
+  1822[ミリ秒]、   364[tick]
+  1850[ミリ秒]、   370[tick]
+  1876[ミリ秒]、   375[tick]
+  1903[ミリ秒]、   380[tick]
+  1929[ミリ秒]、   385[tick]
+  1956[ミリ秒]、   391[tick]
+  1982[ミリ秒]、   396[tick]
+  2008[ミリ秒]、   401[tick]
+  2035[ミリ秒]、   407[tick]
+  2063[ミリ秒]、   412[tick]
+  2090[ミリ秒]、   418[tick]
+  2117[ミリ秒]、   423[tick]
+  2143[ミリ秒]、   428[tick]
+  2170[ミリ秒]、   434[tick]
+  2197[ミリ秒]、   439[tick]
+  2223[ミリ秒]、   444[tick]
+  2249[ミリ秒]、   449[tick]
+  2276[ミリ秒]、   455[tick]
+  2304[ミリ秒]、   460[tick]
+  2332[ミリ秒]、   466[tick]
+  2358[ミリ秒]、   471[tick]
+  2384[ミリ秒]、   476[tick]
+  2411[ミリ秒]、   482[tick]
+  2438[ミリ秒]、   487[tick]
+  2464[ミリ秒]、   492[tick]
+  2490[ミリ秒]、   498[tick]
+  2519[ミリ秒]、   503[tick]
+  2545[ミリ秒]、   509[tick]
+  2574[ミリ秒]、   514[tick]
+  2609[ミリ秒]、   521[tick]
+  2640[ミリ秒]、   528[tick]
+  2666[ミリ秒]、   533[tick]
+  2692[ミリ秒]、   538[tick]
+  2719[ミリ秒]、   543[tick]
+  2753[ミリ秒]、   550[tick]
+  2780[ミリ秒]、   556[tick]
+  2806[ミリ秒]、   561[tick]
+  2841[ミリ秒]、   568[tick]
+  2867[ミリ秒]、   573[tick]
+  2893[ミリ秒]、   578[tick]
+  2919[ミリ秒]、   583[tick]
+  2947[ミリ秒]、   589[tick]
+  2973[ミリ秒]、   594[tick]
+  3000[ミリ秒]、   600[tick]
+</PRE>
+
+<H3><A NAME="MIDIOverview_SlaveMode">1-5.スレーブモードのMIDIクロックを使う</A></H3>
+
+<P>　次に、スレーブモードのMIDIクロックを使った短いプログラムを紹介する。スレーブモードにはMIDIタイミングクロックによる方法とSMPTE/MTCによる方法があるが、ここではMIDIタイミングクロックによる方法を紹介する。下記のプログラムは、MIDIクロックを生成し、TPQNベース、分解能は120[tick／4分音符]、テンポ=100[4分音符／分]のもと、Enterキーを押すとMIDIタイミングクロックが認識され、画面に現在の経過時刻[ミリ秒](参考)と現在の経過ティック値[tick]を表示する。経過ティック値が240[tick](2拍相当)をこえるとプログラムを終了する。</P>
+
+<DIV>▼List1-5-1　スレーブモードで現在の経過ティック値を取得するプログラム</DIV>
+<PRE>
+<SPAN CLASS="KEYWORD">#include</SPAN> &lt;stdio.h&gt;
+<SPAN CLASS="KEYWORD">#include</SPAN> &lt;MIDIClock.h&gt;
+<SPAN CLASS="KEYWORD">int</SPAN> main () {
+	<SPAN CLASS="KEYWORD">long</SPAN> lMillisec = 0;
+	<SPAN CLASS="KEYWORD">long</SPAN> lTickCount = 0;
+	<SPAN CLASS="KEYWORD">char</SPAN> cMIDIMessage[1] = {0xF8};
+	MIDIClock* pMIDIClock = NULL;
+	<SPAN CLASS="COMMENT">/* MIDIクロックの生成(TPQNベース、分解能=120、テンポ=100) */</SPAN>
+	<SPAN CLASS="RED">pMIDIClock = MIDIClock_Create (MIDICLOCK_TPQNBASE, 120, 60000000/100);</SPAN>
+	<SPAN CLASS="KEYWORD">if</SPAN> (pMIDIClock == NULL) {
+		printf (<SPAN CLASS="STRING">"MIDIクロックの生成に失敗しました。\n"</SPAN>);
+		<SPAN CLASS="KEYWORD">return</SPAN> 0;
+	}
+	<SPAN CLASS="COMMENT">/* 同期モードをMIDIタイミングクロックによるスレーブモードに設定する */</SPAN>
+	<SPAN CLASS="RED">MIDIClock_SetMIDIInSyncMode (pMIDIClock, MIDICLOCK_SLAVEMIDITIMINGCLOCK);</SPAN>
+	<SPAN CLASS="COMMENT">/* MIDIクロックのリセットとスタート */</SPAN>
+	<SPAN CLASS="RED">MIDIClock_Reset (pMIDIClock);</SPAN>
+	<SPAN CLASS="RED">MIDIClock_Start (pMIDIClock);</SPAN>
+	<SPAN CLASS="COMMENT">/* 240[tick]になるまで計測 */</SPAN>
+	<SPAN CLASS="KEYWORD">while</SPAN> (lTickCount &lt; 240) {
+		if (getchar () == '\n') {
+			<SPAN CLASS="RED">MIDIClock_PutMIDIMessage (pMIDIClock, cMIDIMessage, 1);</SPAN>
+			lMillisec = <SPAN CLASS="RED">MIDIClock_GetMillisec (pMIDIClock);</SPAN>
+			lTickCount = <SPAN CLASS="RED">MIDIClock_GetTickCount (pMIDIClock);</SPAN>
+			printf (<SPAN CLASS="STRING">"%6d[ミリ秒]、%6d[tick]　"</SPAN>, lMillisec, lTickCount);
+		}
+	}
+	<SPAN CLASS="COMMENT">/* MIDIクロックのストップ */</SPAN>
+	<SPAN CLASS="RED">MIDIClock_Stop (pMIDIClock);</SPAN>
+	<SPAN CLASS="COMMENT">/* MIDIクロックをメモリ上から削除 */</SPAN>
+	<SPAN CLASS="RED">MIDIClock_Delete (pMIDIClock);</SPAN>
+	pMIDIClock = NULL;
+	<SPAN CLASS="KEYWORD">return</SPAN> 1;
+}
+</PRE>
+
+<P>　このプログラムでは、まず1つのMIDIクロックを生成している。MIDIクロックの生成には、<A HREF="#MIDIClock_Create">MIDIClock_Create</A>関数を使っている。引数のタイムモードと分解能とテンポはMIDIデータのタイムベースとテンポに合わせるが、ここでは、それぞれTPQNベース、120、60000000/100とした。次に、<A HREF="#MIDIClock_SetMIDIInSyncMode">MIDIClock_SetMIDIInSyncMode</A>を使って、同期モードをMIDIタイミングクロックによるスレーブモードに設定する。そして、MIDIクロックをリセットした後、MIDIクロックをスタートする。これにはそれぞれ<A HREF="#MIDIClock_Reset">MIDIClock_Reset</A>関数、<A HREF="#MIDIClock_Start">MIDIClock_Start</A>関数を使った。<SPAN CLASS="RED">しかし、これはスレーブモードのMIDIクロックであるため、MIDIクロックをスタートしただけではティック値及びミリ秒は進まない。ティック値が進むのは実際にMIDIタイミングクロック(0xF8)を認識したときのみであり、増加したティック値に合わせてミリ秒も増加するのである。</SPAN>次に、whileループに突入する。ループ内では、ユーザーが何かキーを押すとMIDIタイミングクロック(0xF8)が認識され、現在の経過時刻[ミリ秒]と現在の経過ティック数[tick]を画面に表示する。実際のアプリケーションでは、このwhileループ内に、MIDIInから受信したMIDIタイミングクロック(0xF8)をMIDIクロックに認識させるコードを書くことになる。MIDIタイミングクロックを認識させるには<A HREF="#MIDIClock_PutMIDIMessage">MIDIClock_PutMIDIMessage</A>関数を、現在の経過ティック数を得るには<A HREF="#MIDIClock_GetTickCount">MIDIClock_GetTickCount</A>関数を使った。そして、240ティック経過すると、whileループを抜ける。最後に、MIDIクロックを停止し、MIDIクロックをメモリ上から削除して終了する。MIDIクロックの停止には<A HREF="#MIDIClock_Stop">MIDIClock_Stop</A>関数を、メモリ上からの削除には<A HREF="#MIDIClock_Delete">MIDIClock_Delete</A>関数を使用した。</P>
+
+<P>　このプログラムの実行により、DOSプロンプト画面に次のような表示がされる。1回MIDIタイミングクロックを認識するごとに1行表示される。MIDIタイミングクロック(0xF8)は、4分音符あたり24回送受信されるものであるから、分解能が120の場合、1回のMIDIタイミングクロックで5tick進む。MIDIタイミングクロックが認識されなければ、いつまでたってもティック値及びミリ秒は進まない。なお、ミリ秒値は参考であり、この値を基準に録音や演奏のタイミングを取ってはならない。</P>
+
+<DIV CLASS="TITLE">▼List1-5-2.上のプログラムの実行結果</DIV>
+<PRE>
+   943[ミリ秒]、     5[tick]
+  1209[ミリ秒]、    10[tick]
+  1454[ミリ秒]、    15[tick]
+  1646[ミリ秒]、    20[tick]
+  1886[ミリ秒]、    25[tick]
+  1995[ミリ秒]、    30[tick]
+  2254[ミリ秒]、    35[tick]
+  2419[ミリ秒]、    40[tick]
+  2601[ミリ秒]、    45[tick]
+  2692[ミリ秒]、    50[tick]
+  2864[ミリ秒]、    55[tick]
+  3034[ミリ秒]、    60[tick]
+  3198[ミリ秒]、    65[tick]
+  3470[ミリ秒]、    70[tick]
+  3561[ミリ秒]、    75[tick]
+  3725[ミリ秒]、    80[tick]
+  3961[ミリ秒]、    85[tick]
+  4178[ミリ秒]、    90[tick]
+  4329[ミリ秒]、    95[tick]
+  4441[ミリ秒]、   100[tick]
+  4719[ミリ秒]、   105[tick]
+  4874[ミリ秒]、   110[tick]
+  4982[ミリ秒]、   115[tick]
+  5260[ミリ秒]、   120[tick]
+  5336[ミリ秒]、   125[tick]
+  5518[ミリ秒]、   130[tick]
+  5801[ミリ秒]、   135[tick]
+  5881[ミリ秒]、   140[tick]
+  6049[ミリ秒]、   145[tick]
+  6236[ミリ秒]、   150[tick]
+  6509[ミリ秒]、   155[tick]
+  6634[ミリ秒]、   160[tick]
+  6757[ミリ秒]、   165[tick]
+  6937[ミリ秒]、   170[tick]
+  7282[ミリ秒]、   175[tick]
+  7284[ミリ秒]、   180[tick]
+  7478[ミリ秒]、   185[tick]
+  7674[ミリ秒]、   190[tick]
+  7881[ミリ秒]、   195[tick]
+  8046[ミリ秒]、   200[tick]
+  8259[ミリ秒]、   205[tick]
+  8547[ミリ秒]、   210[tick]
+  8985[ミリ秒]、   215[tick]
+  9070[ミリ秒]、   220[tick]
+  9451[ミリ秒]、   225[tick]
+  9689[ミリ秒]、   230[tick]
+  9805[ミリ秒]、   235[tick]
+ 10008[ミリ秒]、   240[tick]
+</PRE>
+
+
+
+<H2><A NAME="MIDIClockReference">第2章：MIDIクロックリファレンス</A></H2>
+
+<H3><A NAME="MIDIClock_Struct">2-1.MIDIクロックの構造</A></H3>
+
+<P>　MIDIクロックは、現在のタイムモード、現在の分解能、現在のテンポ、現在の経過時刻、現在の経過ティック数を常に保持している。これらの値は必要に応じて、参照・設定できるが、これらの値を直接操作するのは危険である。必ずGet/Set系関数を通して参照、設定されたい。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIClock_FieldTable">▼Table2-1.MIDIClock構造体のフィールドと使い方</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH WIDTH="25%">フィールド</TH>
+  <TH WIDTH="75%">使い方</TH>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">long</SPAN> m_lTimeMode</TD>
+  <TD><A HREF="#MIDIOverview_TimeBase">MIDIクロックのタイムモード</A>。この値は、MIDICLOCK_TPQNBASE(0), MIDICLOCK_SMPTE24BASE(24), MIDICLOCK_SMPTE25BASE(25), MIDICLOCK_SMPTE29BASE(29), MIDICLOCK_SMPTE30BASE(30)のいずれかの値である。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">long</SPAN> m_lResolution</TD>
+  <TD><A HREF="#MIDIClock_Resolution">4分音符あたりの分解能(TPQNベースの場合)又は1フレームあたりの分解能(SMPTEベースの場合)</A>。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">long</SPAN> m_lTempo</TD>
+  <TD><A HREF="#MIDITempo">MIDIテンポ</A>。単位は[マイクロ秒／4分音符]である。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">long</SPAN> m_lSpeed</TD>
+  <TD>スピード。ここでいうスピードとは、時間の進む速さをあらわす。この値は、MIDICLOCK_SPEEDNORMAL(=10000)が標準で、20000で倍速となる。MIDIデータの再生中にm_lSpeedを0に設定すれば、ファミコンがばぐった時のような状態を再現できる。この値は、MIDICLOCK_MINSPEED以上MIDICLOCK_MAXSPEED以下でなければならない。この値は、同期モードがMIDICLOCK_MASTERの時のみ有効である。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">long</SPAN> m_lMIDIInSyncMode</TD>
+  <TD>同期モード(受信)。この値は、<A HREF="#MIDIClock_Master">MIDICLOCK_MASTER(0)</A>, <A HREF="#MIDIClock_MIDITimingClock">MIDICLOCK_SLAVEMIDITIMINGCLOCK(1)</A>, <A HREF="#MIDIClock_SMPTE/MTC">MIDICLOCK_SLAVESMPTEMTC(2)</A>のいずれかの値である。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">long</SPAN> m_lMillisec</TD>
+  <TD>経過時刻[ミリ秒]。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">long</SPAN> m_lTickCount</TD>
+  <TD>経過ティック数[tick]。</TD>
+ </TR>
+</TABLE>
+
+<H3><A NAME="MIDIClock_CreateFunction">2-2.MIDIクロックの生成</A></H3>
+
+<P>　MIDIクロックをメモリ上に新規生成するには、MIDIClock_Create関数を使う。</P>
+
+<P>　MIDIClock_Create関数は、正常終了時には生成したMIDIクロックへのポインタを、異常終了時にはNULLを返す。異常終了は、メモリの割り当てに失敗した場合、及び引数の指定が不正だった場合におこりうる。戻り値は必ずチェックし、異常終了時の回避処理をしておかなければ、ヌルポインターエラーになるであろう。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIClock_CreateFunctionList">▼List2-2.MIDIClock_Create関数の使い方</A></DIV>
+<PRE>
+	MIDIClock* pMIDIClock;
+	<SPAN CLASS="COMMENT">/* MIDIクロックの生成(マスターモードTPQNベース, 分解能=120, テンポ:4分音符=100) */</SPAN>
+	<SPAN CLASS="RED">pMIDIClock = MIDIClock_Create (MIDICLOCK_TPQNBASE, 120, 60000000/100);</SPAN>
+	<SPAN CLASS="KEYWORD">if</SPAN> (pMIDIClock == NULL) {
+		<SPAN CLASS="COMMENT">/* 異常終了時の処理 */</SPAN>
+		printf (<SPAN CLASS="STRING">"MIDIクロックの生成に失敗しました。\n"</SPAN>);
+		<SPAN CLASS="KEYWORD">return</SPAN> 0;
+	}
+	<SPAN CLASS="COMMENT">/* 正常終了時の処理 */</SPAN>
+	...
+</PRE>
+
+<P></P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIClock_CreateFunctionTable">▼Table2-4.MIDIClock_Create系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIClock_Create">MIDIClock* MIDIClock_Create <BR>(<SPAN CLASS="KEYWORD">long</SPAN> lTimeMode, <SPAN CLASS="KEYWORD">long</SPAN> lResolution, <SPAN CLASS="KEYWORD">long</SPAN> lTempo);</A> </TD>
+  <TD>lTimeMode:MIDIクロックのタイムモード(<A HREF="#MIDIClock_Master">MIDICLOCK_TPQNBASE(0)</A>, MIDICLOCK_SMPTE24BASE(24), MIDICLOCK_SMPTE25BASE(25), MIDICLOCK_SMPTE29BASE(29), MIDICLOCK_SMPTE30BASE(30)のうちのいずれか)<BR>lResolution:分解能[ティック/4分音符](1～32767)又は[ティック/フレーム](1～255)<BR>lTempo:テンポ[マイクロ秒／4分音符](1～60000000)<BR></TD>
+  <TD>正常終了:MIDIClockへのポインタ<BR>異常終了:NULL</TD>
+  <TD>MIDIクロックを新規に生成する。タイムモードと分解能は演奏又は録音対象のMIDIデータのタイムベースに合わせる。分解能は、4分音符の長さ又は1フレームの分解能を定義する。分解能に設定する値は、TPQNベースの場合、48, 72, 96, 120, 144, 192, 240, 360, 384, 480, 960のいずれかが望ましい。例えば120を指定した場合、4分音符の長さを120[tick]と定義したことになる。lTempoの単位は[μ秒/4分音符]であり、楽譜のテンポ[4分音符/分]から求める場合は、60000000/楽譜のテンポとなる。生成直後の経過時刻は0[ミリ秒]、経過ティック値は0[tick]に初期化され、動作状態は停止である。デフォルトのスピードはMIDICLOCK_SPEEDNORMAL(10000)に設定される。デフォルトの同期モードはMIDICLOCK_MASTER(0)に設定される。</TD>
+ </TR>
+</TABLE>
+
+<H3><A NAME="MIDIClock_DeleteFunction">2-3.MIDIクロックの削除</A></H3>
+
+<P>　MIDIクロックをメモリ上から削除するには、MIDIClock_Delete関数を使う。</P>
+
+<P><SPAN CLASS="RED">　<A HREF="#MIDIClock_CreateFunction">MIDIClock_Create系関数</A>で生成したMIDIクロックは、使用し終わったらMIDIClock_Delete関数でメモリ上から削除しなければならない。</SPAN>MIDIクロックライブラリではメモリの自動解放(ガベージコレクション)を行わないので、この手続きは常に必要である。もし忘れれば、メモリリークが発生するであろう。</P>
+
+<P><SPAN CLASS="RED">　MIDIクロックを削除した直後には、ポインタにNULLを代入しておくべきである。</SPAN>これをしなければ、このMIDIクロックが既に削除されていることが外部からわからなくなってしまい、バグの原因となりうる。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIClock_DeleteFunctionList">▼List2-3.MIDIClock_Delete関数の使い方</A></DIV>
+<PRE>
+	<SPAN CLASS="RED">MIDIClock_Delete (pMIDIClock)</SPAN>;
+	pMIDIClock = NULL;
+</PRE>
+
+<P></P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIClock_DeleteFunctionTable">▼Table2-3.MIDIClock_Delete系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIClock_Delete"><SPAN CLASS="KEYWORD">void</SPAN> MIDIClock_Delete <BR>(MIDIClock* pMIDIClock);</A> </TD>
+  <TD>pMIDIClock:MIDIクロックへのポインタ</TD>
+  <TD>未定義</TD>
+  <TD>MIDIクロックを削除する。この関数は、MIDIクロックが動作中の場合でも、強制的に停止させてから安全に削除できる。</TD>
+ </TR>
+</TABLE>
+
+<H3><A NAME="MIDIClock_StartFunction">2-4.MIDIクロックの作動と停止</A></H3>
+
+<P>　MIDIクロックは、短距離走などで使われるストップウォッチのように、いつでもスタート・ストップ・リセットすることができる。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIClock_StartFunctionList">▼List2-4.MIDIClock_Start系関数の使い方</A></DIV>
+<PRE>
+	<SPAN CLASS="COMMENT">/* MIDIクロックのリセット */</SPAN>
+	<SPAN CLASS="RED">MIDIClock_Reset (pMIDIClock);</SPAN>
+	<SPAN CLASS="COMMENT">/* MIDIクロックのスタート */</SPAN>
+	<SPAN CLASS="RED">MIDIClock_Start (pMIDIClock);</SPAN>
+	<SPAN CLASS="COMMENT">/* 何らかの処理 */</SPAN>
+	...
+	<SPAN CLASS="COMMENT">/* MIDIクロックのストップ */</SPAN>
+	<SPAN CLASS="RED">MIDIClock_Stop (pMIDIClock);</SPAN>
+</PRE>
+
+<P></P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIClock_StartFunctionTable">▼Table2-4.MIDIClock_Start/Stop/Reset系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIClock_Start"><SPAN CLASS="KEYWORD">long</SPAN> MIDIClock_Start <BR>(MIDIClock* pMIDIClock);</A> </TD>
+  <TD>pMIDIClock:MIDIクロックへのポインタ</TD>
+  <TD>正常終了:0以外<BR>異常終了:0</TD>
+  <TD>MIDIクロックをスタートする。現在の経過時刻、現在の経過ティック数についてはゼロリセット<SPAN CLASS="RED">されない。</SPAN>同期モードがマスターモードの場合、経過時刻[ミリ秒]と経過ティック値[tick]が進みだす。同期モードがスレーブモードの場合、<A HREF="#MIDIClock_PutMIDIMessage">MIDIClock_PutMIDIMessage</A>により、MIDIタイミングクロック又はSMPTE/MTCを認識できるようになる。すでにMIDIクロックが動作状態である場合、又はリソース不足などが発生した場合、この関数は0を返し、何も起こさない。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIClock_Stop"><SPAN CLASS="KEYWORD">long</SPAN> MIDIClock_Stop <BR>(MIDIClock* pMIDIClock);</A> </TD>
+  <TD>pMIDIClock:MIDIクロックへのポインタ</TD>
+  <TD>正常終了:0以外<BR>異常終了:0</TD>
+  <TD>MIDIクロックをストップする。現在の経過時刻、現在の経過ティック数についてはそのまま保持され、ゼロリセット<SPAN CLASS="RED">されない。</SPAN>マスターモードの場合、経過時刻[ミリ秒]と経過ティック値[tick]が進まなくなる。同期モードがスレーブモードの場合、MIDIタイミングクロック又はSMPTE/MTCを認識できないようにする。すでにMIDIクロックが停止状態である場合、この関数は0を返し、何も起こさない。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIClock_Reset"><SPAN CLASS="KEYWORD">long</SPAN> MIDIClock_Reset <BR>(MIDIClock* pMIDIClock);</A> </TD>
+  <TD>pMIDIClock:MIDIクロックへのポインタ</TD>
+  <TD>正常終了:0以外<BR>異常終了:0</TD>
+  <TD>MIDIクロックをリセットする。すなわち、現在の経過時刻を0[ミリ秒]に、現在の経過ティック数を0[tick]に設定する。他の値に設定したい場合は、<A HREF="#MIDIClock_SetFunction">MIDIClock_Set系関数</A>を使う。この関数はMIDIクロックの動作中でも使うことができるが、停止中に使う方が望ましい。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIClock_IsRunning"><SPAN CLASS="KEYWORD">long</SPAN> MIDIClock_IsRunning <BR>(MIDIClock* pMIDIClock);</A> </TD>
+  <TD>pMIDIClock:MIDIクロックへのポインタ</TD>
+  <TD>動作中:1以外<BR>停止中:0</TD>
+  <TD>MIDIクロックが動作中の場合は1を、停止中の場合は0を返す。</TD>
+ </TR>
+</TABLE>
+
+
+<H3><A NAME="MIDIClock_GetFunction">2-5.MIDIクロックの情報取得</A></H3>
+
+<P>　いったん構築したMIDIクロックのプロパティは、動作中・停止中にかかわらず、いつでもGet系関数を使ってその情報を得ることができる。特にマスターモードにおいて、<A HREF="#MIDIClock_GetTickCount">MIDIClock_GetTickCount</A>は、現在の経過ティック数を求めるのに最も頻繁に使われる関数であろう。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIClock_GetFunctionList">▼List2-5.MIDIClock_Get系関数の使い方</A></DIV>
+<PRE>
+	...
+	<SPAN CLASS="COMMENT">MIDIクロックの各種情報取得</SPAN>
+	<SPAN CLASS="KEYWORD">long</SPAN> lTimeMode, <SPAN CLASS="KEYWORD">long</SPAN> lResolution;
+	<SPAN CLASS="RED">MIDIClock_GetTimeBase (pMIDIClock, &amp;lTimeMode, &amp;lResolution);</SPAN>
+	<SPAN CLASS="KEYWORD">long</SPAN> lTempo = <SPAN CLASS="RED">MIDIClock_GetTempo (pMIDIClock);</SPAN>
+	<SPAN CLASS="KEYWORD">long</SPAN> lMillisec = <SPAN CLASS="RED">MIDIClock_GetMillisec (pMIDIClock);</SPAN>
+	<SPAN CLASS="KEYWORD">long</SPAN> lTickCount = <SPAN CLASS="RED">MIDIClock_GetTickCount (pMIDIClock);</SPAN>
+	...
+</PRE>
+
+<P></P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIClock_GetFunctionTable">▼Table2-5.MIDIClock_Get系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR CLASS="TITLE">
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIClock_GetTimeBase"><SPAN CLASS="KEYWORD">long</SPAN> MIDIClock_GetTimeBase <BR>(MIDIClock* pMIDIClock, <SPAN CLASS="KEYWORD">long</SPAN>* pTimeMode, <SPAN CLASS="KEYWORD">long</SPAN>* pResolution);</A> </TD>
+  <TD>pMIDIClock:MIDIクロックへのポインタ</TD>
+  <TD>正常終了:1<BR>異常終了:0</TD>
+  <TD>MIDIクロックの現在のタイムモード(<A HREF="#MIDIClock_FieldTable">m_lTimeModeの値</A>)と分解能(<A HREF="#MIDIClock_FieldTable">m_lResolutionの値</A>)を引数で指定されたlong型バッファに取得する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIClock_GetTempo"><SPAN CLASS="KEYWORD">long</SPAN> MIDIClock_GetTempo <BR>(MIDIClock* pMIDIClock);</A> </TD>
+  <TD>pMIDIClock:MIDIクロックへのポインタ</TD>
+  <TD>現在のMIDIテンポ[μ秒／4分音符]</TD>
+  <TD>MIDIクロックの現在のMIDIテンポを取得する。同期モードがスレーブモードの場合、戻り値は未定義である。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIClock_GetSpeed"><SPAN CLASS="KEYWORD">long</SPAN> MIDIClock_GetSpeed <BR>(MIDIClock* pMIDIClock);</A> </TD>
+  <TD>pMIDIClock:MIDIクロックへのポインタ</TD>
+  <TD>現在のスピード[×0.01％]</TD>
+  <TD>高度な関数である。MIDIクロックの現在のスピードを取得する。標準ならば10000を、倍速ならば20000を返す。同期モードがスレーブモードの場合、戻り値は未定義である。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIClock_GetMIDIInSyncMode"><SPAN CLASS="KEYWORD">long</SPAN> MIDIClock_GetMIDIInSyncMode <BR>(MIDIClock* pMIDIClock);</A> </TD>
+  <TD>pMIDIClock:MIDIクロックへのポインタ</TD>
+  <TD>現在のMIDI入力同期モード</TD>
+  <TD>高度な関数である。MIDIクロックの現在のMIDI入力同期モードを取得する。マスターならばMIDICLOCK_MASTER(0)を、MIDIタイミングクロックによるスレーブならばMIDICLOCK_SLAVEMIDITIMINGCLOCK(1)を、SMPTE/MTCによるスレーブならばMIDICLOCK_SLAVESMPTEMTC(2)を返す。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIClock_GetMillisec"><SPAN CLASS="KEYWORD">long</SPAN> MIDIClock_GetMillisec <BR>(MIDIClock* pMIDIClock);</A> </TD>
+  <TD>pMIDIClock:MIDIクロックへのポインタ</TD>
+  <TD>経過時刻[ミリ秒]</TD>
+  <TD>MIDIクロックの現在の経過時刻をミリ秒単位で取得する。MIDI入力同期モードがマスターの場合、戻り値は内蔵クロックが計測した値である。MIDI入力同期モードがMIDIタイミングクロックによるスレーブの場合、戻り値は内蔵クロックが計測した値であるが、この値は参考のために計測しているだけなので、この値を使用するべきではない。SMPTE/MTCによるスレーブの場合、この値は外部のSMPTE/MTCによって決められた値となる。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIClock_GetTickCount"><SPAN CLASS="KEYWORD">long</SPAN> MIDIClock_GetTickCount <BR>(MIDIClock* pMIDIClock);</A> </TD>
+  <TD>pMIDIClock:MIDIクロックへのポインタ</TD>
+  <TD>経過ティック数[tick]</TD>
+  <TD>MIDIクロックの現在の経過ティック数[tick]を取得する。MIDI入力同期モードがマスターの場合、戻り値は内蔵のティックジェネレーターで計算された値である。MIDI入力同期モードがMIDIタイミングクロックによるスレーブの場合、戻り値はMIDIタイミングクロックの認識回数から計算された値である。MIDI入力同期モードがSMPTE/MTCによるスレーブの場合、この値は無意味である。</TD>
+ </TR>
+</TABLE>
+
+
+
+
+<H3><A NAME="MIDIClock_SetFunction">2-6.MIDIクロックの情報設定</A></H3>
+
+<P>　いったん構築したMIDIクロックのプロパティは、Set系関数を使ってその情報を設定しなおすことができる。複数の項目を同時に設定したい場合は、設定タイミングがずれるのを防ぐため、下の例のようにMIDIクロックをいったん停止してから設定するべきである。マスターモードにおいては、<A HREF="#MIDIClock_SetTempo">MIDIClock_SetTempo</A>は、テンポをリアルタイムで変更するのにかなり頻繁に使われる関数であろう。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIClock_SetFunctionList">▼List2-6.MIDIClock_Set系関数の使い方</A></DIV>
+<PRE>
+	...
+	<SPAN CLASS="COMMENT">/* MIDIクロックの停止 */</SPAN>
+	MIDIClock_Stop (pMIDIClock);
+	<SPAN CLASS="COMMENT">/* MIDIクロックの各種情報設定 */</SPAN>
+	<SPAN CLASS="RED">MIDIClock_SetTimeBase (pMIDIClock, MIDICLOCK_TPQNBASE, 120);</SPAN>
+	<SPAN CLASS="RED">MIDIClock_SetTempo (pMIDIClock, 100);</SPAN>
+	<SPAN CLASS="RED">MIDIClock_SetMillisec (pMIDIClock, 3000);</SPAN>
+	<SPAN CLASS="RED">MIDIClock_SetTickCount (pMIDIClock, 0);</SPAN>
+	<SPAN CLASS="COMMENT">/* MIDIクロックのスタート */</SPAN>
+	MIDIClock_Start (pMIDIClock)
+	...
+</PRE>
+
+<P></P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIClock_SetFunctionTable">▼Table2-6.MIDIClock_Set系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR CLASS="TITLE">
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIClock_SetTimeBase"><SPAN CLASS="KEYWORD">long</SPAN> MIDIClock_SetTimeBase <BR>(MIDIClock* pMIDIClock, <SPAN CLASS="KEYWORD">long</SPAN> lTimeMode, <SPAN CLASS="KEYWORD">long</SPAN> lResolution);</A> </TD>
+  <TD>pMIDIClock:MIDIクロックへのポインタ<BR>lTimeMode:タイムモード<BR>lResolution:分解能</TD>
+  <TD>正常終了:0以外<BR>異常終了:0</TD>
+  <TD>MIDIクロックの現在のタイムモードと分解能[ティック/4分音符]又は[ティック/1フレーム]を設定する。この関数は、MIDIクロックの停止中に使用することが望ましい。lTimeModeに指定できるのは、MIDICLOCK_TPQNBASE(0)、MIDICLOCK_SMPTE24BASE(24), MIDICLOCK_SMPTE25BASE, MIDICLOCK_SMPTE29BASE(29), MIDICLOCK_SMPTE30BASE(30)のいずれかである。MIDIデータの演奏又は録音をする場合、lTimeModeとlResolutionの値はそのMIDIデータのタイムベースに合わせること。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIClock_SetTempo"><SPAN CLASS="KEYWORD">long</SPAN> MIDIClock_SetTempo <BR>(MIDIClock* pMIDIClock, <SPAN CLASS="KEYWORD">long</SPAN> lTempo);</A> </TD>
+  <TD>pMIDIClock:MIDIクロックへのポインタ<BR>lTempo:MIDIテンポ[μ秒／4分音符]</TD>
+  <TD>正常終了:0以外<BR>異常終了:0</TD>
+  <TD>MIDIクロックの現在のMIDIテンポを設定する。この関数はいつでも使えるため、リアルタイムでのテンポ変更に便利である。lTempoの値は1～60000000とする。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIClock_SetSpeed"><SPAN CLASS="KEYWORD">long</SPAN> MIDIClock_SetSpeed <BR>(MIDIClock* pMIDIClock, <SPAN CLASS="KEYWORD">long</SPAN> lSpeed);</A> </TD>
+  <TD>pMIDIClock:MIDIクロックへのポインタ<BR>lSpeed:スピード[×0.01％]</TD>
+  <TD>正常終了:0以外<BR>異常終了:0</TD>
+  <TD>高度な関数である。MIDIクロックの現在のスピードを設定する。この関数はいつでも使えるため、リアルタイムでのスピード変更に便利である。lSpeedの値はMIDICLOCK_MINSPEED～MIDICLOCK_MAXSPEEDとする。デフォルトの値は10000である。例えば、20000を設定すると倍速になる。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIClock_SetMIDIInSyncMode"><SPAN CLASS="KEYWORD">long</SPAN> MIDIClock_SetMIDIInSyncMode <BR>(MIDIClock* pMIDIClock, <SPAN CLASS="KEYWORD">long</SPAN> lMIDIInSyncMode);</A> </TD>
+  <TD>pMIDIClock:MIDIクロックへのポインタ<BR>lMIDIInSyncMode:MIDI入力同期モード</TD>
+  <TD>正常終了:0以外<BR>異常終了:0</TD>
+  <TD>高度な関数である。MIDIクロックのMIDI入力同期モードを設定する。lMIDIInSyncModeは、MIDICLOCK_MASTER(0), MIDICLOCK_SLAVEMIDITIMINGCLOCK(1), MIDICLOCK_SLAVESMPTEMTC(2)のいずれかでなければならない。それぞれ、マスター、MIDIタイミングクロックに追従、SMPTE/MTCに追従を意味する。デフォルトではマスターである。スレーブに設定した場合は、自分自身ではティックカウント及びミリ秒は進行せず、<A HREF="#MIDIClock_PutMIDIMessage">MIDIClock_PutMIDIMessage</A>でMIDIタイミングクロック(0xF8)又はMIDIタイムコードクォーターフレーム(0xF1)を与えることにより、ティックカウント及びミリ秒が進行する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIClock_SetMillisec"><SPAN CLASS="KEYWORD">long</SPAN> MIDIClock_SetMillisec <BR>(MIDIClock* pMIDIClock, <SPAN CLASS="KEYWORD">long</SPAN> lMillisec);</A> </TD>
+  <TD>pMIDIClock:MIDIクロックへのポインタ<BR>lMillisec:経過時刻[ミリ秒]</TD>
+  <TD>正常終了:0以外<BR>異常終了:0</TD>
+  <TD>MIDIクロックの現在の経過時刻をミリ秒単位で強制的に設定する。この関数は、MIDIクロックの停止中に使用することが望ましい。この関数はMIDIデータを途中から再生する場合などによく使う。その場合、MIDIClock_SetTickCountを併用し、ミリ秒とティックカウントの両方を正しく設定する必要がある。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIClock_SetTickCount"><SPAN CLASS="KEYWORD">long</SPAN> MIDIClock_SetTickCount <BR>(MIDIClock* pMIDIClock, <SPAN CLASS="KEYWORD">long</SPAN> lTickCount);</A> </TD>
+  <TD>pMIDIClock:MIDIクロックへのポインタ<BR>lTickCount:経過ティック数[tick]</TD>
+  <TD>正常終了:0以外<BR>異常終了:0</TD>
+  <TD>MIDIクロックの現在の経過ティック数を強制的に設定する。この関数は、MIDIクロックの停止中に使用することが望ましい。この関数はMIDIデータを途中から再生する場合などによく使う。その場合、MIDIClock_SetMillisecを併用し、ミリ秒とティックカウントの両方を正しく設定する必要がある。</TD>
+ </TR>
+</TABLE>
+
+
+<H3><A NAME="MIDIClock_OtherFunction">2-7.MIDIクロックにMIDIメッセージを認識させる</A></H3>
+
+<P>　MIDIクロックは、MIDIメッセージを認識することができる。MIDIクロックにMIDIメッセージを認識させることにより、現在時刻を動かしたり、スタート・コンティニュー・ストップなどの制御を行うことができる。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIClock_PutMIDIMessageTable">▼Table2-6.MIDIClock_PutMIDIMessage系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR CLASS="TITLE">
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIClock_PutMIDIMessage"><SPAN CLASS="KEYWORD">long</SPAN> MIDIClock_PutMIDIMessage <BR>(MIDIClock* pMIDIClock, <SPAN CLASS="KEYWORD">unsigned char</SPAN>* pMIDIMessage, <SPAN CLASS="KEYWORD">long</SPAN> lLen);</A> </TD>
+  <TD>pMIDIClock:MIDIクロックへのポインタ<BR>pMIDIMessage:MIDIメッセージへのポインタ<BR>lLen:MIDIメッセージの長さ[バイト]</TD>
+  <TD>正常終了:0以外<BR>異常終了(認識対象外を含む):0</TD>
+  <TD>MIDIクロックにMIDIメッセージを認識させる。この関数は、MIDI入力同期モードがスレーブモードの場合において、MIDIタイミングクロック(0xF8)やMIDIタイムコードクォーターフレーム(0xF1...)を認識させるのに使う。この関数を断続的に使うことによって、スレーブモードのMIDIクロックを動かすことができる。また、MIDIクロックはMIDIマシンコントロール(MMC)も認識する。具体的には、スタート(0xFA)・コンティニュー(0xFB)・ストップ(0xFC)が認識できる。MIDIクロックにとって無意味なMIDIメッセージ(ノートオンやコントローラーなど)を指定した場合、何も起こらない。すなわち、MIDI入力から受信したメッセージを、この関数を使ってそのままMIDIクロックに渡してやればよい。それぞれの具体的なMIDIメッセージは、<A HREF="#APPENDIX_C">付録C　MIDIメッセージ早見表</A>を参考にすること。</TD>
+ </TR>
+</TABLE>
+
+
+<P>　次の例はSMPTE/MTCをシステムエクスクルーシヴメッセージにより認識させる。これは、MIDI入力同期モードがSMPTE/MTCによるスレーブの場合で、かつ動作中のみ有効である。これを認識したMIDIClockは、自身の時刻を指定した時刻に一致するミリ秒値(この例では1時間12分40秒500ミリ秒)に設定する。</P>
+<DIV CLASS="TITLE"><A NAME="MIDIClock_PutMIDIMessageList">▼List2-7-1.MIDIClock_PutMIDIMessage関数の使用例(SMPTE/MTCの認識)</A></DIV>
+<PRE>
+	...
+	<SPAN CLASS="KEYWORD">unsigned char</SPAN> cMIDIMessage[10] = {0xF0, 0x7F, 0x7F, 0x01, 0x01, (0x03 &lt;&lt; 5) + 1, 12, 40, 15, 0xF7};
+	<SPAN CLASS="RED">MIDIClock_PutMIDIMessage (pMIDIClock, cMIDIMessage, 10);</SPAN>
+	...
+</PRE>
+
+<P>　最初の5バイトは、{0xF0, 0x7F, 0x7F, 0x01, 0x01}で固定である。6バイト目は、フレームレートと時カウントを表している。下位5ビットが時カウント(0～23)、その次の2ビットがフレームレート(0～3)、上位1ビットは常に0である。フレームレートは0が24fps、1が25fps、2が29.97fps、3が30fpsである。7バイト目は分カウント(0～59)を表す。8バイト目は秒カウント(0～59)を表す。9バイト目はフレームカウント(0～29)を表す。10バイト目は常に0xF7である。</P>
+
+<P>　次の例はSMPTE/MTCを8個のMIDIタイムコードクォーターフレームにより認識させる。これは、MIDI入力同期モードがSMPTE/MTCによるスレーブの場合で、かつ動作中のみ有効である。これを認識したMIDIClockは、自身の時刻を指定した時刻に一致するミリ秒値(この例では1時間12分40秒500ミリ秒)に設定する。一般的に、MIDIタイムコードクォーターフレームは断続的に送受信するものである。</P>
+<DIV CLASS="TITLE"><A NAME="MIDIClock_PutMIDIMessageList">▼List2-7-2.MIDIClock_PutMIDIMessage関数の使用例(SMPTE/MTCの認識)</A></DIV>
+<PRE>
+	...
+	<SPAN CLASS="KEYWORD">unsigned char</SPAN> cMIDIMessage[2] = {0xF1, 0x00};
+	cMIDIMessage[1] = 0x00 | 15; <SPAN CLASS="COMMENT">/* フレームカウント数下4ビット */</SPAN>
+	<SPAN CLASS="RED">MIDIClock_PutMIDIMessage (pMIDIClock, cMIDIMessage, 2);</SPAN>
+	cMIDIMessage[1] = 0x10 | 0; <SPAN CLASS="COMMENT">/* フレームカウント上4ビット */</SPAN>
+	<SPAN CLASS="RED">MIDIClock_PutMIDIMessage (pMIDIClock, cMIDIMessage, 2);</SPAN>
+	cMIDIMessage[1] = 0x20 | 8; <SPAN CLASS="COMMENT">/* 秒カウント下4ビット */</SPAN>
+	<SPAN CLASS="RED">MIDIClock_PutMIDIMessage (pMIDIClock, cMIDIMessage, 2);</SPAN>
+	cMIDIMessage[1] = 0x30 | 2; <SPAN CLASS="COMMENT">/* 秒カウント上4ビット */</SPAN>
+	<SPAN CLASS="RED">MIDIClock_PutMIDIMessage (pMIDIClock, cMIDIMessage, 2);</SPAN>
+	cMIDIMessage[1] = 0x40 | 12; <SPAN CLASS="COMMENT">/* 分カウント下4ビット */</SPAN>
+	<SPAN CLASS="RED">MIDIClock_PutMIDIMessage (pMIDIClock, cMIDIMessage, 2);</SPAN>
+	cMIDIMessage[1] = 0x50 | 0; <SPAN CLASS="COMMENT">/* 分カウント上4ビット */</SPAN>
+	<SPAN CLASS="RED">MIDIClock_PutMIDIMessage (pMIDIClock, cMIDIMessage, 2);</SPAN>
+	cMIDIMessage[1] = 0x60 | 1; <SPAN CLASS="COMMENT">/* 時カウント下4ビット */</SPAN>
+	<SPAN CLASS="RED">MIDIClock_PutMIDIMessage (pMIDIClock, cMIDIMessage, 2);</SPAN>
+	cMIDIMessage[1] = 0x70 | (0x03 &lt;&lt; 1); <SPAN CLASS="COMMENT">/* 時カウント上1ビット及びフレームレート */</SPAN>
+	<SPAN CLASS="RED">MIDIClock_PutMIDIMessage (pMIDIClock, cMIDIMessage, 2);</SPAN>
+	...
+</PRE>
+
+<P>　MIDIタイムコードクォーターフレームは2バイトのMIDIメッセージであり、1バイト目は常に0xF1である。2バイト目は上位4ビットの値によって下位4ビットの意味が次のように異なる。</P>
+<DIV>・上位4ビットが0のとき、下位4ビットはフレームカウント(0～29)の下4ビットを表す。</DIV>
+<DIV>・上位4ビットが1のとき、下位4ビットはフレームカウント(0～29)の上4ビットを表す。</DIV>
+<DIV>・上位4ビットが2のとき、下位4ビットは秒カウント(0～59)の下4ビットを表す。</DIV>
+<DIV>・上位4ビットが3のとき、下位4ビットは秒カウント(0～59)の上4ビットを表す。</DIV>
+<DIV>・上位4ビットが4のとき、下位4ビットは分カウント(0～59)の下4ビットを表す。</DIV>
+<DIV>・上位4ビットが5のとき、下位4ビットは分カウント(0～59)の上4ビットを表す。</DIV>
+<DIV>・上位4ビットが6のとき、下位4ビットは時カウント(0～23)の下4ビットを表す。</DIV>
+<DIV>・上位4ビットが7のとき、下位1ビットは時カウント(0～23)の上1ビットを表し、その次の2ビットは、フレームレート(0～3)を表す。フレームレートは0が24fps、1が25fps、2が29.97fps、3が30fpsである。その次の1ビットは常に0である。</DIV>
+<P></P>
+
+
+<P>　次の例はMIDIタイミングクロック(0xF8)を認識させる。これは、MIDI入力同期モードがMIDIタイミングクロックによるスレーブの場合でかつ動作中のみ有効である。これを認識したMIDIClockは、4分音符の長さの1/24に相当するティック数だけティック値を進める(例えば分解能が120の場合、5ティック進む)。また、増加ミリ秒を増加ティック数と現在のテンポと分解能から計算し、経過時刻[ミリ秒]を進める。通常の場合、MIDIタイミングクロックは断続的に送受信するものである。MIDIタイミングクロックは常に1バイトのMIDIメッセージで、内容は常に0xF8である。</P>
+<DIV CLASS="TITLE"><A NAME="MIDIClock_PutMIDIMessageList">▼List2-7-3.MIDIClock_PutMIDIMessage関数の使用例(MIDIタイミングクロックの認識)</A></DIV>
+<PRE>
+	...
+	<SPAN CLASS="KEYWORD">unsigned char</SPAN> cMIDIMessage[1] = {0xF8};
+	<SPAN CLASS="RED">MIDIClock_PutMIDIMessage (pMIDIClock, cMIDIMessage, 1);</SPAN>
+	...
+</PRE>
+
+<P>　次の例はMIDIマシンコントロール(スタート)を認識させる。これを認識したMIDIClockは、経過時刻[ミリ秒]と経過ティックカウント[tick]を0にリセットしてからスタートする。これは、MIDI入力同期モードに関係なく使える。</P>
+<DIV CLASS="TITLE"><A NAME="MIDIClock_PutMIDIMessageList">▼List2-7-4.MIDIClock_PutMIDIMessage関数の使用例(MIDIマシンコントロールの認識)</A></DIV>
+<PRE>
+	...
+	<SPAN CLASS="KEYWORD">unsigned char</SPAN> cMIDIMessage[1] = {0xFA};
+	<SPAN CLASS="RED">MIDIClock_PutMIDIMessage (pMIDIClock, cMIDIMessage, 1);</SPAN>
+	...
+</PRE>
+
+<P>　次の例はMIDIマシンコントロール(コンティニュー)を認識させる。これを認識したMIDIClockは、現在位置からスタートする。これは、MIDI入力同期モードに関係なく使える。</P>
+<DIV CLASS="TITLE"><A NAME="MIDIClock_PutMIDIMessageList">▼List2-7-5.MIDIClock_PutMIDIMessage関数の使用例(MIDIマシンコントロールの認識)</A></DIV>
+<PRE>
+	...
+	<SPAN CLASS="KEYWORD">unsigned char</SPAN> cMIDIMessage[1] = {0xFB};
+	<SPAN CLASS="RED">MIDIClock_PutMIDIMessage (pMIDIClock, cMIDIMessage, 1);</SPAN>
+	...
+</PRE>
+
+<P>　次の例はMIDIマシンコントロール(ストップ)を認識させる。これを認識したMIDIClockは停止する。現在時刻は変更しない。これは、MIDI入力同期モードに関係なく使える。</P>
+<DIV CLASS="TITLE"><A NAME="MIDIClock_PutMIDIMesssageList">▼List2-7-6.MIDIClock_PutMIDIMessage関数の使用例(MIDIマシンコントロールの認識)</A></DIV>
+<PRE>
+	...
+	<SPAN CLASS="KEYWORD">unsigned char</SPAN> cMIDIMessage[1] = {0xFC};
+	<SPAN CLASS="RED">MIDIClock_PutMIDIMessage (pMIDIClock, cMIDIMessage, 1);</SPAN>
+	...
+</PRE>
+
+
+
+
+<H2><A NAME="APPENDIX_A">付録A　よくある質問(F.A.Q)</A></H2>
+
+<H4>Q.Microsoft Visual C++から使うにはどうしたらよいですか。</H4>
+<P>　C/C++では直接MIDIClock.cをコンパイルして使うことができます。しかしここでは、コンパイル済みのMIDIClock.dllにリンクして使う方法を説明します。DLLの関数を使う方法は、普通のWindows API関数を使う方法に似ていますが、MIDIClockライブラリは追加されたAPI関数となるため、いくつかの追加作業が必要になります。</P>
+
+<DIV>(1)　<A HREF="../MIDIClock.h">MIDIClock.h</A>をVisualC++をインストールしたフォルダ内のincludeフォルダ内に、<A HREF="../Release/MIDIClock.lib">MIDIClock.lib</A>をVisualC++をインストールしたフォルダ内のlibフォルダ内に、<A HREF="../Release/MIDIClock.dll">MIDIClock.dll</A>をc:\windows\System32\内(32bitOSの場合)、c:\windows\SysWOW64\内(64bitOSの場合)にそれぞれ保存します。</DIV>
+<DIV>(2)　VisualC++でプロジェクトワークスペースを構築します。</DIV>
+<DIV>(3)　「ビルド(B)」-「(プロジェクト名)のプロパティ」から「(プロジェクト名)のプロパティページ」というダイアログを表示させ、その中の「構成とプロパティ」の「リンカ」の「入力」の中に、「追加の依存ファイル」という項目があるので、<STRONG>"MIDIClock.lib"</STRONG>を追加します。これを忘れるとリンク時にエラーになります。デバッグ版とリリース版がある場合は両方とも追加するのを忘れないようにしてください。</DIV>
+<DIV>(4)　ソースを記述します。なお、MIDIClockライブラリを使うソース(Cファイル)の冒頭に、<STRONG>#include &lt;MIDIClock.h&gt;</STRONG>を記述する必要があります。以下に簡単な例を示します。</DIV>
+<PRE>
+<SPAN CLASS="COMMENT">/* 1秒間だけ経過時刻[ミリ秒]と経過ティック数[tick]を測定 */</SPAN>
+<SPAN CLASS="KEYWORD">#include</SPAN> &lt;stdio.h&gt;
+<SPAN CLASS="KEYWORD">#include</SPAN> &lt;MIDIClock.h&gt;
+<SPAN CLASS="KEYWORD">int</SPAN> main () {
+	<SPAN CLASS="KEYWORD">long</SPAN> lMillisec = 0;
+	<SPAN CLASS="KEYWORD">long</SPAN> lTickCount = 0;
+	<SPAN CLASS="RED">MIDIClock* pMIDIClock = MIDIClock_Create (MIDICLOCK_TPQNBASE, 120, 60000000/100);</SPAN>
+	<SPAN CLASS="RED">MIDIClock_Start (pMIDIClock);</SPAN>
+	<SPAN CLASS="KEYWORD">while</SPAN> (lMillisec &lt; 1000) {
+		lMillisec = <SPAN CLASS="RED">MIDIClock_GetMillisec (pMIDIClock);</SPAN>
+		lTickCount = <SPAN CLASS="RED">MIDIClock_GetTickCount (pMIDIClock);</SPAN>
+		printf (<SPAN CLASS="STRING">"%6d[ミリ秒]、%6d[tick]\n"</SPAN>, lMillisec, lTickCount);
+	}
+	<SPAN CLASS="RED">MIDIClock_Stop (pMIDIClock);</SPAN>
+	<SPAN CLASS="RED">MIDIClock_Delete (pMIDIClock);</SPAN>
+	pMIDIClock = NULL;
+	<SPAN CLASS="KEYWORD">return</SPAN> 1;
+}
+</PRE>
+<DIV>(5)　コンパイル・リンクをします。</DIV>
+
+
+<H4>Q.Microsoft Visual Basicから使うにはどうしたらよいですか。</H4>
+<P>　MIDIClockライブラリをVisual Basicから使うには、DLLの関数をWindows API関数のように呼び出します。DLLの関数を呼び出すには、Declare宣言を記述する必要がありますが、既に<A HREF="../MIDIClock.bas">MIDIClock.bas</A>(VB4,5,6用)が用意してあります。</P>
+<DIV>(1)　<A HREF="../MIDIClock.bas">MIDIClock.bas</A>を任意のフォルダに、<A HREF="../Release/MIDIClock.dll">MIDIClock.dll</A>をc:\windows\System32\内(32bitOSの場合)、c:\windows\SysWOW64\内(64bitOSの場合)にそれぞれ保存します。</DIV>
+<DIV>(2)　Visual Basicでプロジェクトワークスペースを構築します。</DIV>
+<DIV>(3)　Visual Basicの「ファイル」の「インポート」より、先ほど保存した<STRONG>"MIDIClock.bas"</STRONG>をインポートします。</DIV>
+<DIV>(4)　フォーム上にCommand1とList1を配置します。</DIV>
+<DIV>(5)　ソースを記述します。以下に簡単な例を示します</DIV>
+<PRE>
+<SPAN CLASS="COMMENT">' 1秒間だけ経過時刻[ミリ秒]と経過ティック数[tick]を測定 </SPAN>
+<SPAN CLASS="KEYWORD">Option Explicit</SPAN>
+<SPAN CLASS="KEYWORD">Private Sub</SPAN> Command1_Click()
+    <SPAN CLASS="KEYWORD">Dim</SPAN> pMIDIClock <SPAN CLASS="KEYWORD">As Long</SPAN>
+    <SPAN CLASS="KEYWORD">Dim</SPAN> lMillisec <SPAN CLASS="KEYWORD">As Long</SPAN>
+    <SPAN CLASS="KEYWORD">Dim</SPAN> lTickCount <SPAN CLASS="KEYWORD">As Long</SPAN>
+    List1.Clear
+    <SPAN CLASS="RED">pMIDIClock = MIDIClock_Create(MIDICLOCK_TPQNBASE, 120, 60000000 / 100)</SPAN>
+    <SPAN CLASS="RED">MIDIClock_Start (pMIDIClock)</SPAN>
+    <SPAN CLASS="KEYWORD">Do While</SPAN> (lMillisec &lt;= 1000)
+        lMillisec = <SPAN CLASS="RED">MIDIClock_GetMillisec(pMIDIClock)</SPAN>
+        lTickCount = <SPAN CLASS="RED">MIDIClock_GetTickCount(pMIDIClock)</SPAN>
+        List1.AddItem (lMillisec & "[ミリ秒]" & " : " & lTickCount & "[tick]")
+    <SPAN CLASS="KEYWORD">Loop</SPAN>
+    <SPAN CLASS="RED">MIDIClock_Stop (pMIDIClock)</SPAN>
+    <SPAN CLASS="RED">MIDIClock_Delete (pMIDIClock)</SPAN>
+    pMIDIClock = 0
+<SPAN CLASS="KEYWORD">End Sub</SPAN>
+</PRE>
+<DIV>(6)　コンパイル・リンクをします。</DIV>
+
+<H4>Q.C++専用のライブラリはないのですか？</H4>
+<P>　C++ではC言語のライブラリを使うことができますので、今のところ用意していません。しかし、オブジェクト指向のC++でCの関数を呼び出すことは、デザイン上奇妙であります。誰かがいつか、C++用のMIDIClockライブラリを作ってくださることを望みます</P>
+
+<H4>Q.Java用のライブラリはないのですか？</H4>
+<P>　はい、ございません。JavaはOSに依存しない利点を生かして普及していますが、大変遅くて重いという弱点をもちます。一方、MIDIクロックを使うアプリケーションは、高いリアルタイム性、レスポンスの速さなどが何よりも求められます。筆者は、Javaはこのような要求に耐えられないものと考えています。ゆえに、Java用のライブラリはあえて製作していないのです。</P>
+
+<H4>Q.Linux用のダイナミックリンクライブラリはないのですか？</H4>
+<P>はい、今のところございません。このソースを元に、誰か作ってくださることを望みます。</P>
+
+<H4>Q.Windows:MIDIClock.dllが見つかりません。</H4>
+<P>　Windowsでは、デフォルトの設定ではダイナミックリンクライブラリ(*.dll)を表示しないようになっています。dllファイルを表示するには、エクスプローラー又はマイコンピューターの「ツール」メニューの「フォルダオプション」を選び、「表示」タブにある「すべてのファイルとフォルダを表示する」をONにします。これをしていない場合、検索をかけても表示されないことがありますのでご注意ください。</P>
+<P>　また、アプリケーションの実行開始時にDLLが見つからないというエラーが起こる場合は、dllの設置フォルダを間違えていないかご確認ください。Windows95/98/MEは次の順序でDLLを探索します。</P>
+<DIV>(1) 実行ファイル(*.exe)を含むディレクトリ</DIV>
+<DIV>(2) カレントディレクトリ</DIV>
+<DIV>(3) Windowsの32ビットシステムディレクトリ(通常はc\windows\system32)</DIV>
+<DIV>(4) Windowsの16ビットシステムディレクトリ(通常はc\windows\system)</DIV>
+<DIV>(5) Windowsディレクトリ(通常はc\windows)</DIV>
+<DIV>(6) 環境変数PATHに設定されているディレクトリ</DIV>
+<P>　また、Windows2000/XPでは次の順序でDLLを検索します。</P>
+<DIV>(1) 実行ファイル(*.exe)を含むディレクトリ</DIV>
+<DIV>(2) Windowsの32ビットシステムディレクトリ(通常はc\windows\system32)</DIV>
+<DIV>(3) Windowsの16ビットシステムディレクトリ(通常はc\windows\system)</DIV>
+<DIV>(4) Windowsディレクトリ(通常はc\windows)</DIV>
+<DIV>(5) カレントディレクトリ</DIV>
+<DIV>(6) 環境変数PATHに設定されているディレクトリ</DIV>
+<P>　2つ以上のヴァージョンを持っていると、誤って古い方のDLLを読み込む恐れがあります。また、共用ディレクトリに置く場合、古いDLLを新しいDLLに上書きすると、古いDLLで動いていたアプリケーションが動かなくなることがあります。このため、デバッグなど特殊な場合を除き、DLLは実行ファイル(*.exe)を含むディレクトリに置く方が無難です。</P>
+
+<H4>Q.このライブラリを使ったソフトウェアを、このライブラリを含んだ形で転載・配布してもよろしいですか？</H4>
+<P>　はい、よろしいです。このライブラリは<A HREF="../license.txt">GNU 劣等一般公衆利用許諾契約書(LGPL)</A>に基づいて公開されています。あなたは次の２つの方法にて、あなたのソフトウェアを転載・配布することができます。使用目的や配布価格による制限はございません。作者に許可をとる必要もありません。</P>
+
+<H5>a) ダイナミックリンクをする場合(DLLのみを使用する場合)</H5>
+<P>　あなたのソフトウェアは、どのようなライセンスでも転載・配布ことができます。例えば、ソースを添付するかしないか、コピーや再配布を許可するかしないは、あなたが自由に決めることができます。あなたがしなければならないことは、作品はMIDIClockライブラリを使用していること、及びMIDIClockライブラリの著作者はくず／おーぷんMIDIぷろじぇくとであることを明示しておくことです。</P>
+
+<H5>b) ソースをプログラムに埋め込む場合、又はスタティックリンクをする場合</H5>
+<P>　あなたのソフトウェアは、LGPLかGPLの下で転載・配布することができます。すなわち、少なくともソースを公開し、コピーや再配布をすることをユーザーに許可しなければなりません。(ソースは同梱されている必要はなく、ネットワーク上からダウンロードできるようにしていても構いません。) あなたがしなければならないことは、あなたのソフトウェア全体がLGPLかGPLの下で配布されていること、作品はMIDIClockライブラリを使用していること、及びMIDIClockライブラリの著作者はくず／おーぷんMIDIぷろじぇくとであることを明示しておくことです。この方法では、より積極的にソフトウェアを普及させることができるでしょう。もしあなたがソースを公開したくなかったり、誰かに無断転載されることを望まないのであれば、a)の方法を使うことをお勧めします。</P>
+
+<H4>Q.このライブラリのサポートはしていないのですか？</H4>
+<P>　このライブラリのサポートは、<A HREF="http://openmidiproject.sourceforge.jp/index.html">おーぷんMIDIぷろじぇくと</A>の掲示板にてしております。ただし、必ずしも返答があることを保証するものではありません。また、「まじめなソフト開発を始めるので、有料でもいいからきちんとサポートしてほしい」と言われましても、そもそも筆者は会社に行っていて音信不通なので、きちんとサポートをすることができません。どうしても連絡をとりたい場合は、<A HREF="mailto:ee65051@yahoo.co.jp">こちら</A>にメールをしてください。</P>
+
+<H2><A NAME="APPENDIX_B">付録B　キー・ナンバー対応表</A></H2>
+
+<P>ノートキー：ノートオンイベント・ノートオフイベント・キーアフタータッチの2バイト目(key)の値。チャンネル10以外(n!=9)の場合。</P>
+
+<P>ドラムキー：ノートオンイベント・ノートオフイベント・キーアフタータッチの2バイト目(key)の値。チャンネル10(n=9)の場合。ただし、音源によってはチャンネル10以外もドラムにできるものがある。</P>
+
+<P>コントロールチェンジ：コントロールチェンジの2バイト目(num)の値。</P>
+
+<P>プログラムチェンジ：プログラムチェンジの2バイト目(num)の値。</P>
+
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH>値</TH>
+  <TH>16進</TH>
+  <TH>ノートキー</TH>
+  <TH>ドラムキー</TH>
+  <TH>コントロールチェンジ</TH>
+  <TH>プログラムチェンジ</TH>
+ </TR>
+ <TR>
+  <TD>0</TD>
+  <TD>0x00</TD>
+  <TD>C0</TD>
+  <TD>-</TD>
+  <TD>Bank Select MSB</TD>
+  <TD>Acoustic Grand Piano</TD>
+ </TR>
+ <TR>
+  <TD>1</TD>
+  <TD>0x01</TD>
+  <TD>C#0=Db0</TD>
+  <TD>-</TD>
+  <TD>Modulation MSB</TD>
+  <TD>Bright Acoustic Piano</TD>
+ </TR>
+ <TR>
+  <TD>2</TD>
+  <TD>0x02</TD>
+  <TD>D0</TD>
+  <TD>-</TD>
+  <TD>Breath Controller MSB</TD>
+  <TD>Electric Grand Piano</TD>
+ </TR>
+ <TR>
+  <TD>3</TD>
+  <TD>0x03</TD>
+  <TD>D#0=Eb0</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Honky-tonk Piano</TD>
+ </TR>
+ <TR>
+  <TD>4</TD>
+  <TD>0x04</TD>
+  <TD>E0</TD>
+  <TD>-</TD>
+  <TD>Foot Controller MSB</TD>
+  <TD>Electric Piano 1</TD>
+ </TR>
+ <TR>
+  <TD>5</TD>
+  <TD>0x05</TD>
+  <TD>F0</TD>
+  <TD>-</TD>
+  <TD>Portamento Time MSB</TD>
+  <TD>Electric Piano 2</TD>
+ </TR>
+ <TR>
+  <TD>6</TD>
+  <TD>0x06</TD>
+  <TD>F#0=Gb0</TD>
+  <TD>-</TD>
+  <TD>Data Entry MSB</TD>
+  <TD>Harpsichord</TD>
+ </TR>
+ <TR>
+  <TD>7</TD>
+  <TD>0x07</TD>
+  <TD>G0</TD>
+  <TD>-</TD>
+  <TD>Channel Volume MSB</TD>
+  <TD>Clavi</TD>
+ </TR>
+ <TR>
+  <TD>8</TD>
+  <TD>0x08</TD>
+  <TD>G#0=Ab0</TD>
+  <TD>-</TD>
+  <TD>Balance MSB</TD>
+  <TD>Celesta</TD>
+ </TR>
+ <TR>
+  <TD>9</TD>
+  <TD>0x09</TD>
+  <TD>A0</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Glockenspiel</TD>
+ </TR>
+ <TR>
+  <TD>10</TD>
+  <TD>0x0A</TD>
+  <TD>A#0=Bb0</TD>
+  <TD>-</TD>
+  <TD>Pan MSB</TD>
+  <TD>Music Box</TD>
+ </TR>
+ <TR>
+  <TD>11</TD>
+  <TD>0x0B</TD>
+  <TD>B0</TD>
+  <TD>-</TD>
+  <TD>Expression MSB</TD>
+  <TD>Vibraphone</TD>
+ </TR>
+ <TR>
+  <TD>12</TD>
+  <TD>0x0C</TD>
+  <TD>C1</TD>
+  <TD>-</TD>
+  <TD>Effect Control 1 MSB</TD>
+  <TD>Marimba</TD>
+ </TR>
+ <TR>
+  <TD>13</TD>
+  <TD>0x0D</TD>
+  <TD>C#1=Db1</TD>
+  <TD>-</TD>
+  <TD>Effect Control 2 MSB</TD>
+  <TD>Xylophone</TD>
+ </TR>
+ <TR>
+  <TD>14</TD>
+  <TD>0x0E</TD>
+  <TD>D1</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Tubular Bells</TD>
+ </TR>
+ <TR>
+  <TD>15</TD>
+  <TD>0x0F</TD>
+  <TD>D#1=Eb1</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Dulcimer</TD>
+ </TR>
+ <TR>
+  <TD>16</TD>
+  <TD>0x10</TD>
+  <TD>E1</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Drawbar Organ</TD>
+ </TR>
+ <TR>
+  <TD>17</TD>
+  <TD>0x11</TD>
+  <TD>F1</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Percussive Organ</TD>
+ </TR>
+ <TR>
+  <TD>18</TD>
+  <TD>0x12</TD>
+  <TD>F#1=Gb1</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Rock Organ</TD>
+ </TR>
+ <TR>
+  <TD>19</TD>
+  <TD>0x13</TD>
+  <TD>G1</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Church Organ</TD>
+ </TR>
+ <TR>
+  <TD>20</TD>
+  <TD>0x14</TD>
+  <TD>G#1=Ab1</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Reed Organ</TD>
+ </TR>
+ <TR>
+  <TD>21</TD>
+  <TD>0x15</TD>
+  <TD>A1</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Accordion</TD>
+ </TR>
+ <TR>
+  <TD>22</TD>
+  <TD>0x16</TD>
+  <TD>A#1=Bb1</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Harmonica</TD>
+ </TR>
+ <TR>
+  <TD>23</TD>
+  <TD>0x17</TD>
+  <TD>B1</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Tango Accordion</TD>
+ </TR>
+ <TR>
+  <TD>24</TD>
+  <TD>0x18</TD>
+  <TD>C2</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Acoustic Guitar (nylon)</TD>
+ </TR>
+ <TR>
+  <TD>25</TD>
+  <TD>0x19</TD>
+  <TD>C#2=Db2</TD>
+  <TD>Snare Roll</TD>
+  <TD>-</TD>
+  <TD>Acoustic Guitar (steel)</TD>
+ </TR>
+ <TR>
+  <TD>26</TD>
+  <TD>0x1A</TD>
+  <TD>D2</TD>
+  <TD>Finger Snap</TD>
+  <TD>-</TD>
+  <TD>Electric Guitar (jazz)</TD>
+ </TR>
+ <TR>
+  <TD>27</TD>
+  <TD>0x1B</TD>
+  <TD>D#2=Eb2</TD>
+  <TD>High Q</TD>
+  <TD>-</TD>
+  <TD>Electric Guitar (clean)</TD>
+ </TR>
+ <TR>
+  <TD>28</TD>
+  <TD>0x1C</TD>
+  <TD>E2</TD>
+  <TD>Slap</TD>
+  <TD>-</TD>
+  <TD>Electric Guitar (muted)</TD>
+ </TR>
+ <TR>
+  <TD>29</TD>
+  <TD>0x1D</TD>
+  <TD>F2</TD>
+  <TD>Scratch Push</TD>
+  <TD>-</TD>
+  <TD>Overdriven Guitar</TD>
+ </TR>
+ <TR>
+  <TD>30</TD>
+  <TD>0x1E</TD>
+  <TD>F#2=Gb2</TD>
+  <TD>Scratch Pull</TD>
+  <TD>-</TD>
+  <TD>Distortion Guitar</TD>
+ </TR>
+ <TR>
+  <TD>31</TD>
+  <TD>0x1F</TD>
+  <TD>G2</TD>
+  <TD>Sticks</TD>
+  <TD>-</TD>
+  <TD>Guitar Harmonics</TD>
+ </TR>
+ <TR>
+  <TD>32</TD>
+  <TD>0x20</TD>
+  <TD>G#2=Ab2</TD>
+  <TD>Square Click</TD>
+  <TD>Bank Select LSB</TD>
+  <TD>Acoustic Bass</TD>
+ </TR>
+ <TR>
+  <TD>33</TD>
+  <TD>0x21</TD>
+  <TD>A2</TD>
+  <TD>Metronome Click</TD>
+  <TD>Modulation LSB</TD>
+  <TD>Electric Bass (finger)</TD>
+ </TR>
+ <TR>
+  <TD>34</TD>
+  <TD>0x22</TD>
+  <TD>A#2=Bb2</TD>
+  <TD>Metronome Bell</TD>
+  <TD>Breath Controller LSB</TD>
+  <TD>Electric Bass (pick)</TD>
+ </TR>
+ <TR>
+  <TD>35</TD>
+  <TD>0x23</TD>
+  <TD>B2</TD>
+  <TD>Standard Kick 2</TD>
+  <TD>-</TD>
+  <TD>Fretless Bass</TD>
+ </TR>
+ <TR>
+  <TD>36</TD>
+  <TD>0x24</TD>
+  <TD>C3</TD>
+  <TD>Standard Kick 1</TD>
+  <TD>Foot Controller LSB</TD>
+  <TD>Slap Bass 1</TD>
+ </TR>
+ <TR>
+  <TD>37</TD>
+  <TD>0x25</TD>
+  <TD>C#3=Db3</TD>
+  <TD>Side Stick</TD>
+  <TD>Portamento Time LSB</TD>
+  <TD>Slap Bass 2</TD>
+ </TR>
+ <TR>
+  <TD>38</TD>
+  <TD>0x26</TD>
+  <TD>D3</TD>
+  <TD>Standard Snare 1</TD>
+  <TD>Data Entry LSB</TD>
+  <TD>Synth Bass 1</TD>
+ </TR>
+ <TR>
+  <TD>39</TD>
+  <TD>0x27</TD>
+  <TD>D#3=Eb3</TD>
+  <TD>Hand Clap</TD>
+  <TD>Channel Volume LSB</TD>
+  <TD>Synth Bass 2</TD>
+ </TR>
+ <TR>
+  <TD>40</TD>
+  <TD>0x28</TD>
+  <TD>E3</TD>
+  <TD>Standard Snare 2</TD>
+  <TD>Balance LSB</TD>
+  <TD>Violin</TD>
+ </TR>
+ <TR>
+  <TD>41</TD>
+  <TD>0x29</TD>
+  <TD>F3</TD>
+  <TD>Low Tom 2</TD>
+  <TD>-</TD>
+  <TD>Viola</TD>
+ </TR>
+ <TR>
+  <TD>42</TD>
+  <TD>0x2A</TD>
+  <TD>F#3=Gb3</TD>
+  <TD>Closed Hi-hat</TD>
+  <TD>Pan LSB</TD>
+  <TD>Cello</TD>
+ </TR>
+ <TR>
+  <TD>43</TD>
+  <TD>0x2B</TD>
+  <TD>G3</TD>
+  <TD>Low Tom 1</TD>
+  <TD>Expression LSB</TD>
+  <TD>Contrabass</TD>
+ </TR>
+ <TR>
+  <TD>44</TD>
+  <TD>0x2C</TD>
+  <TD>G#3=Ab3</TD>
+  <TD>Pedal Hi-hat</TD>
+  <TD>Effect Control 1 LSB</TD>
+  <TD>Tremolo Strings</TD>
+ </TR>
+ <TR>
+  <TD>45</TD>
+  <TD>0x2D</TD>
+  <TD>A3</TD>
+  <TD>Mid Tom 2</TD>
+  <TD>Effect Control 2 LSB</TD>
+  <TD>Pizzicato Strings</TD>
+ </TR>
+ <TR>
+  <TD>46</TD>
+  <TD>0x2E</TD>
+  <TD>A#3=Bb3</TD>
+  <TD>Open Hi-hat</TD>
+  <TD>-</TD>
+  <TD>Orchestral Harp</TD>
+ </TR>
+ <TR>
+  <TD>47</TD>
+  <TD>0x2F</TD>
+  <TD>B3</TD>
+  <TD>Mid Tom 1</TD>
+  <TD>-</TD>
+  <TD>Timpani</TD>
+ </TR>
+ <TR>
+  <TD>48</TD>
+  <TD>0x30</TD>
+  <TD>C4</TD>
+  <TD>High Tom 2</TD>
+  <TD>-</TD>
+  <TD>String Ensemble 1</TD>
+ </TR>
+ <TR>
+  <TD>49</TD>
+  <TD>0x31</TD>
+  <TD>C#4=Db4</TD>
+  <TD>Crash Cymbal 1</TD>
+  <TD>-</TD>
+  <TD>String Ensemble 2</TD>
+ </TR>
+ <TR>
+  <TD>50</TD>
+  <TD>0x32</TD>
+  <TD>D4</TD>
+  <TD>High Tom 1</TD>
+  <TD>-</TD>
+  <TD>SynthStrings 1</TD>
+ </TR>
+ <TR>
+  <TD>51</TD>
+  <TD>0x33</TD>
+  <TD>D#4=Eb4</TD>
+  <TD>Ride Cymbal 1</TD>
+  <TD>-</TD>
+  <TD>SynthStrings 2</TD>
+ </TR>
+ <TR>
+  <TD>52</TD>
+  <TD>0x34</TD>
+  <TD>E4</TD>
+  <TD>Chinese Cymbal</TD>
+  <TD>-</TD>
+  <TD>Choir Aahs</TD>
+ </TR>
+ <TR>
+  <TD>53</TD>
+  <TD>0x35</TD>
+  <TD>F4</TD>
+  <TD>Ride Bell</TD>
+  <TD>-</TD>
+  <TD>Voice Oohs</TD>
+ </TR>
+ <TR>
+  <TD>54</TD>
+  <TD>0x36</TD>
+  <TD>F#4=Gb4</TD>
+  <TD>Tambourine</TD>
+  <TD>-</TD>
+  <TD>Synth Vox</TD>
+ </TR>
+ <TR>
+  <TD>55</TD>
+  <TD>0x37</TD>
+  <TD>G4</TD>
+  <TD>Splash Cymbal</TD>
+  <TD>-</TD>
+  <TD>Orchestra Hit</TD>
+ </TR>
+ <TR>
+  <TD>56</TD>
+  <TD>0x38</TD>
+  <TD>G#4=Ab4</TD>
+  <TD>Cowbell</TD>
+  <TD>-</TD>
+  <TD>Trumpet</TD>
+ </TR>
+ <TR>
+  <TD>57</TD>
+  <TD>0x39</TD>
+  <TD>A4</TD>
+  <TD>Crash Cymbal 2</TD>
+  <TD>-</TD>
+  <TD>Trombone</TD>
+ </TR>
+ <TR>
+  <TD>58</TD>
+  <TD>0x3A</TD>
+  <TD>A#4=Bb4</TD>
+  <TD>Vibra-slap</TD>
+  <TD>-</TD>
+  <TD>Tuba</TD>
+ </TR>
+ <TR>
+  <TD>59</TD>
+  <TD>0x3B</TD>
+  <TD>B4</TD>
+  <TD>Ride Cymbal 2</TD>
+  <TD>-</TD>
+  <TD>Muted Trumpet</TD>
+ </TR>
+ <TR>
+  <TD>60</TD>
+  <TD>0x3C</TD>
+  <TD>C5</TD>
+  <TD>High Bongo</TD>
+  <TD>-</TD>
+  <TD>French Horn</TD>
+ </TR>
+ <TR>
+  <TD>61</TD>
+  <TD>0x3D</TD>
+  <TD>C#5=Db5</TD>
+  <TD>Low Bongo</TD>
+  <TD>-</TD>
+  <TD>Brass Section</TD>
+ </TR>
+ <TR>
+  <TD>62</TD>
+  <TD>0x3E</TD>
+  <TD>D5</TD>
+  <TD>Mute High Conga</TD>
+  <TD>-</TD>
+  <TD>Synth Brass 1</TD>
+ </TR>
+ <TR>
+  <TD>63</TD>
+  <TD>0x3F</TD>
+  <TD>D#5=Eb5</TD>
+  <TD>Open High Conga</TD>
+  <TD>-</TD>
+  <TD>Synth Brass 2</TD>
+ </TR>
+ <TR>
+  <TD>64</TD>
+  <TD>0x40</TD>
+  <TD>E5</TD>
+  <TD>Low Conga</TD>
+  <TD>Hold Pedal 1</TD>
+  <TD>Soprano Sax</TD>
+ </TR>
+ <TR>
+  <TD>65</TD>
+  <TD>0x41</TD>
+  <TD>F5</TD>
+  <TD>High Timbale</TD>
+  <TD>Portament Pedal</TD>
+  <TD>Alto Sax</TD>
+ </TR>
+ <TR>
+  <TD>66</TD>
+  <TD>0x42</TD>
+  <TD>F#5=Gb5</TD>
+  <TD>Low Timbale</TD>
+  <TD>Sostenuto Pedal</TD>
+  <TD>Tenor Sax</TD>
+ </TR>
+ <TR>
+  <TD>67</TD>
+  <TD>0x43</TD>
+  <TD>G5</TD>
+  <TD>High Agogo</TD>
+  <TD>Soft Pedal</TD>
+  <TD>Baritone Sax</TD>
+ </TR>
+ <TR>
+  <TD>68</TD>
+  <TD>0x44</TD>
+  <TD>G#5=Ab5</TD>
+  <TD>Low Agogo</TD>
+  <TD>Legato Pedal</TD>
+  <TD>Oboe</TD>
+ </TR>
+ <TR>
+  <TD>69</TD>
+  <TD>0x45</TD>
+  <TD>A5</TD>
+  <TD>Cabasa</TD>
+  <TD>Hold Pedal 2</TD>
+  <TD>English Horn</TD>
+ </TR>
+ <TR>
+  <TD>70</TD>
+  <TD>0x46</TD>
+  <TD>A#5=Bb5</TD>
+  <TD>Maracas</TD>
+  <TD>Sound Variation</TD>
+  <TD>Bassoon</TD>
+ </TR>
+ <TR>
+  <TD>71</TD>
+  <TD>0x47</TD>
+  <TD>B5</TD>
+  <TD>Short Hi Whistle</TD>
+  <TD>Harmonic Contents</TD>
+  <TD>Clarinet</TD>
+ </TR>
+ <TR>
+  <TD>72</TD>
+  <TD>0x48</TD>
+  <TD>C6</TD>
+  <TD>Long Low Whistle</TD>
+  <TD>Release Time</TD>
+  <TD>Piccolo</TD>
+ </TR>
+ <TR>
+  <TD>73</TD>
+  <TD>0x49</TD>
+  <TD>C#6=Db6</TD>
+  <TD>Short Gurio</TD>
+  <TD>Attack Time</TD>
+  <TD>Flute</TD>
+ </TR>
+ <TR>
+  <TD>74</TD>
+  <TD>0x4A</TD>
+  <TD>D6</TD>
+  <TD>Long Gurio</TD>
+  <TD>Brightness</TD>
+  <TD>Recorder</TD>
+ </TR>
+ <TR>
+  <TD>75</TD>
+  <TD>0x4B</TD>
+  <TD>D#6=Eb6</TD>
+  <TD>Claves</TD>
+  <TD>Decay Time</TD>
+  <TD>Pan Flute</TD>
+ </TR>
+ <TR>
+  <TD>76</TD>
+  <TD>0x4C</TD>
+  <TD>E6</TD>
+  <TD>High Wood Block</TD>
+  <TD>Vibrato rate</TD>
+  <TD>Blown Bottle</TD>
+ </TR>
+ <TR>
+  <TD>77</TD>
+  <TD>0x4D</TD>
+  <TD>F6</TD>
+  <TD>Low Wood Block</TD>
+  <TD>Vibrato deapth</TD>
+  <TD>Shakuhachi</TD>
+ </TR>
+ <TR>
+  <TD>78</TD>
+  <TD>0x4E</TD>
+  <TD>F#6=Gb6</TD>
+  <TD>Mute Cuica</TD>
+  <TD>Vibrato deray</TD>
+  <TD>Whistle</TD>
+ </TR>
+ <TR>
+  <TD>79</TD>
+  <TD>0x4F</TD>
+  <TD>G6</TD>
+  <TD>Open Cuica</TD>
+  <TD>Sound Controller 10</TD>
+  <TD>Ocarina</TD>
+ </TR>
+ <TR>
+  <TD>80</TD>
+  <TD>0x50</TD>
+  <TD>G#6=Ab6</TD>
+  <TD>Mute Triangle</TD>
+  <TD>-</TD>
+  <TD>Lead 1 (square)</TD>
+ </TR>
+ <TR>
+  <TD>81</TD>
+  <TD>0x51</TD>
+  <TD>A6</TD>
+  <TD>Open Triangle</TD>
+  <TD>-</TD>
+  <TD>Lead 2 (sawtooth)</TD>
+ </TR>
+ <TR>
+  <TD>82</TD>
+  <TD>0x52</TD>
+  <TD>A#6=Bb6</TD>
+  <TD>Shaker</TD>
+  <TD>-</TD>
+  <TD>Lead 3 (calliope)</TD>
+ </TR>
+ <TR>
+  <TD>83</TD>
+  <TD>0x53</TD>
+  <TD>B6</TD>
+  <TD>Jingle Bell</TD>
+  <TD>-</TD>
+  <TD>Lead 4 (chiff)</TD>
+ </TR>
+ <TR>
+  <TD>84</TD>
+  <TD>0x54</TD>
+  <TD>C7</TD>
+  <TD>Bell Tree</TD>
+  <TD>Portament Control</TD>
+  <TD>Lead 5 (charang)</TD>
+ </TR>
+ <TR>
+  <TD>85</TD>
+  <TD>0x55</TD>
+  <TD>C#7=Db7</TD>
+  <TD>Castanets</TD>
+  <TD>-</TD>
+  <TD>Lead 6 (voice)</TD>
+ </TR>
+ <TR>
+  <TD>86</TD>
+  <TD>0x56</TD>
+  <TD>D7</TD>
+  <TD>Mute Surdo</TD>
+  <TD>-</TD>
+  <TD>Lead 7 (fifths)</TD>
+ </TR>
+ <TR>
+  <TD>87</TD>
+  <TD>0x57</TD>
+  <TD>D#7=Eb7</TD>
+  <TD>Open Surdo</TD>
+  <TD>-</TD>
+  <TD>Lead 8 (bass + lead)</TD>
+ </TR>
+ <TR>
+  <TD>88</TD>
+  <TD>0x58</TD>
+  <TD>E7</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Pad 1 (new age)</TD>
+ </TR>
+ <TR>
+  <TD>89</TD>
+  <TD>0x59</TD>
+  <TD>F7</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Pad 2 (warm)</TD>
+ </TR>
+ <TR>
+  <TD>90</TD>
+  <TD>0x5A</TD>
+  <TD>F#7=Gb7</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Pad 3 (polysynth)</TD>
+ </TR>
+ <TR>
+  <TD>91</TD>
+  <TD>0x5B</TD>
+  <TD>G7</TD>
+  <TD>-</TD>
+  <TD>Reverb</TD>
+  <TD>Pad 4 (choir)</TD>
+ </TR>
+ <TR>
+  <TD>92</TD>
+  <TD>0x5C</TD>
+  <TD>G#7=Ab7</TD>
+  <TD>-</TD>
+  <TD>Effect 2 Depth</TD>
+  <TD>Pad 5 (bowed)</TD>
+ </TR>
+ <TR>
+  <TD>93</TD>
+  <TD>0x5D</TD>
+  <TD>A7</TD>
+  <TD>-</TD>
+  <TD>Chorus</TD>
+  <TD>Pad 6 (metallic)</TD>
+ </TR>
+ <TR>
+  <TD>94</TD>
+  <TD>0x5E</TD>
+  <TD>A#7=Bb7</TD>
+  <TD>-</TD>
+  <TD>Effect 4 Depth</TD>
+  <TD>Pad 7 (halo)</TD>
+ </TR>
+ <TR>
+  <TD>95</TD>
+  <TD>0x5F</TD>
+  <TD>B7</TD>
+  <TD>-</TD>
+  <TD>Effect 5 Depth</TD>
+  <TD>Pad 8 (sweep)</TD>
+ </TR>
+ <TR>
+  <TD>96</TD>
+  <TD>0x60</TD>
+  <TD>C8</TD>
+  <TD>-</TD>
+  <TD>Data Increment</TD>
+  <TD>FX 1 (rain)</TD>
+ </TR>
+ <TR>
+  <TD>97</TD>
+  <TD>0x61</TD>
+  <TD>C#8=Db8</TD>
+  <TD>-</TD>
+  <TD>Data Decrement</TD>
+  <TD>FX 2 (soundtrack)</TD>
+ </TR>
+ <TR>
+  <TD>98</TD>
+  <TD>0x62</TD>
+  <TD>D8</TD>
+  <TD>-</TD>
+  <TD>NRPN LSB</TD>
+  <TD>FX 3 (crystal)</TD>
+ </TR>
+ <TR>
+  <TD>99</TD>
+  <TD>0x63</TD>
+  <TD>D#8=Eb8</TD>
+  <TD>-</TD>
+  <TD>NRPN MSB</TD>
+  <TD>FX 4 (atmosphere)</TD>
+ </TR>
+ <TR>
+  <TD>100</TD>
+  <TD>0x64</TD>
+  <TD>E8</TD>
+  <TD>-</TD>
+  <TD>RPN LSB</TD>
+  <TD>FX 5 (brightness)</TD>
+ </TR>
+ <TR>
+  <TD>101</TD>
+  <TD>0x65</TD>
+  <TD>F8</TD>
+  <TD>-</TD>
+  <TD>RPN MSB</TD>
+  <TD>FX 6 (goblins)</TD>
+ </TR>
+ <TR>
+  <TD>102</TD>
+  <TD>0x66</TD>
+  <TD>F#8=Gb8</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>FX 7 (echoes)</TD>
+ </TR>
+ <TR>
+  <TD>103</TD>
+  <TD>0x67</TD>
+  <TD>G8</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>FX 8 (sci-fi)</TD>
+ </TR>
+ <TR>
+  <TD>104</TD>
+  <TD>0x68</TD>
+  <TD>G#8=Ab8</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Sitar</TD>
+ </TR>
+ <TR>
+  <TD>105</TD>
+  <TD>0x69</TD>
+  <TD>A8</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Banjo</TD>
+ </TR>
+ <TR>
+  <TD>106</TD>
+  <TD>0x6A</TD>
+  <TD>A#8=Bb8</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Shamisen</TD>
+ </TR>
+ <TR>
+  <TD>107</TD>
+  <TD>0x6B</TD>
+  <TD>B8</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Koto</TD>
+ </TR>
+ <TR>
+  <TD>108</TD>
+  <TD>0x6C</TD>
+  <TD>C9</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Kalimba</TD>
+ </TR>
+ <TR>
+  <TD>109</TD>
+  <TD>0x6D</TD>
+  <TD>C#9=Db9</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Bag pipe</TD>
+ </TR>
+ <TR>
+  <TD>110</TD>
+  <TD>0x6E</TD>
+  <TD>D9</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Fiddle</TD>
+ </TR>
+ <TR>
+  <TD>111</TD>
+  <TD>0x6F</TD>
+  <TD>D#9=Eb9</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Shanai</TD>
+ </TR>
+ <TR>
+  <TD>112</TD>
+  <TD>0x70</TD>
+  <TD>E9</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Tinkle Bell</TD>
+ </TR>
+ <TR>
+  <TD>113</TD>
+  <TD>0x71</TD>
+  <TD>F9</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Agogo</TD>
+ </TR>
+ <TR>
+  <TD>114</TD>
+  <TD>0x72</TD>
+  <TD>F#9=Gb9</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Steel Drums</TD>
+ </TR>
+ <TR>
+  <TD>115</TD>
+  <TD>0x73</TD>
+  <TD>G9</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Woodblock</TD>
+ </TR>
+ <TR>
+  <TD>116</TD>
+  <TD>0x74</TD>
+  <TD>G#9=Ab9</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Taiko</TD>
+ </TR>
+ <TR>
+  <TD>117</TD>
+  <TD>0x75</TD>
+  <TD>A9</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Melodic Tom</TD>
+ </TR>
+ <TR>
+  <TD>118</TD>
+  <TD>0x76</TD>
+  <TD>A#9=Bb9</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Synth Drum</TD>
+ </TR>
+ <TR>
+  <TD>119</TD>
+  <TD>0x77</TD>
+  <TD>B9</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Reverse Cymbal</TD>
+ </TR>
+ <TR>
+  <TD>120</TD>
+  <TD>0x78</TD>
+  <TD>C10</TD>
+  <TD>-</TD>
+  <TD>All Sound Off</TD>
+  <TD>Guitar Fret Noise</TD>
+ </TR>
+ <TR>
+  <TD>121</TD>
+  <TD>0x79</TD>
+  <TD>C#10=Db10</TD>
+  <TD>-</TD>
+  <TD>Reset All Controller</TD>
+  <TD>Breath Noise</TD>
+ </TR>
+ <TR>
+  <TD>122</TD>
+  <TD>0x7A</TD>
+  <TD>D10</TD>
+  <TD>-</TD>
+  <TD>Local Control</TD>
+  <TD>Seashore</TD>
+ </TR>
+ <TR>
+  <TD>123</TD>
+  <TD>0x7B</TD>
+  <TD>D#10=Eb10</TD>
+  <TD>-</TD>
+  <TD>All Note Off</TD>
+  <TD>Bird Tweet</TD>
+ </TR>
+ <TR>
+  <TD>124</TD>
+  <TD>0x7C</TD>
+  
+  <TD>E10</TD>
+  <TD>-</TD>
+  <TD>Omni Mode Off</TD>
+  <TD>Telephone Ring</TD>
+ </TR>
+ <TR>
+  <TD>125</TD>
+  <TD>0x7D</TD>
+  <TD>F10</TD>
+  <TD>-</TD>
+  <TD>Omni Mode On</TD>
+  <TD>Helicopter</TD>
+ </TR>
+ <TR>
+  <TD>126</TD>
+  <TD>0x7E</TD>
+  <TD>F#10=Gb10</TD>
+  <TD>-</TD>
+  <TD>Mono Mode On</TD>
+  <TD>Applause</TD>
+ </TR>
+ <TR>
+  <TD>127</TD>
+  <TD>0x7F</TD>
+  <TD>G10</TD>
+  <TD>-</TD>
+  <TD>Poly Mode On</TD>
+  <TD>Gunshot</TD>
+ </TR>
+</TABLE>
+
+
+
+<H2><A NAME="APPENDIX_C">付録C　MIDIメッセージ早見表</A></H2>
+
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH VALIGN="MIDDLE">　
+  </TH>
+  <TH WIDTH="20%" VALIGN="MIDDLE">
+   1バイト目<BR>
+   ステータスバイト(0x80以上)
+  </TH>
+  <TH WIDTH="20%" VALIGN="MIDDLE">
+   2バイト目<BR>
+   データバイト(0x7F以下)
+  </TH>
+  <TH WIDTH="20%" VALIGN="MIDDLE">
+   3バイト目<BR>
+   データバイト(0x7F以下)
+  </TH>
+  <TH WIDTH="20%" VALIGN="MIDDLE">
+   特記事項<BR>
+  </TH>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE" ROWSPAN=7>
+   <FONT COLOR="#000000">チャンネルボイスメッセージ</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">ノートオフ：0x8n<BR>(nはチャンネル、以下同様)</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">キー：0x00(C0)～0x7F(G9)</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">ベロシティ：0x00(0)～0x7F(127)</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE" BGCOLOR="#E0E0E0">
+   <FONT COLOR="#000000">指定した音の発音を止める。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">ノートオン：0x9n</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">キー：0x00(C0)～0x7F(G9)</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">ベロシティ：0x00(0)～0x7F(127)</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE" BGCOLOR="#E0E0E0">
+   <FONT COLOR="#000000">指定した音を発音する。ただしベロシティが0の場合はノートオフと解釈する。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#800080">キーアフター：0xAn</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#800080">キー：0x00(C0)～0x7F(G9)</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#800080">値：0x00(0)～0x7F(127)</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE" BGCOLOR="#E0E0E0">
+   <FONT COLOR="#800080">指定した音を発音した後、鍵盤を押さえる圧力を上下左右に変化させると送信され、そのキーの音質が変化する。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#008000">コントローラー：0xBn</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#008000">番号：0x00(CC#0)～0x7F(CC#127)</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#008000">値：0x00(0)～0x7F(127)</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE" BGCOLOR="#E0E0E0">
+   <FONT COLOR="#008000">モジュレーション(CC#1)、ヴォリューム(CC#7)、パン(CC#10)、エクスプレッション(CC#11)、サスティンペダル(CC#64)、リバーブ(CC#91)、コーラス(CC#93)、ディレイ(CC#94)などを設定する。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#808000">パッチチェンジ：0xCn</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#808000">番号：0x00(Piano1)～0x7F(GunShot)</FONT>
+  </TD>
+  <TD WIDTH=400 VALIGN="MIDDLE" COLSPAN=2 BGCOLOR="#E0E0E0">
+   <FONT COLOR="#808000">楽器を選択する。ただし10チャンネル(n=9)の場合は、ドラムセットを選択する。バンクも指定したい場合はこのメッセージの前にバンクセレクト(CC#0とCC#32)を使うことにより、最大2097152種類の音色を選択することができる。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#0000FF">チャンネルアフタータッチ：0xDn</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#0000FF">値：0x00(0)～0x7F(127)</FONT>
+  </TD>
+  <TD WIDTH=400 VALIGN="MIDDLE" BGCOLOR="#E0E0E0" COLSPAN=2>
+   <FONT COLOR="#0000FF">ある音を発音した後、鍵盤を押さえる圧力を上下左右に変化させると送信され、そのチャンネル全体の音質が変化する。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#F000F0">ピッチベンド：0xEn</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#F000F0">LSB(下位7ビット)：0x00～0x7F</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#F000F0">MSB(上位7ビット)：0x00～0x7F</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE" BGCOLOR="#E0E0E0">
+   <FONT COLOR="#F000F0">ピッチを変化させるのに使う。値は0～8192～16383で表す。中央はLSB=0x00, MSB=0x40、最低値はLSB=0x00, MSB=0x00、最高値はLSB=0x7F, MSB=0x7Fである。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD WIDTH=100 VALIGN="MIDDLE">
+   <FONT COLOR="#000000">★システムエクスクルーシヴメッセージ</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#800080">スタートオブエクスクルーシヴ：0xF0</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#800080">2バイト目以降には任意の長さのデータ配列(0x00～0x7F)が続く。データはエンドオブエクスクルーシヴ(0xF7)で終了する。</FONT>
+  </TD>
+  <TD WIDTH=400 VALIGN="MIDDLE" BGCOLOR="#E0E0E0" COLSPAN=2>
+   <FONT COLOR="#800080">音源の設定を操作する場合に使う。例えばGMリセットは{0xF0, 0x7E, 0x7F, 0x09, 0x01, 0xF7}である。システムエクスクルーシヴメッセージは、音源により意味が異なるため、互換性が乏しい。また、SMPTE/MTCによる同期を行うためにも使える。{0xF0, 0x7F, 0x7F, 0x01, 0x01, 0xhr, 0xmn, 0xsc, 0xfr, 0xF7}という10バイトのシステムエクスクルーシヴメッセージは、1メッセージで1つの時刻を表すことができる。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD WIDTH=100 VALIGN="MIDDLE" ROWSPAN=4>
+   <FONT COLOR="#000000">システムコモンメッセージ</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">★MIDIタイムコードクォーターフレーム：0xF1</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">値：0x00～0x7F</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE" BGCOLOR="#E0E0E0" COLSPAN=2>
+   <FONT COLOR="#000000">SMPTE/MTCによる同期を行うために使う。このMIDIメッセージは8メッセージで1つの時刻を表す。値を2進法で表したものを0abcdefgとすると、abc=0のときdefgはフレームカウント下位4ビット、abc=1のときdefgはフレームカウント上位4ビット、abc=2のときdefgは秒カウント下位4ビット、abc=3のときdefgは秒カウント上位4ビット、abc=4のときdefgは分カウント下位4ビット、nnn=5のときdefgは分カウント上位4ビット、abc=6のときdefgは時カウント下位4ビット、abc=7のときdeは時カウント上位2ビット、fgはフレームレート(00は24fps、01は25fps、02は29.97fps、03は30fps)を、それぞれ意味する。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">ソングポジションセレクタ：0xF2</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">LSB(下位7ビット)：0x00～0x7F</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">MSB(上位7ビット)：0x00～0x7F</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE" BGCOLOR="#E0E0E0">
+   <FONT COLOR="#000000">再生開始位置を指定するのに使う。値は0～16383で、6MIDIタイミングクロックを1(つまり16分音符の長さを1)として計測する。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">ソングセレクト：0xF3</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">ソングナンバー：0x00(0)～0x7F(127)</FONT>
+  </TD>
+  <TD WIDTH=400 VALIGN="MIDDLE" BGCOLOR="#E0E0E0" COLSPAN=2>
+   <FONT COLOR="#000000">受信デバイスが複数のシーケンスやドラムパターンを扱える場合、それらを選択するのに使う。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">チェーンリクエスト</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE" BGCOLOR="#E0E0E0" COLSPAN=3>
+   <FONT COLOR="#000000">アナログシンセサイザーのチューニングのために用いられる。現在ではほとんど使われない。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE" ROWSPAN=6>
+   <FONT COLOR="#000000">システムリアルタイムメッセージ</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">★MIDIタイミングクロック：0xF8</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE" BGCOLOR="#E0E0E0" COLSPAN=3>
+   <FONT COLOR="#000000">MIDIタイミングクロックによる同期を行うときに使う。送信間隔はテンポに依存し、4分音符あたり24回の速度で流す。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">★スタート：0xFA</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE" BGCOLOR="#E0E0E0" COLSPAN=3 ROWSPAN=3>
+   <FONT COLOR="#000000">MIDIメッセージでシーケンサーの再生／停止を制御するのに使う。スタートは、シーケンスの先頭から再生開始することを意味する。ストップは停止することを意味する。コンティニューは前回停止した位置から再生を開始することを意味する。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">★コンティニュー：0xFB</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">★ストップ：0xFC</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">アクティブセンシング：0xFE</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE" BGCOLOR="#E0E0E0" COLSPAN=3>
+   <FONT COLOR="#000000">ケーブルの接続をチェックするため、約300ミリ秒毎に断続的に流される。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">システムリセット：0xFF</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE" BGCOLOR="#E0E0E0" COLSPAN=3>
+   <FONT COLOR="#000000">音源を初期化するのに使う。めったに使われない。</FONT>
+  </TD>
+ </TR>
+</TABLE>
+<DIV>注：★印のものは、MIDIクロックライブラリが<A HREF="#MIDIClock_PutMIDIMessage">MIDIClock_PutMIDIMessage</A>関数により認識可能であることを意味する。</DIV>
+
+
+
+<H2><A NAME="APPENDIX_D">付録D　更新履歴</A></H2>
+
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH>
+   ヴァージョン番号
+  </TH>
+  <TH>
+   リリース年月日
+  </TH>
+  <TH>
+   修正事項
+  </TH>
+ </TR>
+ <TR>
+  <TD>
+   β0.1
+  </TD>
+  <TD>
+   2005年9月18日
+  </TD>
+  <TD>
+   <UL>
+    <LI>多くのバグを抱えながらもとりあえず初リリース</LI>
+   </UL>
+  </TD>
+ </TR>
+ <TR>
+  <TD>
+   β0.2
+  </TD>
+  <TD>
+   2006年8月06日
+  </TD>
+  <TD>
+   <UL>
+    <LI>仕様細部決定、それに伴う取説とソースの修正</LI>
+   </UL>
+  </TD>
+ </TR>
+ <TR>
+  <TD>
+   β0.3
+  </TD>
+  <TD>
+   2007年1月18日
+  </TD>
+  <TD>
+   <UL>
+    <LI>m_lSpeed変数を追加</LI>
+    <LI>MIDIClock_Create関数の引数を変更</LI>
+    <LI>MIDIClock_SetSpeed関数を追加</LI>
+    <LI>MIDIClock_GetSpeed関数を追加</LI>
+    <LI>MIDIClock_Set系関数およびMIDIClock_Reset関数は、コールバック割り込みにおける時刻演算中は待機する処置を導入</LI>
+    <LI>公式ガイドブックの修正</LI>
+    <LI>付録C MIDIメッセージ早見表の空欄を書き込み</LI>
+    <LI>プロジェクトホームページを<A HREF="http://www.geocities.jp/ee65051/index.html">おーぷんMIDIぷろじぇくと</A>に変更</LI>
+   </UL>
+  </TD>
+ </TR>
+ <TR>
+  <TD>
+   β0.4
+  </TD>
+  <TD>
+   2007年12月28日
+  </TD>
+  <TD>
+   <UL>
+    <LI>タイムモードでマスターのSMPTE24ベース、SMPTE25ベース、SMPTE29.97ベース, SMPTE30ベースに対応。及びこれに伴う、#define定義の変更</LI>
+    <LI>MIDIClock_Create関数の、引数の順序を変更(MIDIDataライブラリとの統一性をとるため)。これにより、今までのプログラムが正常にコンパイルできても、動作は異なってしまうので注意を要する。</LI>
+    <LI>MIDIClock_GetMode関数及びMIDIClock_SetMode関数を廃止し、MIDIClock_GetTimeBase関数及びMIDIClock_SetTimeBase関数に融合(MIDIDataライブラリとの統一性をとるため)</LI>
+    <LI>MilliSecを含む変数名・関数名は、Millisec(sを小文字にした)に変更(MIDIDataライブラリとの統一性をとるため)</LI>
+    <LI>「タイムベース」というあいまいな表現をやめ、「タイムモード」と「分解能」にはっきり区別する。</LI>
+    <LI>公式ガイドブックのHTMLタグ不整合訂正、及びW3C HTML4.01の基準に適合化</LI>
+   </UL>
+  </TD>
+ </TR>
+ <TR>
+  <TD>
+   β0.5
+  </TD>
+  <TD>
+   2008年3月31日
+  </TD>
+  <TD>
+   <UL>
+    <LI>プロジェクトホームページを<A HREF="http://openmidiproject.sourceforge.jp/index.html">http://openmidiproject.sourceforge.jp/index.html</A>に変更</LI>
+    <LI>MIN,MAX,CLIPマクロを新たに定義</LI>
+   </UL>
+  </TD>
+ </TR>
+ <TR>
+  <TD>
+   β0.6
+  </TD>
+  <TD>
+   2008年7月23日
+  </TD>
+  <TD>
+   <UL>
+    <LI>SMPTE29ベース(29.97フレーム／秒)において正しくクロックが進行しないバグを修正</LI>
+   </UL>
+  </TD>
+ </TR>
+ <TR>
+  <TD>
+   β0.7
+  </TD>
+  <TD>
+   2009年4月07日
+  </TD>
+  <TD>
+   <UL>
+    <LI>公式ガイドブック誤記修正。</LI>
+   </UL>
+  </TD>
+ </TR>
+ <TR>
+  <TD>
+   0.8
+  </TD>
+  <TD>
+   2009年7月05日
+  </TD>
+  <TD>
+   <UL>
+    <LI>MIDICLOCK_MASTERTPQNBASE(0)を定義廃止(互換性のために残してはある)。</LI>
+    <LI>MIDICLOCK_MASTERSMPTE24BASE(24)を定義廃止(互換性のために残してはある)。</LI>
+    <LI>MIDICLOCK_MASTERSMPTE25BASE(25)を定義廃止(互換性のために残してはある)。</LI>
+    <LI>MIDICLOCK_MASTERSMPTE29BASE(29)を定義廃止(互換性のために残してはある)。</LI>
+    <LI>MIDICLOCK_MASTERSMPTE30BASE(30)を定義廃止(互換性のために残してはある)。</LI>
+    <LI>MIDICLOCK_TPQNBASE(0)を追加定義。</LI>
+    <LI>MIDICLOCK_SMPTE24BASE(24)を追加定義。</LI>
+    <LI>MIDICLOCK_SMPTE25BASE(25)を追加定義。</LI>
+    <LI>MIDICLOCK_SMPTE29BASE(29)を追加定義。</LI>
+    <LI>MIDICLOCK_SMPTE30BASE(30)を追加定義。</LI>
+    <LI>MIDICLOCK_MASTER(0)を追加定義。</LI>
+    <LI>MIDICLOCK_SLAVEMITITIMINGCLOCK(1)の定義値変更。</LI>
+    <LI>MIDICLOCK_SLAVESMPTEMTC(2)の定義値変更。</LI>
+    <LI>MIDICLOCK構造体のフィールドにm_lMIDIInSyncModeを追加</LI>
+    <LI><A HREF="#MIDIClock_Create">MIDIClock_Create</A>関数の第一引数(lTimeMode)の仕様変更。</LI>
+    <LI><A HREF="#MIDIClock_SetTimeBase">MIDIClock_SetTimeBase</A>関数の第二引数(lTimeMode)の仕様変更。</LI>
+    <LI><A HREF="#MIDIClock_GetMIDIInSyncMode">MIDIClock_GetMIDIInSyncMode</A>関数追加。</LI>
+    <LI><A HREF="#MIDIClock_GetMIDIInSyncMode">MIDIClock_SetMIDIInSyncMode</A>関数追加。</LI>
+    <LI><A HREF="#MIDIClock_IsRunning">MIDIClock_IsRunning</A>関数追加。</LI>
+    <LI><A HREF="#MIDIClock_PutMIDIMessage">MIDIClock_PutMIDIMessage</A>関数でMIDIタイミングクロック(0xF8)やMIDIタイムコードクォーターフレーム(0xF1)を与えたときに経過時刻[msec]や経過ティックカウント[tick]の進行量が正しくない場合があるバグを修正。</LI>
+    <LI>MIDIタイミングクロックによるスレーブモードの場合、スタートすると経過時刻[msec]が勝手に進んでしまうバグを修正。</LI>
+    <LI>VB用basファイル内MIDIClock_GetMilliSec→MIDIClock_GetMillisecに修正。</LI>
+    <LI>VB用basファイル内MIDIClock_SetMilliSec→MIDIClock_SetMillisecに修正。</LI>
+    <LI>VB用basファイル内MIDIClock_PutMIDIMessageの第二引数ByVal→ByRefに修正。</LI>
+    <LI>公式ガイドブック誤記修正。</LI>
+   </UL>
+  </TD>
+ </TR>
+ <TR>
+  <TD>
+   0.9
+  </TD>
+  <TD>
+   2012年09月30日
+  </TD>
+  <TD>
+   <UL>
+    <LI><A HREF="#MIDIClock_Create">MIDIClock_Create</A>の引数チェックに関するバグを修正。</LI>
+   </UL>
+  </TD>
+ </TR>
+ <TR>
+  <TD>
+   1.0
+  </TD>
+  <TD>
+   2014年04月30日
+  </TD>
+  <TD>
+   <UL>
+    <LI>開発環境を、古いVisualC++ 4.0から新しいVisualC++ 2008 Service Pack1に移行した。</LI>
+   </UL>
+  </TD>
+ </TR>
+</TABLE>
+
+</BODY>
+</HTML>
+
+
+
+
+
+

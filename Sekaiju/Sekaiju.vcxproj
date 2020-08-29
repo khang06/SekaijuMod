@@ -1,0 +1,466 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="DebugU|Win32">
+      <Configuration>DebugU</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="ReleaseU|Win32">
+      <Configuration>ReleaseU</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{4EF0D16C-FE64-4B85-A7C3-76F7CF50EA58}</ProjectGuid>
+    <RootNamespace>Sekaiju</RootNamespace>
+    <Keyword>MFCProj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v142</PlatformToolset>
+    <UseOfMfc>Dynamic</UseOfMfc>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugU|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v142</PlatformToolset>
+    <UseOfMfc>Dynamic</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v142</PlatformToolset>
+    <UseOfMfc>Dynamic</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseU|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v142</PlatformToolset>
+    <UseOfMfc>Dynamic</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugU|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseU|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>16.0.30323.82</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseU|Win32'">
+    <OutDir>.\ReleaseU\</OutDir>
+    <IntDir>.\ReleaseU\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>.\Release\</OutDir>
+    <IntDir>.\Release\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugU|Win32'">
+    <OutDir>.\DebugU\</OutDir>
+    <IntDir>.\DebugU\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>.\Debug\</OutDir>
+    <IntDir>.\Debug\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseU|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\ReleaseU/Sekaiju.tlb</TypeLibraryName>
+      <HeaderFileName />
+    </Midl>
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PrecompiledHeaderOutputFile>.\ReleaseU/Sekaiju.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\ReleaseU/</AssemblerListingLocation>
+      <ObjectFileName>.\ReleaseU/</ObjectFileName>
+      <ProgramDataBaseFileName>.\ReleaseU/</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0411</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>..\MIDIData\Release\MIDIData.lib;..\MIDIClock\Release\MIDIClock.lib;..\MIDIIO\Release\MIDIIO.lib;..\MIDIStatus\Release\MIDIStatus.lib;..\MIDIInstrument\Release\MIDIInstrument.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>.\ReleaseU/Sekaiju.exe</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <ProgramDatabaseFile>.\ReleaseU/Sekaiju.pdb</ProgramDatabaseFile>
+      <SubSystem>Windows</SubSystem>
+      <EntryPointSymbol>wWinMainCRTStartup</EntryPointSymbol>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\ReleaseU/Sekaiju.bsc</OutputFile>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\Release/Sekaiju.tlb</TypeLibraryName>
+      <HeaderFileName />
+    </Midl>
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PrecompiledHeaderOutputFile>.\Release/Sekaiju.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\Release/</AssemblerListingLocation>
+      <ObjectFileName>.\Release/</ObjectFileName>
+      <ProgramDataBaseFileName>.\Release/</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0411</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>..\MIDIData\Release\MIDIData.lib;..\MIDIClock\Release\MIDIClock.lib;..\MIDIIO\Release\MIDIIO.lib;..\MIDIStatus\Release\MIDIStatus.lib;..\MIDIInstrument\Release\MIDIInstrument.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>.\Release/Sekaiju.exe</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <ProgramDatabaseFile>.\Release/Sekaiju.pdb</ProgramDatabaseFile>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\Release/Sekaiju.bsc</OutputFile>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugU|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\DebugU/Sekaiju.tlb</TypeLibraryName>
+      <HeaderFileName />
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeaderOutputFile>.\DebugU/Sekaiju.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\DebugU/</AssemblerListingLocation>
+      <ObjectFileName>.\DebugU/</ObjectFileName>
+      <ProgramDataBaseFileName>.\DebugU/</ProgramDataBaseFileName>
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0411</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>ole32.lib;..\MIDIData\Debug\MIDIDatad.lib;..\MIDIClock\Debug\MIDIClockd.lib;..\MIDIIO\Debug\MIDIIOd.lib;..\MIDIStatus\Debug\MIDIStatusd.lib;..\MIDIInstrument\Debug\MIDIInstrumentd.lib;..\SAL\Debug\SALd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>.\DebugU/Sekaiju.exe</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>.\DebugU/Sekaiju.pdb</ProgramDatabaseFile>
+      <SubSystem>Windows</SubSystem>
+      <EntryPointSymbol>wWinMainCRTStartup</EntryPointSymbol>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\DebugU/Sekaiju.bsc</OutputFile>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\Debug/Sekaiju.tlb</TypeLibraryName>
+      <HeaderFileName />
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeaderOutputFile>.\Debug/Sekaiju.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\Debug/</AssemblerListingLocation>
+      <ObjectFileName>.\Debug/</ObjectFileName>
+      <ProgramDataBaseFileName>.\Debug/</ProgramDataBaseFileName>
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0411</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>ole32.lib;..\MIDIData\Debug\MIDIDatad.lib;..\MIDIClock\Debug\MIDIClockd.lib;..\MIDIIO\Debug\MIDIIOd.lib;..\MIDIStatus\Debug\MIDIStatusd.lib;..\MIDIInstrument\Debug\MIDIInstrumentd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>.\Debug/Sekaiju.exe</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>.\Debug/Sekaiju.pdb</ProgramDatabaseFile>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\Debug/Sekaiju.bsc</OutputFile>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="src\AboutDlg.cpp" />
+    <ClCompile Include="src\AutoSaveDlg.cpp" />
+    <ClCompile Include="src\ChildFrame.cpp" />
+    <ClCompile Include="src\ColorfulCheckListBox.cpp" />
+    <ClCompile Include="src\ColorfulComboBox.cpp" />
+    <ClCompile Include="src\ColorOptionPage.cpp" />
+    <ClCompile Include="src\ColorSelectComboBox.cpp" />
+    <ClCompile Include="src\common.c" />
+    <ClCompile Include="src\EditBeatScanDlg.cpp" />
+    <ClCompile Include="src\EditBreakupAndTrillDlg.cpp" />
+    <ClCompile Include="src\EditChannelDlg.cpp" />
+    <ClCompile Include="src\EditDurationDlg.cpp" />
+    <ClCompile Include="src\EditInsertMeasureDlg.cpp" />
+    <ClCompile Include="src\EditKeyDlg.cpp" />
+    <ClCompile Include="src\EditQuantizeDlg.cpp" />
+    <ClCompile Include="src\EditRemoveMeasureDlg.cpp" />
+    <ClCompile Include="src\EditStrokeDlg.cpp" />
+    <ClCompile Include="src\EditTempoDlg.cpp" />
+    <ClCompile Include="src\EditTimeDlg.cpp" />
+    <ClCompile Include="src\EditTimeSmpDlg.cpp" />
+    <ClCompile Include="src\EditTrackDlg.cpp" />
+    <ClCompile Include="src\EditValueDlg.cpp" />
+    <ClCompile Include="src\EditVelocityDlg.cpp" />
+    <ClCompile Include="src\EventKindListBox.cpp" />
+    <ClCompile Include="src\EventListFrame.cpp" />
+    <ClCompile Include="src\EventListIndexPropertyView.cpp" />
+    <ClCompile Include="src\EventListIndexScaleView.cpp" />
+    <ClCompile Include="src\EventListOptionPage.cpp" />
+    <ClCompile Include="src\EventListPrintView.cpp" />
+    <ClCompile Include="src\EventListPropertyScaleView.cpp" />
+    <ClCompile Include="src\EventListScaleView.cpp" />
+    <ClCompile Include="src\FilePropertyDlg.cpp" />
+    <ClCompile Include="src\FontOptionPage.cpp" />
+    <ClCompile Include="src\GeneralOptionPage.cpp" />
+    <ClCompile Include="src\GraphKindListBox.cpp" />
+    <ClCompile Include="src\HistoryRecord.cpp" />
+    <ClCompile Include="src\HistoryUnit.cpp" />
+    <ClCompile Include="src\InplaceEdit.cpp" />
+    <ClCompile Include="src\InplaceListBox.cpp" />
+    <ClCompile Include="src\LanguageDlg.cpp" />
+    <ClCompile Include="src\MainFrame.cpp" />
+    <ClCompile Include="src\MetronomeDlg.cpp" />
+    <ClCompile Include="src\MIDIDeviceSheet.cpp" />
+    <ClCompile Include="src\MIDIInDevicePage.cpp" />
+    <ClCompile Include="src\MIDIInstDefDrumPage.cpp" />
+    <ClCompile Include="src\MIDIInstDefNormPage.cpp" />
+    <ClCompile Include="src\MIDIInSyncModePage.cpp" />
+    <ClCompile Include="src\MIDIOutDevicePage.cpp" />
+    <ClCompile Include="src\MIDIOutSyncModePage.cpp" />
+    <ClCompile Include="src\MIDISyncModeSheet.cpp" />
+    <ClCompile Include="src\MIDIThruPage.cpp" />
+    <ClCompile Include="src\MusicalScoreFrame.cpp" />
+    <ClCompile Include="src\MusicalScoreOptionPage.cpp" />
+    <ClCompile Include="src\MusicalScorePrintView.cpp" />
+    <ClCompile Include="src\MusicalScoreScaleView.cpp" />
+    <ClCompile Include="src\MusicalScoreTimeScaleView.cpp" />
+    <ClCompile Include="src\MusicalScoreTrackScaleView.cpp" />
+    <ClCompile Include="src\MusicalScoreTrackTimeView.cpp" />
+    <ClCompile Include="src\OptionSheet.cpp" />
+    <ClCompile Include="src\PianoRollFrame.cpp" />
+    <ClCompile Include="src\PianoRollKeyScaleView.cpp" />
+    <ClCompile Include="src\PianoRollKeyTimeView.cpp" />
+    <ClCompile Include="src\PianoRollOptionPage.cpp" />
+    <ClCompile Include="src\PianoRollPrintView.cpp" />
+    <ClCompile Include="src\PianoRollScaleView.cpp" />
+    <ClCompile Include="src\PianoRollTimeScaleView.cpp" />
+    <ClCompile Include="src\PianoRollVelScaleView.cpp" />
+    <ClCompile Include="src\PianoRollVelTimeView.cpp" />
+    <ClCompile Include="src\PropertyKeySignatureDlg.cpp" />
+    <ClCompile Include="src\PropertyMarkerDlg.cpp" />
+    <ClCompile Include="src\PropertyNoteDlg.cpp" />
+    <ClCompile Include="src\PropertyTempoDlg.cpp" />
+    <ClCompile Include="src\PropertyTimeSignatureDlg.cpp" />
+    <ClCompile Include="src\SekaijuApp.cpp" />
+    <ClCompile Include="src\SekaijuDoc.cpp" />
+    <ClCompile Include="src\SekaijuDocManager.cpp" />
+    <ClCompile Include="src\SekaijuDocTemplate.cpp" />
+    <ClCompile Include="src\SekaijuFileDlg.cpp" />
+    <ClCompile Include="src\SekaijuPreviewView.cpp" />
+    <ClCompile Include="src\SekaijuStatusBar.cpp" />
+    <ClCompile Include="src\SekaijuToolBar.cpp" />
+    <ClCompile Include="src\SekaijuView.cpp" />
+    <ClCompile Include="src\SelectVoiceDlg.cpp" />
+    <ClCompile Include="src\TextFile.cpp" />
+    <ClCompile Include="src\TrackListBox.cpp" />
+    <ClCompile Include="src\TrackListFrame.cpp" />
+    <ClCompile Include="src\TrackListModeScaleView.cpp" />
+    <ClCompile Include="src\TrackListOption1Page.cpp" />
+    <ClCompile Include="src\TrackListOption2Page.cpp" />
+    <ClCompile Include="src\TrackListPrintView.cpp" />
+    <ClCompile Include="src\TrackListScaleView.cpp" />
+    <ClCompile Include="src\TrackListTimeScaleView.cpp" />
+    <ClCompile Include="src\TrackListTrackModeView.cpp" />
+    <ClCompile Include="src\TrackListTrackScaleView.cpp" />
+    <ClCompile Include="src\TrackListTrackTimeView.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="src\Sekaiju.rc">
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='DebugU|Win32'">.\src;src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\src;src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='ReleaseU|Win32'">.\src;src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\src;src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\AboutDlg.h" />
+    <ClInclude Include="src\AutoSaveDlg.h" />
+    <ClInclude Include="src\ChildFrame.h" />
+    <ClInclude Include="src\ColorfulCheckListBox.h" />
+    <ClInclude Include="src\ColorfulComboBox.h" />
+    <ClInclude Include="src\ColorOptionPage.h" />
+    <ClInclude Include="src\ColorSelectComboBox.h" />
+    <ClInclude Include="src\common.h" />
+    <ClInclude Include="src\EditBeatScanDlg.h" />
+    <ClInclude Include="src\EditBreakupAndTrillDlg.h" />
+    <ClInclude Include="src\EditChannelDlg.h" />
+    <ClInclude Include="src\EditDurationDlg.h" />
+    <ClInclude Include="src\EditInsertMeasureDlg.h" />
+    <ClInclude Include="src\EditKeyDlg.h" />
+    <ClInclude Include="src\EditQuantizeDlg.h" />
+    <ClInclude Include="src\EditRemoveMeasureDlg.h" />
+    <ClInclude Include="src\EditStrokeDlg.h" />
+    <ClInclude Include="src\EditTempoDlg.h" />
+    <ClInclude Include="src\EditTimeDlg.h" />
+    <ClInclude Include="src\EditTimeSmpDlg.h" />
+    <ClInclude Include="src\EditTrackDlg.h" />
+    <ClInclude Include="src\EditValueDlg.h" />
+    <ClInclude Include="src\EditVelocityDlg.h" />
+    <ClInclude Include="src\EventKindListBox.h" />
+    <ClInclude Include="src\EventListFrame.h" />
+    <ClInclude Include="src\EventListIndexPropertyView.h" />
+    <ClInclude Include="src\EventListIndexScaleView.h" />
+    <ClInclude Include="src\EventListOptionPage.h" />
+    <ClInclude Include="src\EventListPrintView.h" />
+    <ClInclude Include="src\EventListPropertyScaleView.h" />
+    <ClInclude Include="src\EventListScaleView.h" />
+    <ClInclude Include="src\FilePropertyDlg.h" />
+    <ClInclude Include="src\FontOptionPage.h" />
+    <ClInclude Include="src\GeneralOptionPage.h" />
+    <ClInclude Include="src\GraphKindListBox.h" />
+    <ClInclude Include="src\HistoryRecord.h" />
+    <ClInclude Include="src\HistoryUnit.h" />
+    <ClInclude Include="src\InplaceEdit.h" />
+    <ClInclude Include="src\InplaceListBox.h" />
+    <ClInclude Include="src\LanguageDlg.h" />
+    <ClInclude Include="src\MainFrame.h" />
+    <ClInclude Include="src\MetronomeDlg.h" />
+    <ClInclude Include="src\MIDIDeviceSheet.h" />
+    <ClInclude Include="src\MIDIInDevicePage.h" />
+    <ClInclude Include="src\MIDIInstDefDrumPage.h" />
+    <ClInclude Include="src\MIDIInstDefNormPage.h" />
+    <ClInclude Include="src\MIDIInSyncModePage.h" />
+    <ClInclude Include="src\MIDIOutDevicePage.h" />
+    <ClInclude Include="src\MIDIOutSyncModePage.h" />
+    <ClInclude Include="src\MIDISyncModeSheet.h" />
+    <ClInclude Include="src\MIDIThruPage.h" />
+    <ClInclude Include="src\mousewheel.h" />
+    <ClInclude Include="src\MusicalScoreFrame.h" />
+    <ClInclude Include="src\MusicalScoreOptionPage.h" />
+    <ClInclude Include="src\MusicalScorePrintView.h" />
+    <ClInclude Include="src\MusicalScoreScaleView.h" />
+    <ClInclude Include="src\MusicalScoreTimeScaleView.h" />
+    <ClInclude Include="src\MusicalScoreTrackScaleView.h" />
+    <ClInclude Include="src\MusicalScoreTrackTimeView.h" />
+    <ClInclude Include="src\OptionSheet.h" />
+    <ClInclude Include="src\PianoRollFrame.h" />
+    <ClInclude Include="src\PianoRollKeyScaleView.h" />
+    <ClInclude Include="src\PianoRollKeyTimeView.h" />
+    <ClInclude Include="src\PianoRollOptionPage.h" />
+    <ClInclude Include="src\PianoRollPrintView.h" />
+    <ClInclude Include="src\PianoRollScaleView.h" />
+    <ClInclude Include="src\PianoRollTimeScaleView.h" />
+    <ClInclude Include="src\PianoRollVelScaleView.h" />
+    <ClInclude Include="src\PianoRollVelTimeView.h" />
+    <ClInclude Include="src\PropertyKeySignatureDlg.h" />
+    <ClInclude Include="src\PropertyMarkerDlg.h" />
+    <ClInclude Include="src\PropertyNoteDlg.h" />
+    <ClInclude Include="src\PropertyTempoDlg.h" />
+    <ClInclude Include="src\PropertyTimeSignatureDlg.h" />
+    <ClInclude Include="src\Resource.h" />
+    <ClInclude Include="src\SAL.h" />
+    <ClInclude Include="src\SekaijuApp.h" />
+    <ClInclude Include="src\SekaijuDoc.h" />
+    <ClInclude Include="src\SekaijuDocManager.h" />
+    <ClInclude Include="src\SekaijuDocTemplate.h" />
+    <ClInclude Include="src\SekaijuFileDlg.h" />
+    <ClInclude Include="src\SekaijuPreviewView.h" />
+    <ClInclude Include="src\SekaijuStatusBar.h" />
+    <ClInclude Include="src\SekaijuToolBar.h" />
+    <ClInclude Include="src\SekaijuView.h" />
+    <ClInclude Include="src\TextFile.h" />
+    <ClInclude Include="src\TrackListBox.h" />
+    <ClInclude Include="src\TrackListFrame.h" />
+    <ClInclude Include="src\TrackListModeScaleView.h" />
+    <ClInclude Include="src\TrackListOption1Page.h" />
+    <ClInclude Include="src\TrackListOption2Page.h" />
+    <ClInclude Include="src\TrackListPrintView.h" />
+    <ClInclude Include="src\TrackListScaleView.h" />
+    <ClInclude Include="src\TrackListTimeScaleView.h" />
+    <ClInclude Include="src\TrackListTrackModeView.h" />
+    <ClInclude Include="src\TrackListTrackScaleView.h" />
+    <ClInclude Include="src\TrackListTrackTimeView.h" />
+    <ClInclude Include="src\winver.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

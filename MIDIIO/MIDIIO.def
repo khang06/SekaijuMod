@@ -1,0 +1,33 @@
+;LIBRARY midiio
+
+EXPORTS
+	MIDIOut_GetDeviceNum
+	MIDIOut_GetDeviceNameA
+	MIDIOut_GetDeviceNameW
+	MIDIOut_OpenA
+	MIDIOut_OpenW
+	MIDIOut_Close
+	MIDIOut_ReopenA
+	MIDIOut_ReopenW
+	MIDIOut_Reset
+	MIDIOut_PutMIDIMessage
+	MIDIOut_PutByte
+	MIDIOut_PutBytes
+	MIDIOut_GetThisDeviceNameA
+	MIDIOut_GetThisDeviceNameW
+	MIDIIn_GetDeviceNum
+	MIDIIn_GetDeviceNameA
+	MIDIIn_GetDeviceNameW
+	MIDIIn_OpenA
+	MIDIIn_OpenW
+	MIDIIn_Close
+	MIDIIn_ReopenA
+	MIDIIn_ReopenW
+	MIDIIn_Reset
+	MIDIIn_GetMIDIMessage
+	MIDIIn_GetByte
+	MIDIIn_GetBytes
+	MIDIIn_GetThisDeviceNameA
+	MIDIIn_GetThisDeviceNameW
+
+

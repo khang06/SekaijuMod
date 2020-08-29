@@ -1,0 +1,3191 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML LANG="ja">
+<HEAD>
+<TITLE>MIDIStatusライブラリ　公式ガイドブック</TITLE>
+<META http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+<STYLE TYPE="text/css">
+<!--
+H1 {FONT-SIZE:36px; BORDER-WIDTH:1px; BORDER-COLOR:#000000; BORDER-STYLE:SOLID; PADDING:20px; BACKGROUND-COLOR:#E0E0D0; TEXT-ALIGN:CENTER;}
+H2 {FONT-SIZE:28px; BORDER-WIDTH:1px; BORDER-COLOR:#000000; BORDER-STYLE:SOLID; PADDING:20px; BACKGROUND-COLOR:#E0E0D0}
+H3 {FONT-SIZE:24px;}
+H4 {FONT-SIZE:16px;}
+H5 {FONT-SIZE:14px;}
+H6 {FONT-SIZE:12px;}
+P {FONT-SIZE:12px; LINE-HEIGHT:18px;}
+DIV {FONT-SIZE:12px; LINE-HEIGHT:18px;}
+DIV.INDEX {FONT-SIZE:14px; LINE-HEIGHT:18px;}
+DIV.TITLE {FONT-SIZE:12px; LINE-HEIGHT:18px;}
+SPAN.RED {FONT-SIZE:12px; COLOR:#FF0000; LINE-HEIGHT:18px;}
+SPAN.KEYWORD {FONT-SIZE:12px; COLOR:#0000FF; LINE-HEIGHT:18px;}
+SPAN.COMMENT {FONT-SIZE:12px; COLOR:#008000; LINE-HEIGHT:18px;}
+SPAN.STRING {FONT-SIZE:12px; COLOR:#808000; LINE-HEIGHT:18px;}
+LI {FONT-SIZE:12px; LINE-HEIGHT:18px;}
+TABLE {FONT-SIZE:12px; LINE-HEIGHT:18px;}
+TH {BACKGROUND-COLOR:#FFE0B0; FONT-WEIGHT:NORMAL;}
+TR {BACKGROUND-COLOR:#FFFFD0; FONT-WIEGHT:NORMAL;}
+PRE {FONT-SIZE:12px; LINE-HEIGHT:18px; BACKGROUND-COLOR:#E0E0E0; PADDING:1px;}
+-->
+</STYLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFFF" ALINK="#0040FF" VLINK="#0040FF">
+
+<H1>MIDIStatusライブラリ<BR>公式ガイドブック<BR><FONT SIZE=3>(C)2002-2014 くず / おーぷんMIDIぷろじぇくと</FONT></H1>
+
+<H3>はじめに</H3>
+
+<P>　MIDIStatusライブラリは、フリーでオープンソースの、MIDI音源の状態保持・参照用ライブラリである。このライブラリは、MIDI音源の各鍵盤の押され具合、コントローラーやプログラムナンバーやピッチベンドなどの状態、マスターボリューム・マスターリバーブ・マスターコーラスなどの状態を記憶する構造体を管理し、いつでも状態を設定・参照することができる。リアルタイムで状態を記録するには、MIDIStatusオブジェクトに対してMIDIメッセージを与えるだけでよい。MIDIStatusオブジェクトは、MIDI1.0/GM/GM2/GS/XGで定義されるほとんどのMIDIメッセージ(システムエクスクルーシブ含む)を認識できる。</P>
+
+<P>　MIDIStatusライブラリは普通のC言語で書かれているが、ソースのほか、ダイナミックリンクライブラリ(*.dll)の形で提供される。ゆえに、C/C++からはもちろんのこと、Visual BasicやDelphiから使用することもできる。最新のMIDIStatusライブラリは、2014年現在<A HREF="http://openmidiproject.sourceforge.jp/index.html">おーぷんMIDIぷろじぇくと</A>からダウンロードできる。</P>
+
+<P>　本書はMIDIStatusライブラリの使い方を解説した公式ガイドブックである。本書は、サンプルコードと関数リファレンスを交えつつ、Cマガ風味に仕上げた。<SPAN CLASS="RED">本書はMIDI音源の動作原理を解説したものではない。</SPAN>とは言え、MIDI音源の知識が豊富であるほど、この本を簡単に理解できるであろうし、そうでなくても、ここに書かれている内容はMIDI音源を取り扱う上で大いに役に立つであろう。</P>
+
+<P>　本書は、基本的なMIDIの知識とC言語の知識があることを前提に書かれている。従って、MIDIとは何かとか、4分音符とは何かとか、構造体とは何かとか、ポインタとは何かとかについては、一切述べていない。MIDIやC言語については、良質な市販の本が多く出版されているので、そちらを参照されたい。</P>
+
+<H3>謝辞</H3>
+
+<P>　MIDIStatusライブラリは、MIDI音源を扱うあらゆるアプリケーションの中核となるべく、数年がかりで開発された。当初の開発のきっかけは、リアルタイムで録音や演奏をする際に、現在のMIDI音源の状態を簡単に保持・参照できるライブラリが欲しかったからである。しかし、sourceforgeを見てもわかるように、画像やオーディオ関係の作成編集ライブラリが充実しているのに比べて、MIDI音源の状態を保持・参照するようなライブラリは無いに等しかった。そこで筆者はこのライブラリを製作することを決意した。</P>
+
+<P>　思えば、本ライブラリがリリースできたのは奇跡的である。筆者は会社から帰ってきてから深夜に開発を進めたため、時間は限りなく足りなかった。その上不況は深刻で、金欠病でもあった。そのようなさなか、昔から愛用のノートパソコンがついに壊れた。やがて筆者は疲れていたのか、電車内で失神したのである。幸いにも入院せずに済んだが、今後の人生に暗い影を落とした。</P>
+
+<P>　リリースにあたっては、まず、書庫部の皆様にお礼を述べなければならない。書庫部にはベテランのプログラマがおり、彼らの刺激なくしてはこのライブラリはリリースできなかったであろう。中でもあましんさんは、もともと正常だった筆者をこちらの世界に導いた人物として重要である。彼無くしては、筆者はいまだにC言語やMIDIの存在を知らなかった恐れすらある。そして最後に、あらゆる面においていつも筆者を支えてくださった家族の皆に、深く感謝の意とお礼を申し上げたい。</P>
+
+<H3>もくじ</H3>
+<DIV CLASS="INDEX"><A HREF="#MIDIOverview">第1章　概略</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIOverview_AboutMIDI">1-1.MIDIについて</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIOverview_AboutMIDIModule">1-2.MIDI音源について</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIOverview_PurposeOfMIDIStatus">1-3.MIDIステータスの目的</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIOverview_UseMIDIStatus">1-4.MIDIステータスを使う</A></DIV>
+<DIV CLASS="INDEX"><A HREF="#MIDIStatusReference">第2章　MIDIステータスリファレンス</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIStatus_Struct">2-1.MIDIステータスの構造</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIStatus_CreateFunction">2-2.MIDIステータスの生成</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIStatus_DeleteFunction">2-3.MIDIステータスの削除</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIStatus_GetFunction">2-4.MIDIステータスの情報取得</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIStatus_SetFunction">2-5.MIDIステータスの情報設定</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIStatus_PutFunction">2-6.MIDIステータスへMIDIメッセージを送信</A></DIV>
+<!--
+<DIV CLASS="INDEX">　　<A HREF="#MIDIStatus_OtherFunction">2-7.MIDIステータスその他の関数</A></DIV>
+-->
+<DIV CLASS="INDEX"><A HREF="#MIDIPartReference">第3章　MIDIパートリファレンス</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIPart_Struct">3-1.MIDIパートの構造</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIPart_CreateFunction">3-2.MIDIパートの生成</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIPart_DeleteFunction">3-3.MIDIパートの削除</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIPart_GetFunction">3-4.MIDIパートの情報取得</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIPart_SetFunction">3-5.MIDIパートの情報設定</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIPart_OtherFunction">3-6.MIDIパートその他の関数</A></DIV>
+<DIV CLASS="INDEX"><A HREF="#MIDIDrumSetupReference">第4章　MIDIドラムセットアップリファレンス</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIDrumSetup_Struct">4-1.MIDIドラムセットアップの構造</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIDrumSetup_CreateFunction">4-2.MIDIドラムセットアップの生成</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIDrumSetup_DeleteFunction">4-3.MIDIドラムセットアップの削除</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIDrumSetup_GetFunction">4-4.MIDIドラムセットアップの情報取得</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIDrumSetup_SetFunction">4-5.MIDIドラムセットアップの情報設定</A></DIV>
+
+<DIV CLASS="INDEX"><A HREF="#APPENDIX_A">付録A　よくある質問(F.A.Q)</A></DIV>
+<DIV CLASS="INDEX"><A HREF="#APPENDIX_B">付録B　キー・ナンバー対応表</A></DIV>
+<DIV CLASS="INDEX"><A HREF="#APPENDIX_C">付録C　MIDIメッセージ早見表</A></DIV>
+<DIV CLASS="INDEX"><A HREF="#APPENDIX_D">付録D　更新履歴</A></DIV>
+
+
+<H2><A NAME="MIDIOverview">第1章：概略</A></H2>
+
+
+<H3><A NAME="MIDIOverview_AboutMIDI">1-1.MIDIについて</A></H3>
+<P>　MIDIとは<U>M</U>usical <U>I</U>nstrument <U>D</U>igital <U>I</U>nterfaceの略で、電子楽器の間で情報を通信するための規格である。その中でも中核となるのが、MIDI音源と呼ばれる機器である。MIDI音源は電子楽器の一種であり、さまざまな音色を内蔵している。MIDI音源は予め内蔵された音色しか使えないが、シンセサイザーを用いれば内蔵された音色を自由に加工・変形・合成して新しい音色を作り出すことができる。</P>
+
+<P>　MIDI音源の基本的な使い方は、MIDI対応キーボードで演奏をして音を鳴らすというものである。最近では、コンピュータの普及により、パソコンで再生してMIDI音源を演奏することもできるようになった。自動演奏をする場合の演奏方法を記述したものがMIDIデータである。</P>
+
+<DIV>▼Fig1-1-1　MIDIの構成</DIV>
+<IMG SRC="MIDIStatus_Fig1-1-1.gif" WIDTH=600 HEIGHT=360 ALT="">
+
+<H3><A NAME="MIDIOverview_AboutMIDIModule">1-2.MIDI音源について</A></H3>
+
+<P>　MIDI音源は、MIDI1.0という規格に基づいてMIDIメッセージを解析し、演奏をする。
+例えば、{0x90, 0x36, 0x64}は「チャンネル1の中央のドの音(ノートナンバー60)をベロシティ100で押す」ことを意味し、{0xB0, 0x07, 0x7F}は、「チャンネル1のボリュームを127にする」ことを意味し、{0xC0, 0x30}は「チャンネル1の音色を48番にする」ことを意味する。詳細は、<A HREF="#APPENDIX_C">付録C MIDIメッセージ早見表</A>を参照していただきたい。</P>
+
+<P>　しかし、最近のMIDI音源は、ラックモジュールやシンセサイザーなど、多種多様である。それでは、MIDI音源を変えるたびに音色や効果が変わってしまうという不都合を生じる。そこで、どのMIDI音源で演奏してもだいたい同じ音色・効果で演奏がなされるように、共通の規格がいくつか決められている。なかでも有名なのはGM、GM2、GS、XGの4つである。MIDIStatusライブラリは、主にこの4つの規格を認識することを目指して作られている。また、特にシンセサイザーにおいては各機種ごとに豊富な拡張機能を持っているが、機種ごとに動作仕様が異なるので、そのような拡張機能には未対応である。</P>
+
+<P>　それでは、具体的にMIDI音源がどのような情報を記憶しているかを紹介する。ただし、これは機種により多少異なる。</P>
+
+<DIV>▼List1-2-1　MIDI音源の記憶する主な情報</DIV>
+<PRE>
+■MIDI音源
+├モジュールモード(NATIVE/GM/GM2/GS/88/XG)
+├マスターファインチューニング(-100.0cent～<U>0</U>～+100.0cent)
+├マスターコースチューニング(-24半音～<U>0</U>～+24半音)……マスターキーシフトとも言う
+├マスターボリューム(0～<U>127</U>)
+├マスターパン(1～<U>64</U>～127)
+├マスターリバーブ[設定項目約24個]
+├マスターコーラス[設定項目約24個]
+├マスターディレイ[設定項目約24個](XGではマスターヴァリエーション)
+├マスターイコライザ[設定項目約24個]
+│
+├■パート1
+│├パートモード(<U>ノーマル</U>・ドラム1・ドラム2)
+│├オムニON/OFF・モノ/ポリモード(1,2,<U>3</U>,4)
+│├チャンネルファインチューニング(-100.0cent～<U>±0</U>～+100.0cent)
+│├チャンネルコースチューニング(-24半音～<U>±0</U>～+24半音)(チャンネルキーシフトともいう)
+│├ピッチベンドセンシティビティ(0～<U>2半音</U>～24半音)
+│├モジュレーションデプスレンジ(0～)
+│├レシーブチャンネル
+│├ベロシティセンスデプス(0～<U>64</U>～127)
+│├ベロシティセンスオフセット(0～<U>64</U>～127)
+│├キーボードレンジロー(<U>0</U>～127)(ノートリミットローともいう)
+│├キーボードレンジハイ(0～<U>127</U>)(ノートリミットハイともいう)
+│├ノート[128キー](各々0～127)
+│├キーアフタータッチ[128キー](各々0～127)
+│├コントローラー[128種類](各々0～127)
+│├プログラムナンバー(<U>0</U>～127)
+│├チャンネルアフタータッチ(<U>0</U>～127)
+│└ピッチベンド(-8192～<U>0</U>～+8191)
+│
+├■パート2
+│└(パート1に同じ)
+├■パート3
+│└(パート1に同じ)
+├■パート4
+│└(パート1に同じ)
+├■パート5
+│└(パート1に同じ)
+├■パート6
+│└(パート1に同じ)
+├■パート7
+│└(パート1に同じ)
+├■パート8
+│└(パート1に同じ)
+├■パート9
+│└(パート1に同じ)
+├■パート10
+│└(パート1に同じ。ただし、パートモードは<U>ドラム1</U>がデフォルトである。)
+├■パート11
+│└(パート1に同じ)
+├■パート12
+│└(パート1に同じ)
+├■パート13
+│└(パート1に同じ)
+├■パート14
+│└(パート1に同じ)
+├■パート15
+│└(パート1に同じ)
+├■パート16
+│└(パート1に同じ)
+│
+├■ドラムセットアップ1(通常はパート10用)
+│├楽器ごとのピッチ[128種類](各々0～<U>64</U>～127)
+│├楽器ごとのボリューム[128種類](各々0～<U>64</U>～127)
+│├楽器ごとのパン[128種類](各々0～<U>64</U>～127)
+│├楽器ごとのリバーブ[128種類](各々0～<U>64</U>～127)
+│├楽器ごとのコーラス[128種類](各々0～<U>64</U>～127)
+│└楽器ごとのディレイ[128種類](各々0～<U>64</U>～127)(XGでは楽器ごとのヴァリエーション)
+│
+└■ドラムセットアップ2(通常はパート10以外用)
+　└(ドラムセットアップ1に同じ)
+
+</PRE>
+
+<P>　マスター関係は、音源全体の特性や演奏会場の特性などを表す項目であり、すべてのパートの音に影響を与える。これらの値は曲の冒頭で初期化される場合が多い。一方、パート1～パート16は、16人の演奏者を意味する。それぞれのパート(演奏者)には、演奏すべきチャンネル(楽譜の行のようなもの)が割り当てられており、通常パート1はチャンネル1のデータを演奏し、パート2はチャンネル2のデータを演奏する。また、通常の設定では、パート10はドラムモード、その他のパートはノーマルモードとなっている(ただし、パート11をドラムモードとして使うこともよくある)。各パートは、与えられたMIDIメッセージに従って随時楽器(プログラムナンバー)が割り当てられ、鍵盤を押したり(ノートオン)、離したり(ノートオフ)する。このように、MIDI音源の状態は、演奏中は刻々と変化している。</P>
+
+<P>　マスターパラメータで重要なのは、まず、現在のモジュールモードである。すなわち、NATIVE/GM/GM2/GS/88/XG/のどのモードで音源が機能しているかである。また、現在のマスターボリュームも重要である。各パートのボリュームとは別にマスターボリュームを使って、音源全体のボリュームをコントロールすることができるのである。</P>
+
+<P>　一方、各パートごとのパラメータで重要なのは、まず、現在のノートの状態である。すなわち鍵盤が押されているか、離されているか、押されているとすればベロシティいくつで押されたのかを記憶している。また、現在のコントローラーの値も重要である。特にモジュレーション(CC#1)、ボリューム(CC#7)、パン(CC#10)、エクスプレッション(CC#11)、ホールドペダル(CC#64)、リバーブセンドレベル(CC#91)、コーラスセンドレベル(CC#93)、ディレイセンドレベル(CC#94)などの値は使用頻度が高いと言える。また、現在の選択されているパッチ(楽器)も重要である。すなわち、プログラムナンバーの値とバンクセレクトMSB(CC#0)の値とバンクセレクトLSB(CC#32)の値の3つによって、現在何の楽器を使っているのかを判別する。その他には現在のピッチベンドの値も重要である。</P>
+
+<H3><A NAME="MIDIOverview_PurposeOfMIDIStatus">1-3.MIDIステータスの目的</A></H3>
+
+<P>　MIDIステータスライブラリの目的は、MIDI音源の状態を記録するための構造体を提供することと、MIDIメッセージをMIDIステータスオブジェクトに与えることによって、簡単に音源の状態を記録させることである。これにより、MIDI音源の状態をいつでもすばやくリアルタイムで取得することができる。</P>
+
+<P>　例えば、MIDIデータを再生することは、MIDI出力デバイスにMIDIメッセージを送信することにより可能である。しかし、現在の音源の状態(例えば選択されている楽器や各コントローラーの値や各鍵盤の押され具合など)をリアルタイムに画面上に表示するには、パソコン側内部にもMIDI音源の状態を記録しておく必要がある。そのため、今までは独自に構造体を作るなどしてメモリ空間を用意し、そこにMIDI音源の状態を記録していた。この方法は悪いわけではないが、メモリ空間を用意するのが面倒な上に、次のような難点がある。</P>
+
+<P>　例えば中央の「ド」(ノートキー=60)をベロシティ100で押した場合、再生するためにMIDI出力デバイスには{0x90, 0x3C, 0x64}というMIDIメッセージを送信するのに対し、パソコン内の構造体に記録するためには、pMIDIStatus-&gt;m_pMIDIPart[0]-&gt;m_cNote[60] = 100; と記述しなければならない。これは、プログラマーがMIDIメッセージの意味をひとつひとつ厳密に解釈する必要があることを意味する。つまり、MIDI入力端子やMIDIデータからMIDIメッセージを読み取るたびに、ノートオフ・ノートオン・キーアフタータッチ・コントロールチェンジ・プログラムチェンジ・チャンネルアフタータッチ・ピッチベンド・システムエクスクルーシブに分類し、そのMIDIメッセージを解析するルーチンを仕上げなければならない。RPN・NRPNが存在することや、GM/GM2/GS/XGでMIDIメッセージの形式が異なることなどを考えると、これは想像以上に厄介な問題である。</P>
+
+<P>　MIDIステータスライブラリを使えば、このような煩わしさから解放される。まず、MIDIStatusオブジェクトは、MIDI音源の状態を記録する構造体を既にもっている。さらにMIDIStatusオブジェクトは、MIDIメッセージをそのまま認識する機能をもっている。すなわち、あたかもMIDI出力デバイスの場合と同じように、MIDIメッセージを与えるだけで、構造体の状態を適切に更新する。以下に単純な例を示す。</P>
+
+<DIV>▼List1-3-1　MIDIStatusオブジェクトにMIDIメッセージを送信(抜粋)</DIV>
+<PRE>
+	<SPAN CLASS="KEYWORD">unsigned char</SPAN> cMIDIMessage[] = {0x90, 0x3C, 0x64};
+	MIDIOut_PutMIDIMessage (pMIDIOut, cMIDIMessage, 3);
+	MIDIStatus_PutMIDIMessage (pMIDIStatus, cMIDIMessage, 3);
+</PRE>
+
+<P>　この例は、中央の「ド」をベロシティ100で押すことを想定している。2行目では再生のために、MIDI出力デバイスに対してMIDIメッセージを送っている。3行目ではMIDI音源の状態をパソコン内に記録するために、MIDIStatusに対してMIDIメッセージを与えている。特筆すべきは、MIDIメッセージ{0x90, 0x3C, 0x64}が何を意味するのか解析しなくても、単純にMIDIメッセージをそのままの形でMIDIStatusオブジェクトに与えるだけで、自動的に pMIDIStatus-&gt;m_pMIDIPart[0]-&gt;m_cNote[60] の値が 100 に変化するようにできていることである。</P>
+
+<P>　このように、MIDIStatusオブジェクトは、あらゆるMIDIメッセージ※を解読し、予め確保された構造体の適切な部分に記録して、プログラマにMIDI音源の状態を簡単に提供する。</P>
+
+<P><SMALL>※MIDI1.0/GM/GM2/GS/XGで規定されているものに限る(システムエクスクルーシブメッセージを含む)。それ以外の音源固有のMIDIメッセージは解読しない。</SMALL></P>
+
+<H3><A NAME="MIDIOverview_UseMIDIStatus">1-4.MIDIステータスを使う</A></H3>
+
+<P>　それでは実際にプログラムを書いて、MIDI音源の状態を記録・取得する例を紹介する。ここでは、まず、MIDI音源のチャンネル1の音色が48番の「ストリングス1」に変更され、ド→ミ→ソの音を順に押されたことを想定する。この瞬間、チャンネル1の音色は48番の「ストリングス1」、押されている鍵盤はドとミとソの3つである。この状態を、<A HREF="#MIDIStatus_PutMIDIMessage">MIDIStatus_PutMIDIMessage</A>関数を使ってMIDIStatusオブジェクトに記憶させる。最後に、DOSプロンプトに現在押されている鍵盤のリストを表示させる。</P>
+
+<DIV>▼List1-4-1　MIDIステータスライブラリを使って現在の音源の状態を記録・取得するプログラム</DIV>
+<PRE>
+<SPAN CLASS="KEYWORD">#include</SPAN> &lt;stdio.h&gt;
+<SPAN CLASS="KEYWORD">#include</SPAN> &lt;MIDIStatus.h&gt;
+<SPAN CLASS="KEYWORD">int</SPAN> main () {
+	<SPAN CLASS="KEYWORD">int</SPAN> i, j;
+	<SPAN CLASS="KEYWORD">unsigned char</SPAN> cMIDIMessage1[2] = {0xC0, 0x30};
+	<SPAN CLASS="KEYWORD">unsigned char</SPAN> cMIDIMessage2[3] = {0x90, 0x3C, 0x64};
+	<SPAN CLASS="KEYWORD">unsigned char</SPAN> cMIDIMessage3[3] = {0x90, 0x40, 0x66};
+	<SPAN CLASS="KEYWORD">unsigned char</SPAN> cMIDIMessage4[3] = {0x90, 0x43, 0x68};
+	<SPAN CLASS="RED">MIDIStatus* pMIDIStatus = NULL;</SPAN>
+	<SPAN CLASS="COMMENT">/* MIDIステータスの生成 */</SPAN>
+	<SPAN CLASS="RED">pMIDIStatus = MIDIStatus_Create (MIDISTATUS_MODENATIVE, 16, 4);</SPAN>
+	<SPAN CLASS="KEYWORD">if</SPAN> (pMIDIStatus == NULL) {
+		printf (<SPAN CLASS="STRING">"MIDIステータスの生成に失敗しました。\n"</SPAN>);
+		<SPAN CLASS="KEYWORD">return</SPAN> 0;
+	}
+	<SPAN CLASS="COMMENT">/* チャンネル1のプログラムナンバーが48(ストリングス1)にされた。 */</SPAN>
+	<SPAN CLASS="RED">MIDIStatus_PutMIDIMessage (pMIDIStatus, cMIDIMessage1, 2);</SPAN>
+	<SPAN CLASS="COMMENT">/* チャンネル1の中央のドの音がベロシティ100で押された。 */</SPAN>
+	<SPAN CLASS="RED">MIDIStatus_PutMIDIMessage (pMIDIStatus, cMIDIMessage2, 3);</SPAN>
+	<SPAN CLASS="COMMENT">/* チャンネル1の次のミの音がベロシティ102で押された。 */</SPAN>
+	<SPAN CLASS="RED">MIDIStatus_PutMIDIMessage (pMIDIStatus, cMIDIMessage3, 3);</SPAN>
+	<SPAN CLASS="COMMENT">/* チャンネル1の次のソの音がベロシティ104で押された。 */</SPAN>
+	<SPAN CLASS="RED">MIDIStatus_PutMIDIMessage (pMIDIStatus, cMIDIMessage4, 3);</SPAN>
+
+	<SPAN CLASS="COMMENT">/* 各パートのプログラム・ボリューム・パン・ノート(36～84)を表示 */</SPAN>
+	printf (<SPAN CLASS="STRING">"Part Program Vol Pan _#_#__#_#_#__#_#__#_#_#__#_#__#_#_#__#_#__#_#_#__\n"</SPAN>);
+	<SPAN CLASS="KEYWORD">for</SPAN> (i = 0; i &lt; 16; i++) {
+		<SPAN CLASS="KEYWORD">long</SPAN> lProgramChange;
+		<SPAN CLASS="KEYWORD">unsigned char</SPAN> cControlChange[128];
+		<SPAN CLASS="KEYWORD">unsigned char</SPAN> cNote[128];
+		<SPAN CLASS="RED">MIDIPart* pMIDIPart = MIDIStatus_GetMIDIPart (pMIDIStatus, i);</SPAN>
+		<SPAN CLASS="RED">lProgramChange = MIDIPart_GetProgramChange (pMIDIPart);</SPAN>
+		<SPAN CLASS="RED">MIDIPart_GetControlChangeEx (pMIDIPart, cControlChange, 128);</SPAN>
+		<SPAN CLASS="RED">MIDIPart_GetNoteEx (pMIDIPart, cNote, 128);</SPAN>
+		printf (<SPAN CLASS="STRING">"%4d %7d %3d %3d "</SPAN>, 
+			i + 1, lProgramChange, cControlChange[7], cControlChange[10]);
+		<SPAN CLASS="KEYWORD">for</SPAN> (j = 36; j &lt;= 84; j++) {
+			printf (cNote[j] &gt; 0 ? <SPAN CLASS="STRING">"*"</SPAN> : <SPAN CLASS="STRING">" "</SPAN>); {
+		}
+		printf (<SPAN CLASS="STRING">"\n"</SPAN>);
+	}
+
+	<SPAN CLASS="COMMENT">/* MIDIステータスをメモリ上から削除 */</SPAN>
+	<SPAN CLASS="RED">MIDIStatus_Delete (pMIDIStatus);</SPAN>
+	pMIDIStatus = NULL;
+	<SPAN CLASS="KEYWORD">return</SPAN> 1;
+}
+</PRE>
+
+<P>　このプログラムでは、まず1つのMIDIStatusオブジェクトを生成している。MIDIStatusオブジェクトの生成には、<A HREF="#MIDIStatus_Create">MIDIStatus_Create</A>関数を使用する。そして、音色を48番(ストリングス1)に設定し、ドとミとソの鍵盤を押すようなMIDIメッセージを与えた。MIDIStatusオブジェクトに対してMIDIメッセージを送信するには、<A HREF="#MIDIStatus_PutMIDIMessage">MIDIStatus_PutMIDIMessage</A>関数を使用する。次に、現在のMIDI音源の状態を調べている。この例では、現在のプログラムナンバーを<A HREF="#MIDIPart_GetProgramChange">MIDIPart_GetProgramChange</A>関数で、現在のコントローラーを<A HREF="#MIDIPart_GetControlChange">MIDIPart_GetControlChangeEx</A>関数で、現在押されている鍵盤を<A HREF="#MIDIPart_GetNote">MIDIPart_GetNoteEx</A>関数で取得している。そして、押されている鍵盤には"*"を、押されていない鍵盤には" "をprintfする。最後に、MIDIStatusオブジェクトをメモリ上から削除して終了する。メモリ上からの削除には<A HREF="#MIDIStatus_Delete">MIDIStatus_Delete</A>関数を使用する。</P>
+
+<P>　このプログラムの実行により、DOSプロンプト画面に次のような表示がされる。</P>
+
+<DIV CLASS="TITLE">▼List1-4-2.上のプログラムの実行結果</DIV>
+<PRE>
+Part Program Vol Pan _#_#__#_#_#__#_#__#_#_#__#_#__#_#_#__#_#__#_#_#__
+   1      48 100  64                         *   *  *                 
+   2       0 100  64                                                  
+   3       0 100  64                                                  
+   4       0 100  64                                                  
+   5       0 100  64                                                  
+   6       0 100  64                                                  
+   7       0 100  64                                                  
+   8       0 100  64                                                  
+   9       0 100  64                                                  
+  10       0 100  64                                                  
+  11       0 100  64                                                  
+  12       0 100  64                                                  
+  13       0 100  64                                                  
+  14       0 100  64                                                  
+  15       0 100  64                                                  
+  16       0 100  64                                                  
+</PRE>
+
+
+<H2><A NAME="MIDIStatusReference">第2章：MIDIステータスリファレンス</A></H2>
+
+<H3><A NAME="MIDIStatus_Struct">2-1.MIDIステータスの構造</A></H3>
+
+<P>　MIDIStatus構造体は、現在の音源の状態のうち、音源全体に関係するパラメーターを保持している。これらの値を参照する場合は、<A HREF="#MIDIStatus_GetFunction">MIDIStatus_Get系関数</A>を使う。設定する場合は、<A HREF="#MIDIStatus_SetFunction">MIDIStatus_Set系関数</A>を使うか、<A HREF="#MIDIStatus_PutFunction">MIDIStatus_Put系関数</A>を使う。特にMIDIメッセージをもとにMIDIステータスの状態を更新するには、<A HREF="#MIDIStatus_PutMIDIMessage">MIDIStauts_PutMIDIMessage</A>関数が便利である。直接に値を設定することは、整合性がとれなくなるなどの危険性があるので、してはならない。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIStatus_FieldTable">▼Table2-1.MIDIStatus構造体のフィールドと使い方</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH WIDTH="25%">フィールド</TH>
+  <TH WIDTH="75%">使い方</TH>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">long</SPAN> m_lModuleMode</TD>
+  <TD>現在のモジュールモード。この値は、MIDISTATUS_MODENATIVE(0x00000000)、MIDISTATUS_MODEGM(0x7E000002)、MIDISTATUS_MODEGM2(0x7E000003)、MIDISTATUS_MODEGS(0x41000002)、MIDISTATUS_MODE88(0x41000003)、MIDISTATUS_MODEXG(0x43000002)、のいずれかの値をとる。モジュールモードを変更するには、各種リセットに相当するシステムエクスクルーシブメッセージを送信しなければならない。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">long</SPAN> m_lMasterFineTuning</TD>
+  <TD>現在のマスターファインチューニング。8192がデフォルト値かつ中央で、0～16383の値をとる(100/8192セント単位)。ただし、GS/88/XGでは1024がデフォルト値かつ中央で、24～2024(XGでは0～2048)の値をとる(0.1セント単位)。すなわち、-100～+100セントの範囲でピッチの微調整が可能である。この値を変更するには、専用のシステムエクスクルーシブメッセージを送信しなければならない。<BR><SMALL>※100セント=半音。</SMALL></TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">long</SPAN> m_lMasterCoarseTuning</TD>
+  <TD>現在のマスターコースチューニング。マスターキーシフトとも呼ばれる。64がデフォルト値かつ中央で、可変範囲は、±12半音の音源の場合52～76、±24半音の音源の場合40～88、±48半音の音源の場合16～112である(半音単位で変化)。この値を変更するには、専用のシステムエクスクルーシブメッセージを送信しなければならない。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">long</SPAN> m_lMasterVolume</TD>
+  <TD>現在のマスターボリューム。127がデフォルトで、0～127の値をとる。この値を変更するには、汎用のシステムエクスクルーシブメッセージを送信しなければならない。音源によっては0～16383のものもあるが、そのような場合は、MIDIステータスライブラリでは、128で割った値を保持する(下位7ビットを無視する)。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">long</SPAN> m_lMasterPan</TD>
+  <TD>現在のマスターパン。64が中央かつデフォルトで、1～127の値をとる。この値を変更するには、専用のシステムエクスクルーシブメッセージを送信しなければならない。音源によっては1～16383のものもあるが、そのような場合は、MIDIステータスライブラリでは、128で割った値を保持する(下位7ビットを無視する)。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">long</SPAN> m_lMasterReverb[32]</TD>
+  <TD>現在のマスターリバーブ[0]～[31]。マスターリバーブの値は、複数の設定項目があり、それぞれの意味は動作モードにより異なる。GMの場合、この値は使用しない。GM2の場合、[0]=リバーブタイプ(0～4及び8)、[1]=リバーブタイム(0～127)を表す。GS/88の場合、[0]=リバーブタイプ(0～7)、[1]=リバーブキャラクター(0～7)、[2]=リバーブプリローパスフィルター(0～7)、[3]=リバーブレベル(0～127)、[4]=リバーブタイム(0～127)、[5]=リバーブディレイフィードバック(0～127)、[6]=未使用、[7]=リバーブプリディレイタイム(0～127)を表す。XGの場合、[0]=リバーブタイプ、[1]～[16]=リバーブパラメーター1～16、[17]=リバーブリターン、[18]=リバーブパン表す。この値を変更するには、専用のシステムエクスクルーシブメッセージを送信しなければならない。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">long</SPAN> m_lMasterChorus[32]</TD>
+  <TD>現在のマスターコーラス[0]～[31]。マスターコーラスの値は、複数の設定項目があり、それぞれの意味は動作モードにより異なる。GMの場合、この値は使用しない。GM2の場合、[0]=コーラスタイプ(0～5)、[1]=モジュレーションレート(0～127)、[2]=モジュレーションデプス(0～127)、[3]=フィードバック(0～127)、[4]=センドトゥリバーブ(0～127)を表す。GS/88の場合、[0]=コーラスタイプ(0～7)、[1]=コーラスプリローパスフィルター(0～7)、[2]=コーラスレベル(0～127)、[3]=コーラスフィードバックレベル(0～127)、[4]=コーラスディレイタイム(0～127)、[5]=コーラスレイト(0～127)、[6]=コーラスデプス(0～127)、[7]=コーラスセンドレベルトゥリバーブ(0～127)、[8]=コーラスセンドレベルトゥディレイ(0～127)を表す。XGの場合、[0]=コーラスタイプ、[1]～[16]=コーラスパラメーター1～16、[17]=コーラスリターン(0～127)、[18]=コーラスパン(1～127)、[19]=センドコーラストゥリバーブ(0～127)を表す。この値を変更するには、専用のシステムエクスクルーシブメッセージを送信しなければならない。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">long</SPAN> m_lMasterDelay[32]</TD>
+  <TD>現在のマスターディレイ[0]～[31]。マスターディレイの値は、複数の設定項目があり、それぞれの意味は動作モードにより異なる。GM/GM2では、この値は使用しない。GS/88の場合、[0]=ディレイタイプ(0～10)、[1]=ディレイプリローパスフィルター(0～7)、[2]=ディレイタイムセンター、[3]=ディレイタイムレシオレフト、[4]=ディレイタイムレシオライト、[5]=ディレイレベルセンター(0～127)、[6]=ディレイレベルレフト(0～127)、[7]=ディレイレベルライト(0～127)、[8]=ディレイレベル(0～127)、[9]=ディレイフィードバック(0～127で64がフィードバックなし)、[10]=ディレイセンドレベルトゥリバーブ(0～127)を表す。XGの場合、[0]=バリエーションタイプ、[1]～[16]=バリエーションパラメーター1～16、[17]=バリエーションリターン(0～127)、[18]=バリエーションパン(1～127)、[19]=センドバリエーショントゥリバーブ(0～127)、[20]=センドバリエーショントゥコーラス(0～127)、[21]=バリエーションコネクション(0～1)、[22]=バリエーションパート(0～127)を表す。この値を変更するには、専用のシステムエクスクルーシブメッセージを送信しなければならない。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">long</SPAN> m_lMasterEqualizer[32]</TD>
+  <TD>現在のマスターイコライザ[0]～[31]。マスターイコライザの値は、複数の設定項目があり、それぞれの意味は動作モードにより異なる。GM/GM2では、この値は使用しない。GS/88の場合、[0]=未使用、[1]=イコライザーローフリケンシー(0～1)、[2]=イコライザーローゲイン(52～76で64が±0dB)、[3]=イコライザーハイフリケンシー(0～1)、[4]=イコライザーハイゲイン(52～76で64が±0dB)を表す。XGの場合、[0]=イコライザータイプ(0～4)、[1]=イコライザゲイン1(52～76で64が±0dB)、[2]=イコライザ周波数1(4～40)、[3]=イコライザQ1(1～78)、[4]=イコライザシェイプ1(0～1)、[5]=イコライザゲイン2(52～76で64が±0dB)、[6]=イコライザ周波数2(4～40)、[7]=イコライザQ2(1～78)、[8]=未使用、[9]=イコライザゲイン3(52～76で64が±0dB)、[10]=イコライザ周波数3(4～40)、[11]=イコライザQ3(1～78)、[12]=未使用、[13]=イコライザゲイン4(52～76で64が±0dB)、[14]=イコライザ周波数4(4～40)、[15]=イコライザQ4(1～78)、[16]=未使用、[17]=イコライザゲイン5(52～76で64が±0dB)、[18]=イコライザ周波数5(4～40)、[19]=イコライザQ5(1～78)、[20]=イコライザシェイプ5(0～1)を表す。この値を変更するには、専用のシステムエクスクルーシブメッセージを送信しなければならない。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">long</SPAN> m_lNumMIDIPart</TD>
+  <TD>このMIDIStatusオブジェクトが持っているMIDIパートの数。MIDIパートの数は通常16個であるが、そうでない場合もある。この値はMIDIStatusオブジェクト生成時に決定され、途中で変化することはない。<SPAN CLASS="RED">この値は決して操作してはならない。</SPAN></TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">long</SPAN> m_lNumDrumSetup</TD>
+  <TD>このMIDIStatusオブジェクトが持っているMIDIドラムセットアップの数。MIDIドラムセットアップの数は通常2個か4個であるが、そうでない場合もある。この値はMIDIStatusオブジェクト生成時に決定され、途中で変化することはない。<SPAN CLASS="RED">この値は決して操作してはならない。</SPAN></TD>
+ </TR>
+ <TR>
+  <TD>MIDIPart* m_pMIDIPart[MIDISTATUS_MAXMIDIPART]</TD>
+  <TD>各MIDIパートへのポインタ。m_pMIDIPart[0]～m_pMIDIPart[15]はそれぞれMIDIパートの1～16に対応している。この値はMIDIStatusオブジェクト生成時に決定され、途中で変化することはない。<SPAN CLASS="RED">この値は決して操作してはならない。各MIDIパートへのポインタは、必ず<A HREF="#MIDIStatus_GetMIDIPart">MIDIStatus_GetMIDIPart</A>関数を用いて取得する。</SPAN>使用可能なMIDIパートの数は、m_lNumMIDIPartに格納されており、通常16個である。なお、MIDIパートの数は、最大で128個まで使用可能である。</TD>
+ </TR>
+ <TR>
+  <TD>MIDIDrumSetup* m_pMIDIDrumSetup[MIDISTATUS_MAXMIDIDRUM]</TD>
+  <TD>各MIDIドラムセットアップへのポインタ。pMIDIDrumSetup[0]～m_pMIDIDrumSetup[3]はそれぞれドラムセットアップの1～4に対応している。この値はMIDIStatusオブジェクト生成時に決定され、途中で変化することはない。<SPAN CLASS="RED">この値は決して操作してはならない。各MIDIドラムセットアップへのポインタは、必ず<A HREF="#MIDIStatus_GetMIDIDrumSetup">MIDIStatus_GetMIDIDrumSetup</A>関数を用いて取得する。</SPAN>使用可能なMIDIドラムセットアップの数は,
+m_lNumMIDIDrumSetupに格納されており、通常2個か4個である。なお、MIDIドラムセットアップは、最大で128個まで使用可能である。</TD>
+ </TR>
+</TABLE>
+
+<H3><A NAME="MIDIStatus_CreateFunction">2-2.MIDIステータスの生成</A></H3>
+
+<P>　MIDIStatusオブジェクトをメモリ上に新規生成するには、MIDIStatus_Create関数を使う。</P>
+
+<P>　MIDIStatus_Create関数は、戻り値として正常終了時に生成したMIDIStatusオブジェクトへのポインタを、異常終了時にNULLを返す。異常終了は、メモリの割り当てに失敗した場合、及び引数の指定が不正だった場合におこりうる。戻り値は必ずチェックし、異常終了時の回避処理をしておかなければ、ヌルポインターエラーになるであろう。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIStatus_CreateFunctionList">▼List2-2.MIDIStatus_Create関数の使い方</A></DIV>
+<PRE>
+	MIDIStatus* pMIDIStatus;
+	<SPAN CLASS="COMMENT">/* MIDIStatusオブジェクトの生成 */</SPAN>
+	pMIDIStatus = MIDIStatus_Create (MIDISTATUS_MODENATIVE, 16, 2);
+	<SPAN CLASS="KEYWORD">if</SPAN> (pMIDIStatus == NULL) {
+		<SPAN CLASS="COMMENT">/* 異常終了時の処理 */</SPAN>
+		printf (<SPAN CLASS="STRING">"MIDIStatusオブジェクトの生成に失敗しました。\n"</SPAN>);
+		<SPAN CLASS="KEYWORD">return</SPAN> 0;
+	}
+	<SPAN CLASS="COMMENT">/* 正常終了時の処理 */</SPAN>
+	...
+</PRE>
+
+<P></P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIStatus_CreateFunctionTable">▼Table2-2.MIDIStatus_Create系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIStatus_Create">MIDIStatus* MIDIStatus_Create <BR>(<SPAN CLASS="KEYWORD">long</SPAN> lModuleMode, <SPAN CLASS="KEYWORD">long</SPAN> lNumMIDIPart, <SPAN CLASS="KEYWORD">long</SPAN> lNumMIDIDrumSetup);</A> </TD>
+  <TD>lModuleMode:パラメータの初期化モード (MIDISTATUS_MODENATIVE / MIDISTATUS_MODEGM / MIDISTATUS_MODEGM2 / MIDISTATUS_MODEGS / MIDISTATUS_MODE88 / MIDISTATUS_MODEXG のいずれか)<BR>lNumMIDIPart:このMIDIStatusオブジェクトが持つMIDIパートの数(=16)<BR>lNumMIDIDrumSetup:このMIDIStatusオブジェクトが持つMIDIドラムセットアップの数(=2又は4)</TD>
+  <TD>正常終了:MIDIStatusオブジェクトへのポインタ<BR>異常終了:NULL</TD>
+  <TD>MIDIStatusオブジェクトを新規に生成する。<SPAN CLASS="RED">この関数を使用すると同時に、MIDIStatus内にlNumMIDIPart個のMIDIPartオブジェクトとlNumMIDIDrumSetup個のMIDIDrumSetupオブジェクトが自動的に生成される。</SPAN>MIDIステータスのすべてのパラメータは、lModuleModeの値に従ってデフォルト値に設定される。なお、lModuleModeはパラメータの初期化のために必要な引数であり、動作モード自体は<A HREF="#MIDIStatus_PutFunction">MIDIStatus_Put系関数</A>によりいつでも切り替えられる。わからない場合はMIDISTATUS_MODENATIVEを指定しておけばよい。lNumMIDIPartは通常16を指定する。将来MIDIの規格が拡張されたときのために備えて、MAXMIDIPART(=128)まで指定できるようになっている。lNumMIDIDrumSetupは通常2か4を指定する。将来MIDIの規格が拡張されたときのために備えて、MAXMIDIDRUMSETUP(=128)まで指定できるようになっている。lNumMIDIPartで指定したMIDIパート数とlNumMIDIDrumSetupで指定したMIDIドラムセットアップ数は、このMIDIStatusオブジェクトが存在している間有効で、途中で変更することはできない。</TD>
+ </TR>
+</TABLE>
+
+<H3><A NAME="MIDIStatus_DeleteFunction">2-3.MIDIステータスの削除</A></H3>
+
+<P>　MIDIStatusオブジェクトをメモリ上から削除するには、MIDIStatus_Delete関数を使う。</P>
+
+<P><SPAN CLASS="RED">　<A HREF="#MIDIStatus_CreateFunction">MIDIStatus_Create系関数</A>で生成したMIDIStatusオブジェクトは、使用し終わったらMIDIStatus_Delete関数でメモリ上から削除しなければならない。</SPAN>MIDIステータスライブラリではメモリの自動解放(ガベージコレクション)を行わないので、この手続きは常に必要である。もし忘れれば、メモリリークが発生するであろう。</P>
+
+<P><SPAN CLASS="RED">　MIDIStatusオブジェクトを削除した直後には、ポインタにNULLを代入しておくべきである。</SPAN>これをしなければ、このMIDIStatusオブジェクトが既に削除されていることが外部からわからなくなってしまい、バグの原因となりうる。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIStatus_DeleteFunctionList">▼List2-3.MIDIStatus_Delete関数の使い方</A></DIV>
+<PRE>
+	MIDIStatus_Delete (pMIDIStatus);
+	pMIDIStatus = NULL;
+</PRE>
+
+<P></P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIStatus_DeleteFunctionTable">▼Table2-3.MIDIStatus_Delete系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIStatus_Delete"><SPAN CLASS="KEYWORD">void</SPAN> MIDIStatus_Delete <BR>(MIDIStatus* pMIDIStatus);</A> </TD>
+  <TD>pMIDIStatus:MIDIStatusオブジェクトへのポインタ</TD>
+  <TD>なし</TD>
+  <TD>MIDIStatusオブジェクトを削除する。<SPAN CLASS="RED">この関数は、MIDIStauts内に含まれるすべてのMIDIPartオブジェクトとすべてのMIDIDrumSetupオブジェクトも自動的に削除する。</SPAN></TD>
+ </TR>
+</TABLE>
+
+
+
+
+<H3><A NAME="MIDIStatus_GetFunction">2-4.MIDIステータスの情報取得</A></H3>
+
+<P>　MIDIステータスの各値は、MIDIStatus_Get系関数を使ってその情報を得ることができる。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIStatus_GetFunctionList">▼List2-4.MIDIStatus_Get系関数の使い方</A></DIV>
+<PRE>
+	<SPAN CLASS="KEYWORD">long</SPAN> lModuleMode;
+	<SPAN CLASS="KEYWORD">long</SPAN> lMasterVolume;
+	<SPAN CLASS="KEYWORD">long</SPAN> lMasterReverb[24]; 
+	<SPAN CLASS="COMMENT">/* モジュールモードを取得 */</SPAN>
+	lModuleMode = MIDIStatus_GetModuleMode (pMIDIStatus);
+	<SPAN CLASS="COMMENT">/* マスターボリュームを取得 */</SPAN>
+	lMasterVolume = MIDIStatus_GetMasterVolume (pMIDIStatus);
+	<SPAN CLASS="COMMENT">/* マスターリバーブの値を一括取得 */</SPAN>
+	MIDIStatus_GetMasterReverb (pMIDIPart, lMasterReverb, 24); 
+</PRE>
+
+<P>　MIDIStatusオブジェクトに含まれる各MIDIパートの値は、まず<A HREF="#MIDIStatus_GetMIDIPart">MIDIStatus_GetMIDIPart</A>関数で特定のパートへのポインタを取得し、そのポインタと<A HREF="#MIDIPart_GetFunction">MIDIPart_Get系関数</A>を使って情報を得ることができる。</P>
+
+<P>　MIDIStatusオブジェクトに含まれる各MIDIドラムセットアップの値は、まず<A HREF="#MIDIStatus_GetMIDIDrumSetup">MIDIStatus_GetMIDIDrumSetup</A>関数で特定のドラムセットアップへのポインタを取得し、そのポインタと<A HREF="#MIDIDrumSetup_GetFunction">MIDIDrumSetup_Get系関数</A>を使って情報を得ることができる。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIStatus_GetFunctionTable">▼Table2-4.MIDIStatus_Get系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIStatus_GetModuleMode"><SPAN CLASS="KEYWORD">long</SPAN> MIDIStatus_GetModuleMode <BR>(MIDIStatus* pMIDIStatus);</A> </TD>
+  <TD>pMIDIStatus:MIDIStatusオブジェクトへのポインタ</TD>
+  <TD>m_lModuleModeの値</TD>
+  <TD>現在のモジュールモードを返す。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIStatus_GetMasterFineTuning"><SPAN CLASS="KEYWORD">long</SPAN> MIDIStatus_GetMasterFineTuning <BR>(MIDIStatus* pMIDIStatus);</A> </TD>
+  <TD>pMIDIStatus:MIDIStatusオブジェクトへのポインタ</TD>
+  <TD>m_lMasterFineTuningの値(0～<U>8192</U>～16383、又は0～<U>1024</U>～2048)</TD>
+  <TD>現在のマスターファインチューニングの値を返す。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIStatus_GetMasterCoarseTuning"><SPAN CLASS="KEYWORD">long</SPAN> MIDIStatus_GetMasterCoarseTuning <BR>(MIDIStatus* pMIDIStatus);</A> </TD>
+  <TD>pMIDIStatus:MIDIStatusオブジェクトへのポインタ</TD>
+  <TD>m_lMasterCoarseTuningの値(0～<U>64</U>～127)</TD>
+  <TD>現在のマスターコースチューニング(マスターキーシフトとも言う)の値を返す。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIStatus_GetMasterVolume"><SPAN CLASS="KEYWORD">long</SPAN> MIDIStatus_GetMasterVolume <BR>(MIDIStatus* pMIDIStatus);</A> </TD>
+  <TD>pMIDIStatus:MIDIStatusオブジェクトへのポインタ</TD>
+  <TD>m_lMasterVolumeの値(0～<U>127</U>)</TD>
+  <TD>現在のマスターボリュームの値を返す。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIStatus_GetMasterPan"><SPAN CLASS="KEYWORD">long</SPAN> MIDIStatus_GetMasterPan <BR>(MIDIStatus* pMIDIStatus);</A> </TD>
+  <TD>pMIDIStatus:MIDIStatusオブジェクトへのポインタ</TD>
+  <TD>m_lMasterPanの値(1～<U>64</U>～127)</TD>
+  <TD>現在のマスターパンの値を返す。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIStatus_GetMasterReverb"><SPAN CLASS="KEYWORD">long</SPAN> MIDIStatus_GetMasterReverb <BR>(MIDIStatus* pMIDIStatus, <SPAN CLASS="KEYWORD">long</SPAN>lNum);</A> </TD>
+  <TD>pMIDIStatus:MIDIStatusオブジェクトへのポインタ<BR>lNum:配列のインデックス(0～31)</TD>
+  <TD>m_lMasterReverb[lNum]の値(0～127又は0～16383)</TD>
+  <TD>現在のマスターリバーブに関する値をひとつ取得する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIStatus_GetMasterReverbEx"><SPAN CLASS="KEYWORD">long</SPAN> MIDIStatus_GetMasterReverbEx <BR>(MIDIStatus* pMIDIStatus, <SPAN CLASS="KEYWORD">long</SPAN>* pBuf, <SPAN CLASS="KEYWORD">long</SPAN> lLen);</A> </TD>
+  <TD>pMIDIStatus:MIDIStatusオブジェクトへのポインタ<BR>pBuf:値を取得するためのlong型配列へのポインタ<BR>lLen:long型配列の長さ</TD>
+  <TD>正常終了:0以外、異常終了:0</TD>
+  <TD>現在のマスターリバーブに関する値(m_lMasterReverb[])をまとめてpBufに取得する。マスターリバーブに関する値を複数取得する場合は、<A HREF="#MIDIStatus_GetMasterReverb">MIDIStatus_GetMasterReverb</A>を複数回使うよりも、この関数を使った方が高速である。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIStatus_GetMasterChorus"><SPAN CLASS="KEYWORD">long</SPAN> MIDIStatus_GetMasterChorus <BR>(MIDIStatus* pMIDIStatus, <SPAN CLASS="KEYWORD">long</SPAN>lNum);</A> </TD>
+  <TD>pMIDIStatus:MIDIStatusオブジェクトへのポインタ<BR>lNum:配列のインデックス(0～31)</TD>
+  <TD>m_lMasterChorus[lNum]の値(0～127又は0～16383)</TD>
+  <TD>現在のマスターコーラスに関する値をひとつ取得する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIStatus_GetMasterChorusEx"><SPAN CLASS="KEYWORD">long</SPAN> MIDIStatus_GetMasterChorusEx <BR>(MIDIStatus* pMIDIStatus, <SPAN CLASS="KEYWORD">long</SPAN>* pBuf, <SPAN CLASS="KEYWORD">long</SPAN> lLen);</A> </TD>
+  <TD>pMIDIStatus:MIDIStatusオブジェクトへのポインタ<BR>pBuf:値を取得するためのlong型配列へのポインタ<BR>lLen:long型配列の長さ</TD>
+  <TD>正常終了:0以外、異常終了:0</TD>
+  <TD>現在のマスターコーラスに関する値(m_lMasterChorus[])をまとめてpBufに取得する。マスターコーラスに関する値を複数取得する場合は、<A HREF="#MIDIStatus_GetMasterChorus">MIDIStatus_GetMasterChorus</A>を複数回使うよりも、この関数を使った方が高速である。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIStatus_GetMasterDelay"><SPAN CLASS="KEYWORD">long</SPAN> MIDIStatus_GetMasterDelay <BR>(MIDIStatus* pMIDIStatus, <SPAN CLASS="KEYWORD">long</SPAN>lNum);</A> </TD>
+  <TD>pMIDIStatus:MIDIStatusオブジェクトへのポインタ<BR>lNum:配列のインデックス(0～31)</TD>
+  <TD>m_lMasterDelay[lNum]の値(0～127又は0～16383)</TD>
+  <TD>現在のマスターディレイに関する値をひとつ取得する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIStatus_GetMasterDelayEx"><SPAN CLASS="KEYWORD">long</SPAN> MIDIStatus_GetMasterDelayEx <BR>(MIDIStatus* pMIDIStatus, <SPAN CLASS="KEYWORD">long</SPAN>* pBuf, <SPAN CLASS="KEYWORD">long</SPAN> lLen);</A> </TD>
+  <TD>pMIDIStatus:MIDIStatusオブジェクトへのポインタ<BR>pBuf:値を取得するためのlong型配列へのポインタ<BR>lLen:long型配列の長さ</TD>
+  <TD>正常終了:0以外、異常終了:0</TD>
+  <TD>現在のマスターディレイに関する値(m_lMasterDelay[])をまとめてpBufに取得する。マスターディレイに関する値を複数取得する場合は、<A HREF="#MIDIStatus_GetMasterDelay">MIDIStatus_GetMasterDelay</A>を複数回使うよりも、この関数を使った方が高速である。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIStatus_GetMasterEqualizer"><SPAN CLASS="KEYWORD">long</SPAN> MIDIStatus_GetMasterEqualizer <BR>(MIDIStatus* pMIDIStatus, <SPAN CLASS="KEYWORD">long</SPAN>lNum);</A> </TD>
+  <TD>pMIDIStatus:MIDIStatusオブジェクトへのポインタ<BR>lNum:配列のインデックス(0～31)</TD>
+  <TD>m_lMasterEqualizer[lNum]の値(0～127又は0～16383)</TD>
+  <TD>現在のマスターイコライザに関する値をひとつ取得する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIStatus_GetMasterEqualizerEx"><SPAN CLASS="KEYWORD">long</SPAN> MIDIStatus_GetMasterEqualizerEx <BR>(MIDIStatus* pMIDIStatus, <SPAN CLASS="KEYWORD">long</SPAN>* pBuf, <SPAN CLASS="KEYWORD">long</SPAN> lLen);</A> </TD>
+  <TD>pMIDIStatus:MIDIStatusオブジェクトへのポインタ<BR>pBuf:値を取得するためのlong型配列へのポインタ<BR>lLen:long型配列の長さ</TD>
+  <TD>正常終了:0以外、異常終了:0</TD>
+  <TD>現在のマスターイコライザに関する値(m_lMasterEqualizer[])をまとめてpBufに取得する。マスターイコライザに関する値を複数取得する場合は、<A HREF="#MIDIStatus_GetMasterEqualizer">MIDIStatus_GetMasterEqualizer</A>を複数回使うよりも、この関数を使った方が高速である。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIStatus_GetMIDIPart">MIDIPart* MIDIStatus_GetMIDIPart <BR>(MIDIStatus* pMIDIStatus, <SPAN CLASS="KEYWORD">long</SPAN> lIndex);</A> </TD>
+  <TD>pMIDIStatus:MIDIStatusオブジェクトへのポインタ<BR>lIndex:パート番号(0～m_lNumMIDIPart - 1)</TD>
+  <TD>正常終了:MIDIPartオブジェクトへのポインタ、異常終了:NULL</TD>
+  <TD>各パートへのポインタを取得する。lIndexのインデックスは、表示上のパート1～パート16が0～15に対応している。インデックスが不正だった場合はNULLを返す。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIStatus_GetMIDIDrumSetup">MIDIPart* MIDIStatus_GetMIDIDrumSetup <BR>(MIDIStatus* pMIDIStatus, <SPAN CLASS="KEYWORD">long</SPAN> lIndex);</A> </TD>
+  <TD>pMIDIStatus:MIDIStatusオブジェクトへのポインタ<BR>lIndex:ドラムセットアップ番号(0～m_lNumMIDIDrumSetup - 1)</TD>
+  <TD>正常終了:MIDIDrumSetupオブジェクトへのポインタ、異常終了:NULL</TD>
+  <TD>各ドラムセットアップへのポインタを取得する。lIndexのインデックスは、表示上のドラムセットアップ1～ドラムセットアップ4が0～3に対応している。インデックスが不正だった場合はNULLを返す。</TD>
+ </TR>
+</TABLE>
+
+<H3><A NAME="MIDIStatus_SetFunction">2-5.MIDIステータスの情報設定</A></H3>
+
+<P>　MIDIステータスの各値は、MIDIStatus_Set系関数を使ってその値を設定することができる。しかし、特にMIDIメッセージをもとにMIDIステータスの状態を更新するには、<A HREF="#MIDIStatus_PutMIDIMessage">MIDIStauts_PutMIDIMessage</A>関数が便利である。直接に値を設定することは、整合性がとれなくなるなどの危険性があるので、してはならない。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIStatus_SetFunctionTable">▼Table2-5.MIDIStatus_Set系関数</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIStatus_SetModuleMode"><SPAN CLASS="KEYWORD">long</SPAN> MIDIStatus_SetModuleMode <BR>(MIDIPart* pMIDIPart, <SPAN CLASS="KEYWORD">long</SPAN> lMode)</A> </TD>
+  <TD>pMIDIStatus:MIDIStatusオブジェクトへのポインタ<BR>lModuleMode:設定するモジュールモード</TD>
+  <TD>正常終了:0以外、異常終了:0</TD>
+  <TD>現在のモジュールモード(m_lModuleMode)の値を設定する。この関数は、指定したモードに従って、すべてのパラメーターをデフォルト値に初期化する。lModuleModeが無意味な値であった場合、何も起こらない。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIStatus_SetMasterFineTuning"><SPAN CLASS="KEYWORD">long</SPAN> MIDIStatus_SetMasterFineTuning <BR>(MIDIPart* pMIDIPart, <SPAN CLASS="KEYWORD">long</SPAN> lMasterFineTuning)</A> </TD>
+  <TD>pMIDIStatus:MIDIStatusオブジェクトへのポインタ<BR>lMasterFineTuning:設定するマスターファインチューニング(0～<U>8192</U>～16383、又は0～<U>1024</U>～2048)</TD>
+  <TD>正常終了:0以外、異常終了:0</TD>
+  <TD>現在のマスターファインチューニング(m_lMasterFineTuning)の値を設定する。8192がデフォルト値かつ中央で、0～16383の値をとる(100/8192セント単位で変化)。ただし、GS/XG/88では、1024がデフォルト値かつ中央で、24～2024(XGでは0～2048)の値をとる(0.1セント単位で変化)。<BR><SMALL>※100セント=半音</SMALL></TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIStatus_SetMasterCoarseTuning"><SPAN CLASS="KEYWORD">long</SPAN> MIDIStatus_SetMasterCoarseTuning <BR>(MIDIPart* pMIDIPart, <SPAN CLASS="KEYWORD">long</SPAN> lMasterCoarseTuning)</A> </TD>
+  <TD>pMIDIStatus:MIDIStatusオブジェクトへのポインタ<BR>lMasterCoarseTuning:設定するマスターコースチューニング(0～<U>64</U>～127)</TD>
+  <TD>正常終了:0以外、異常終了:0</TD>
+  <TD>現在のマスターコースチューニング(m_lMasterCoarseTuning)の値を設定する。マスターキーシフトとも言う。64がデフォルト値かつ中央で、可変範囲は、±12半音の音源の場合52～76、±24半音の音源の場合40～88、±48半音の音源の場合16～112である(半音単位で変化)。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIStatus_SetMasterVolume"><SPAN CLASS="KEYWORD">long</SPAN> MIDIStatus_SetMasterVolume <BR>(MIDIPart* pMIDIPart, <SPAN CLASS="KEYWORD">long</SPAN> lMasterVolume)</A> </TD>
+  <TD>pMIDIStatus:MIDIStatusオブジェクトへのポインタ<BR>lMasterVolume:設定するマスターボリューム(0～<U>127</U>)</TD>
+  <TD>正常終了:0以外、異常終了:0</TD>
+  <TD>現在のマスターボリューム(m_lMasterVolume)の値を設定する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIStatus_SetMasterPan"><SPAN CLASS="KEYWORD">long</SPAN> MIDIStatus_SetMasterPan <BR>(MIDIPart* pMIDIPart, <SPAN CLASS="KEYWORD">long</SPAN> lMasterPan)</A> </TD>
+  <TD>pMIDIStatus:MIDIStatusオブジェクトへのポインタ<BR>lMasterPan:設定するマスターパン(1～<U>64</U>～127)</TD>
+  <TD>正常終了:0以外、異常終了:0</TD>
+  <TD>現在のマスターパン(m_lMasterPan)の値を設定する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIStatus_SetMasterReverb"><SPAN CLASS="KEYWORD">long</SPAN> MIDIStatus_SetMasterReverb <BR>(MIDIPart* pMIDIPart, <SPAN CLASS="KEYWORD">long</SPAN> lNum, <SPAN CLASS="KEYWORD">long</SPAN> lVal)</A> </TD>
+  <TD>pMIDIStatus:MIDIStatusオブジェクトへのポインタ<BR>lNum:設定するマスターリバーブのインデックス(0～31)<BR>lVal:設定するマスターリバーブの値</TD>
+  <TD>正常終了:0以外、異常終了:0</TD>
+  <TD>現在の指定したマスターリバーブ(m_lMasterReverb[lNum])の値を設定する。lNum=0のとき、<A HREF="#MIDIStatus_SetMasterReverbType">MIDIStatus_SetMasterReverbType</A>関数が呼び出される。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIStatus_SetMasterReverbType"><SPAN CLASS="KEYWORD">long</SPAN> MIDIStatus_SetMasterReverbType <BR>(MIDIPart* pMIDIPart, <SPAN CLASS="KEYWORD">long</SPAN> lMasterReverbType)</A> </TD>
+  <TD>pMIDIStatus:MIDIStatusオブジェクトへのポインタ<BR>lMasterReverbType:設定するリバーブタイプの番号</TD>
+  <TD>正常終了:0以外、異常終了:0</TD>
+  <TD>マスターリバーブのタイプ(m_lMasterReverb[0])の値を設定する。この関数は、m_lModuleModeの値と指定したタイプの番号に従って、すべてのマスターリバーブパラメーターをデフォルト値に初期化する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIStatus_SetMasterChorus"><SPAN CLASS="KEYWORD">long</SPAN> MIDIStatus_SetMasterChorus <BR>(MIDIPart* pMIDIPart, <SPAN CLASS="KEYWORD">long</SPAN> lNum, <SPAN CLASS="KEYWORD">long</SPAN> lVal)</A> </TD>
+  <TD>pMIDIStatus:MIDIStatusオブジェクトへのポインタ<BR>lNum:設定するマスターコーラスのインデックス(0～31)<BR>lVal:設定するマスターコーラスの値</TD>
+  <TD>正常終了:0以外、異常終了:0</TD>
+  <TD>現在の指定したマスターコーラス(m_lMasterChorus[lNum])の値を設定する。lNum=0のとき、<A HREF="#MIDIStatus_SetMasterChorusType">MIDIStatus_SetMasterChorusType</A>関数が呼び出される。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIStatus_SetMasterChorusType"><SPAN CLASS="KEYWORD">long</SPAN> MIDIStatus_SetMasterChorusType <BR>(MIDIPart* pMIDIPart, <SPAN CLASS="KEYWORD">long</SPAN> lMasterChorusType)</A> </TD>
+  <TD>pMIDIStatus:MIDIStatusオブジェクトへのポインタ<BR>lMasterChorusType:設定するコーラスタイプの番号</TD>
+  <TD>正常終了:0以外、異常終了:0</TD>
+  <TD>マスターコーラスのタイプ(m_lMasterChorus[0])の値を設定する。この関数は、m_lModuleModeの値と指定したタイプの番号に従って、すべてのマスターコーラスパラメーターをデフォルト値に初期化する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIStatus_SetMasterDelay"><SPAN CLASS="KEYWORD">long</SPAN> MIDIStatus_SetMasterDelay <BR>(MIDIPart* pMIDIPart, <SPAN CLASS="KEYWORD">long</SPAN> lNum, <SPAN CLASS="KEYWORD">long</SPAN> lVal)</A> </TD>
+  <TD>pMIDIStatus:MIDIStatusオブジェクトへのポインタ<BR>lNum:設定するマスターディレイのインデックス(0～31)<BR>lVal:設定するマスターディレイの値</TD>
+  <TD>正常終了:0以外、異常終了:0</TD>
+  <TD>現在の指定したマスターディレイ(m_lMasterDelay[lNum])の値を設定する。lNum=0のとき、<A HREF="#MIDIStatus_SetMasterDelayType">MIDIStatus_SetMasterDelayType</A>関数が呼び出される。なお、XGではディレイはヴァリエーションと読み替えるものとする。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIStatus_SetMasterDelayType"><SPAN CLASS="KEYWORD">long</SPAN> MIDIStatus_SetMasterDelayType <BR>(MIDIPart* pMIDIPart, <SPAN CLASS="KEYWORD">long</SPAN> lMasterDelayType)</A> </TD>
+  <TD>pMIDIStatus:MIDIStatusオブジェクトへのポインタ<BR>lMasterDelayType:設定するディレイタイプの番号</TD>
+  <TD>正常終了:0以外、異常終了:0</TD>
+  <TD>マスターディレイのタイプ(m_lMasterDelay[0])の値を設定する。この関数は、m_lModuleModeの値と指定したタイプの番号に従って、すべてのマスターディレイパラメーターをデフォルト値に初期化する。なお、XGではディレイはヴァリエーションと読み替えるものとする。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIStatus_SetMasterEqualizer"><SPAN CLASS="KEYWORD">long</SPAN> MIDIStatus_SetMasterEqualizer <BR>(MIDIPart* pMIDIPart, <SPAN CLASS="KEYWORD">long</SPAN> lNum, <SPAN CLASS="KEYWORD">long</SPAN> lVal)</A> </TD>
+  <TD>pMIDIStatus:MIDIStatusオブジェクトへのポインタ<BR>lNum:設定するマスターイコライザのインデックス(0～31)<BR>lVal:設定するマスターイコライザの値</TD>
+  <TD>正常終了:0以外、異常終了:0</TD>
+  <TD>現在の指定したマスターイコライザ(m_lMasterEqualizer[lNum])の値を設定する。lNum=0のとき、<A HREF="#MIDIStatus_SetMasterEqualizerType">MIDIStatus_SetMasterEqualizerType</A>関数が呼び出される。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIStatus_SetMasterEqualizerType"><SPAN CLASS="KEYWORD">long</SPAN> MIDIStatus_SetMasterEqualizerType <BR>(MIDIPart* pMIDIPart, <SPAN CLASS="KEYWORD">long</SPAN> lMasterEqualizerType)</A> </TD>
+  <TD>pMIDIStatus:MIDIStatusオブジェクトへのポインタ<BR>lMasterEqualizerType:設定するイコライザタイプの番号</TD>
+  <TD>正常終了:0以外、異常終了:0</TD>
+  <TD>マスターイコライザのタイプ(m_lMasterEqualizer[0])の値を設定する。この関数は、m_lModuleModeの値と指定したタイプの番号に従って、すべてのマスターイコライザパラメーターをデフォルト値に初期化する。</TD>
+ </TR>
+</TABLE>
+
+<H3><A NAME="MIDIStatus_PutFunction">2-6.MIDIステータスへMIDIメッセージを送信</A></H3>
+
+<P>　MIDIStatusオブジェクトの各値は、<A HREF="#MIDIStatus_SetFunction">MIDIStatus_Set系関数</A>設定するよりも、MIDIメッセージを与えることによって設定するほうが一般的である。これにより、MIDIデータや入力MIDIメッセージの内容を解析しなくてもすむ。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIStatus_PutFunctionList">▼List2-6.MIDIStatus_Put系関数の使い方</A></DIV>
+<PRE>
+	<SPAN CLASS="KEYWORD">unsigned char</SPAN> cMIDIMessage[3] = {0x90, 0x36, 0x64};
+	MIDIStatus_PutMIDIMessage (pMIDIStatus, cMIDIMessage, 3);
+</PRE>
+
+<P></P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIStatus_PutFunctionTable">▼Table2-6.MIDIStatus_Put系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIStatus_PutMIDIMessage"><SPAN CLASS="KEYWORD">long</SPAN> MIDIStatus_PutMIDIMessage <BR>(MIDIStatus* pMIDIStatus, <SPAN CLASS="KEYWORD">unsigned char</SPAN>* pMIDIMessage, <SPAN CLASS="KEYWORD">long</SPAN> lLen);</A> </TD>
+  <TD>pMIDIStatus:MIDIStatusへのポインタ<BR>pMIDIMessage:MIDIメッセージを格納したバッファへのポインタ<BR>lLen:MIDIメッセージを格納したバッファの長さ[バイト](1以上256以下でなければならない)</TD>
+  <TD>正常終了:解析されたバイト数(1以上lLen以下)<BR>解析できなかった場合:0</TD>
+  <TD>指定されたMIDIメッセージをMIDIStatusオブジェクトに対して送信する。この関数は、MIDIメッセージを解析して自己のメモリ領域の適切な部分を更新する。MIDIメッセージには、ノートオフ、ノートオン、キーアフタータッチ、コントロールチェンジ、プログラムチェンジ、チャンネルアフタータッチ、ピッチベンドの他、システムエクスクルーシブメッセージを使うことも可能である(MIDI1.0/GM/GM2/GS/XGで定義されるもののみ)。MIDIStatusが認識できないMIDIメッセージだった場合、この関数は0を返し、何も起こさない。この関数に渡すMIDIメッセージは、原則的に1メッセージづつでなければならない。複数のMIDIメッセージがつながった配列を渡すと、最初の1メッセージだけを処理し、残りは無視する。その場合、戻り値を調べることによって何バイト目まで処理されたのかを知ることができる(0が戻った場合を除く)。この関数は、最も頻繁に使用されるであろう。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIStatus_PutReset"><SPAN CLASS="KEYWORD">long</SPAN> MIDIStatus_PutReset <BR>(MIDIStatus* pMIDIStatus);</A> </TD>
+  <TD>pMIDIStatus:MIDIStatusへのポインタ</TD>
+  <TD>正常終了:6<BR>異常終了:0</TD>
+  <TD>GMシステムオフのMIDIメッセージをMIDIStatusオブジェクトに対して送信する。この関数は、m_lModuleModeの値をMIDISTATUS_MODENATIVEにし、すべてのパラメーターをMIDI1.0のデフォルト値に初期化する。この関数は、{0xF0, 0x7E, 0x7F, 0x09, 0x00, 0xF7}を<A HREF="#MIDIStatus_PutMIDIMessage">MIDIStatus_PutMIDIMessage</A>したのと同じ働きをする。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIStatus_PutGMReset"><SPAN CLASS="KEYWORD">long</SPAN> MIDIStatus_PutGMReset <BR>(MIDIStatus* pMIDIStatus);</A> </TD>
+  <TD>pMIDIStatus:MIDIStatusへのポインタ</TD>
+  <TD>正常終了:6<BR>異常終了:0</TD>
+  <TD>GMリセットのMIDIメッセージをMIDIStatusオブジェクトに対して送信する。この関数は、m_lModuleModeの値をMIDISTATUS_MODEGMにし、すべてのパラメーターをGMのデフォルト値に初期化する。この関数は、{0xF0, 0x7E, 0x7F, 0x09, 0x01, 0xF7}を<A HREF="#MIDIStatus_PutMIDIMessage">MIDIStatus_PutMIDIMessage</A>したのと同じ働きをする。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIStatus_PutGM2Reset"><SPAN CLASS="KEYWORD">long</SPAN> MIDIStatus_PutGM2Reset <BR>(MIDIStatus* pMIDIStatus);</A> </TD>
+  <TD>pMIDIStatus:MIDIStatusへのポインタ</TD>
+  <TD>正常終了:6<BR>異常終了:0</TD>
+  <TD>GM2リセットのMIDIメッセージをMIDIStatusオブジェクトに対して送信する。この関数は、m_lModuleModeの値をMIDISTATUS_MODEGM2にし、すべてのパラメーターをGM2のデフォルト値に初期化する。この関数は、{0xF0, 0x7E, 0x7F, 0x09, 0x03, 0xF7}を<A HREF="#MIDIStatus_PutMIDIMessage">MIDIStatus_PutMIDIMessage</A>したのと同じ働きをする。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIStatus_PutGSReset"><SPAN CLASS="KEYWORD">long</SPAN> MIDIStatus_PutGSReset <BR>(MIDIStatus* pMIDIStatus);</A> </TD>
+  <TD>pMIDIStatus:MIDIStatusへのポインタ</TD>
+  <TD>正常終了:11<BR>異常終了:0</TD>
+  <TD>GSリセットのMIDIメッセージをMIDIStatusオブジェクトに対して送信する。この関数は、m_lModuleModeの値をMIDISTATUS_MODEGSにし、すべてのパラメーターをGSのデフォルト値に初期化する。この関数は、{0xF0, 0x41, 0x10, 0x42, 0x12, 0x40, 0x00, 0x7F, 0x00, 0x41, 0xF7}を<A HREF="#MIDIStatus_PutMIDIMessage">MIDIStatus_PutMIDIMessage</A>したのと同じ働きをする。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIStatus_Put88Reset"><SPAN CLASS="KEYWORD">long</SPAN> MIDIStatus_Put88Reset <BR>(MIDIStatus* pMIDIStatus);</A> </TD>
+  <TD>pMIDIStatus:MIDIStatusへのポインタ</TD>
+  <TD>正常終了:11<BR>異常終了:0</TD>
+  <TD>88リセットのMIDIメッセージをMIDIStatusオブジェクトに対して送信する。この関数は、m_lModuleModeの値をMIDISTATUS_MODE88にし、すべてのパラメーターを88のデフォルト値に初期化する。この関数は、{0xF0, 0x41, 0x10, 0x42, 0x12, 0x00, 0x00, 0x7F, 0x00, 0x01, 0xF7}を<A HREF="#MIDIStatus_PutMIDIMessage">MIDIStatus_PutMIDIMessage</A>したのと同じ働きをする。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIStatus_PutXGReset"><SPAN CLASS="KEYWORD">long</SPAN> MIDIStatus_PutXGReset <BR>(MIDIStatus* pMIDIStatus);</A> </TD>
+  <TD>pMIDIStatus:MIDIStatusへのポインタ</TD>
+  <TD>正常終了:9<BR>異常終了:0</TD>
+  <TD>XGリセットのMIDIメッセージをMIDIStatusオブジェクトに対して送信する。この関数は、m_lModuleModeの値をMIDISTATUS_MODEXGにし、すべてのパラメーターをXGのデフォルト値に初期化する。この関数は、{0xF0, 0x43, 0x10, 0x4C, 0x00, 0x00, 0x7E, 0x00, 0xF7}を<A HREF="#MIDIStatus_PutMIDIMessage">MIDIStatus_PutMIDIMessage</A>したのと同じ働きをする。</TD>
+ </TR>
+</TABLE>
+
+
+<!--
+<H3><A NAME="MIDIStatus_OtherFunction">2-7.MIDIステータスその他の関数</A></H3>
+
+<P>　MIDIステータスには、その他に以下のような便利な関数が用意されている。これらの関数は非常にユニークである。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIStatus_OtherTable">▼Table2-7.MIDIStatusのその他の関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR CLASS="TITLE">
+  <TD WIDTH="25%">関数定義</TD>
+  <TD WIDTH="25%">引数</TD>
+  <TD WIDTH="10%">戻り値</TD>
+  <TD WIDTH="40%">解説</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIStatus_GetNumNote"><SPAN CLASS="KEYWORD">long</SPAN> MIDIStatus_GetNumNote <BR>(MIDIStatus* pMIDIStatus)</A> </TD>
+  <TD>pMIDIStatus:MIDIStatusオブジェクトへのポインタ</TD>
+  <TD>現在押されている鍵盤の数(0～127)</TD>
+  <TD>すべてのパートの、現在押されている鍵盤の数を返す。何も押されていない場合は0を返す。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIStatus_GetNumNoteKeep"><SPAN CLASS="KEYWORD">long</SPAN> MIDIStatus_GetNumNoteKeep <BR>(MIDIStatus* pMIDIStatus)</A> </TD>
+  <TD>pMIDIStatus:MIDIStatusオブジェクトへのポインタ</TD>
+  <TD>現在押されている鍵盤の数(ホールド持続含む)(0～127)</TD>
+  <TD>この関数は、<A HREF="#MIDIStatus_GetNumNote">MIDIStatus_GetNumNote</A>とほとんど同じである。しかし、実際に鍵盤が押されていない鍵盤でも、ホールドペダルが押され続けていることによって鍵盤が押されていると同様であるとみなされる場合、その鍵盤も数える。従ってこの関数は、すべてのパートの現在の同時発音数を返すものである(1鍵盤につき1音消耗する場合。音色によっては、1鍵盤で2～4音消耗するものもある)。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIStatus_GetLowestNote"><SPAN CLASS="KEYWORD">long</SPAN> MIDIStatus_GetLowestNote <BR>(MIDIStatus* pMIDIStatus)</A> </TD>
+  <TD>pMIDIStatus:MIDIStatusオブジェクトへのポインタ</TD>
+  <TD>現在押されている最も低い鍵盤(0～127)又は-1</TD>
+  <TD>すべてのパート(ドラムモードになっているパートを除く)の中で、現在押されている最も低い鍵盤を返す。何も押されていない場合は-1を返す。ベースラインの追跡に便利である。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIStatus_GetLowestNoteKeep"><SPAN CLASS="KEYWORD">long</SPAN> MIDIStatus_GetLowestNoteKeep <BR>(MIDIStatus* pMIDIStatus)</A> </TD>
+  <TD>pMIDIStatus:MIDIStatusオブジェクトへのポインタ</TD>
+  <TD>現在押されている最も低い鍵盤(ホールド持続含む)(0～127)又は-1</TD>
+  <TD>この関数は、<A HREF="#MIDIStatus_GetLowestNote">MIDIStatus_GetLowestNote</A>とほとんど同じである。しかし、実際に鍵盤が押されていない鍵盤でも、ホールドペダルが押され続けていることによって鍵盤が押されていると同様であるとみなされる場合、その鍵盤も含める。従ってこの関数は、すべてのパートの中で実際に鳴っている最も低いキーを返すものであるといえる。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIStatus_GetHighestNote"><SPAN CLASS="KEYWORD">long</SPAN> MIDIStatus_GetHighestNote <BR>(MIDIStatus* pMIDIStatus)</A> </TD>
+  <TD>pMIDIStatus:MIDIStatusオブジェクトへのポインタ</TD>
+  <TD>現在押されている最も高い鍵盤(0～127)又は-1</TD>
+  <TD>すべてのパート(ドラムモードになっているパートを除く)の中で、現在押されている最も高い鍵盤を返す。何も押されていない場合は-1を返す。メロディラインの探索に便利である。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIStatus_GetHighestNoteKeep"><SPAN CLASS="KEYWORD">long</SPAN> MIDIStatus_GetHighestNoteKeep <BR>(MIDIStatus* pMIDIStatus)</A> </TD>
+  <TD>pMIDIStatus:MIDIStatusオブジェクトへのポインタ</TD>
+  <TD>現在押されている最も高い鍵盤(ホールド持続含む)(0～127)又は-1</TD>
+  <TD>この関数は、<A HREF="#MIDIStatus_GetHighestNote">MIDIStatus_GetHighestNote</A>とほとんど同じである。しかし、実際に鍵盤が押されていない鍵盤でも、ホールドペダルが押され続けていることによって鍵盤が押されていると同様であるとみなされる場合、その鍵盤も含める。従ってこの関数は、すべてのパートの中で実際に鳴っている最も高いキーを返すものであるといえる。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIStatust_GetChord"><SPAN CLASS="KEYWORD">long</SPAN> MIDIStatus_GetChord <BR>(MIDIStatus* pMIDIStatus)</A> </TD>
+  <TD>pMIDIStatus:MIDIStatusオブジェクトへのポインタ</TD>
+  <TD>現在のコード</TD>
+  <TD>この関数は、すべてのパート(ドラムモードになっているパートを除く)の鍵盤の押され具合から、現在のコードを推測し、そのコードネームを返す。この関数は推測値を返すので、返されたコードが必ずしも正しいとは限らない。例えば、3つ以上の鍵盤が押されているときに高い精度でコードを識別するが、無音や単音や分散和音では全く識別できない。従って、指定したパートがコード認識用のダミーパートとして演奏されている場合に便利である。なお、この関数は2007年度以降のインプリメントの見込みである。戻り値は、上位から16ビットがルート("不明=0", "C"=1, "C#"=2, "D"=3, … , "B"=12)、下位16ビットが属性("不明"=0, "M"=1, "m"=2, "add9"=3, "7"=4, "M7"=5, "m7"=6, "dim"=7, "m7b5"=8, "aug"=9 "7sus4"=10, "6"=11)である。バスについては認識しないので、必要に応じて<A HREF="#MIDIStatus_GetLowestNoteKeep">MIDIStatus_GetLowestNoteKeep</A>関数で調べる必要がある。
+  </TD>
+ </TR>
+</TABLE>
+-->
+
+
+
+
+
+
+
+
+
+<H2><A NAME="MIDIPartReference">第3章：MIDIパートリファレンス</A></H2>
+
+<H3><A NAME="MIDIPart_Struct">3-1.MIDIパートの構造</A></H3>
+
+<P>　MIDIPart構造体は、現在の音源の状態のうち、特定のパートに関係するパラメーターを保持している。これらの値を参照する場合は、<A HREF="#MIDIPart_GetFunction">MIDIPart_Get系関数</A>を使う。設定する場合は、<A HREF="#MIDIPart_SetFunction">MIDIPart_Set系関数</A>を使うか、親のMIDIStatusオブジェクトに対して<A HREF="#MIDIStatus_PutFunction">MIDIStatus_Put系関数</A>を使う。特にMIDIメッセージをもとにMIDIステータスの状態を更新するには、<A HREF="#MIDIStatus_PutMIDIMessage">MIDIStauts_PutMIDIMessage</A>関数が便利である。直接に値を設定することは、整合性がとれなくなるなどの危険性があるので、してはならない。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIPart_FieldTable">▼Table3-1.MIDIPart構造体のフィールドと使い方</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH WIDTH="25%">フィールド</TH>
+  <TH WIDTH="75%">使い方</TH>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">long</SPAN> m_lPartMode</TD>
+  <TD>このパートの現在のパートモード。この値は、0(ノーマル)、1(ドラム1)、2(ドラム2)、3(ドラム3)、4(ドラム4)のいずれかの値をとる。ノーマルとは、通常のインストゥルメントを使えるモードのことである。デフォルトの設定では、パート10のみ1(ドラム1)で、その他のパートは0(ノーマル)となる。ただし、パート11を2(ドラム2)に設定し、2種類のドラムキットを使うこともよくある。GMでは、この値は変更できない。この値を変更するには、GM2ではプログラムチェンジ時のCC#0(Bank Select MSB)の値による。GS/XGでは、専用のシステムエクスクルーシブメッセージを送信しなければならない。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">long</SPAN> m_lOmniMonoPolyMode</TD>
+  <TD>このパートの現在のオムニオン/オフ・モノ/ポリモード。単にチャンネルモードとも言う。この値は、1(オムニオン・ポリ)、2(オムニオン・モノ)、3(オムニオフ・ポリ)、4(オムニオフ・モノ)のいずれかの値をとる。デフォルトは3(オムニフ・ポリ)である。オムニオンとは、すべてのチャンネルのMIDIメッセージを受信することを意味する。オムニオフとは、特定のチャンネルのMIDIメッセージを受信することを意味する。一般的なマルチティンバーのMIDI音源では、オムニオフのみ有効で、オムニオンにはならない。ポリとは、そのチャンネルが同時に複数の音を発音できることを意味する。モノとは、そのチャンネルが同時に1音しか発音できないことを意味する。この値を変更するには、CC#124～CC#127を使う。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">long</SPAN> m_lChannelFineTuning</TD>
+  <TD>このパートのチャンネルファインチューニング。8192がデフォルト値かつ中央で、0～16383の値をとる(100/8192セント単位)。すなわち、-100～+100セントの範囲でピッチの微調整が可能である。この値を変更するには、RPN#1を使う。すなわち、CC#101で0→CC#100で1→CC#6で設定値MSB(上位7ビット)→CC#38で設定値LSB(下位7ビット)を送信する。<BR><SMALL>※100セント=半音。</SMALL></TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">long</SPAN> m_lChannelCoarseTuning</TD>
+  <TD>このパートのチャンネルコースチューニング。チャンネルキーシフトとも呼ばれる。64がデフォルト値かつ中央で、可変範囲は、±12半音の音源の場合52～76、±24半音の音源の場合40～88、±48半音の音源の場合16～112である(半音単位で変化)。この値を変更するには、RPN#2を使う。すなわち、CC#101で0→CC#100で2→CC#6で設定値を送信する。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">long</SPAN> m_lPitchBendSensitivity</TD>
+  <TD>このパートの現在のピッチベンドセンシティビティの値を表す。この値は0～24であり、デフォルトでは2である。ピッチベンドセンシティビティとは、ピッチベンドを使ったときのピッチの変化する割合のことで、この値が12のとき±1オクターブ、24のとき±2オクターブの範囲で変化させることができる。この値を変更するにはRPN#1を使う。すなわち、CC#101で0→CC#100で0→CC#6で設定値を送信する</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">long</SPAN> m_lModulationDepthRange</TD>
+  <TD>このパートの現在のモジュレーションデプスレンジの値を表す。この値は0～16383であり、デフォルトは不明である。単位も不明である。モジュレーションデプスレンジとは、モジュレーション(CC#1)を使ったときの周波数の変化する範囲のことで、この値が128につき±100セント(=半音)の範囲で変化させることができる。この値を変更するにはRPN#5を使う。すなわち、CC#101で0→CC#100で5→CC#6で設定値MSB(上位7ビット)→CC#38で設定値LSB(下位7ビット)を送信する</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">long</SPAN> m_lReceiveChannel</TD>
+  <TD>このパートの現在の受信チャンネル。この値は、パート1～16に対して順番に0～15の値をとる。つまり、パート1では0、パート2では1、……、パート16では15となる。また、この値が16になっているパートは、どのチャンネルのMIDIメッセージも演奏しない。この値を変更するには、専用のシステムエクスクルーシブメッセージを送信しなければならない。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">long</SPAN> m_lVelocitySense</TD>
+  <TD>このパートのベロシティセンス。64がデフォルト値かつ中央で、0～127の値をとる。ベロシティセンスによる音の強弱の変化は、各音源の取説を参照のこと。この値を変更するには、専用のシステムエクスクルーシブメッセージを送信しなければならない。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">long</SPAN> m_lVelocityOffset</TD>
+  <TD>このパートのベロシティオフセット。64がデフォルト値かつ中央で、0～127の値をとる。ベロシティオフセットによる音の強弱の変化は、各音源の取説を参照のこと。この値を変更するには、専用のシステムエクスクルーシブメッセージを送信しなければならない。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">long</SPAN> m_lKeyboardRangeLow</TD>
+  <TD>このパートのキーボードレンジロー(ノートリミットローともいう)。0がデフォルト値で、0～127の値をとる。一般的に、この値で設定された値より下のノートキーは発音しない。この値を変更するには、専用のシステムエクスクルーシブメッセージを送信しなければならない。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">long</SPAN> m_lKeyboardRangeHigh</TD>
+  <TD>このパートのキーボードレンジハイ(ノートリミットハイともいう)。127がデフォルト値で、0～127の値をとる。一般的に、この値で設定された値より上のノートキーは発音しない。この値を変更するには、専用のシステムエクスクルーシブメッセージを送信しなければならない。</TD>
+ </TR>
+<!--
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">long</SPAN> m_bMute</TD>
+  <TD>このパートの現在のミュートがONになっていれば1を、OFFになっていれば0を示す。通常は0である。ミュートがONになっているパートは、受信したMIDIメッセージに関係なく音が出なくなることを意味する。ただし、ここで言っているミュートとは、音源側のミュートスイッチの話であって、シーケンサーやMIDIプレイヤー上でのミュートスイッチとは別物である。この値は、音源や動作モードによっては効かない場合がある。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">long</SPAN> m_bEqualizer</TD>
+  <TD>このパートの現在のイコライザがONになっていれば1を、OFFになっていれば0を示す。通常は0である。EQがONになっているパートは、マスターイコライザで設定したイコライザがかけられた音質に変化する。この値は、音源や動作モードによっては効かない場合がある。</TD>
+ </TR>
+-->
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">unsigned char</SPAN> m_cNote[128]</TD>
+  <TD>このパートの現在の各鍵盤の押され具合をあらわす。[0]～[127]のインデックスはノートキーを表し、[60]が中央のドである。それぞれの値は0～127のいずれかとなる。0はその鍵盤が押されていないことを意味する。1～127は、その鍵盤が、その数値のベロシティで押されていることを意味する。ただし、鍵盤が押されていてもCC#120(オールサウンドオフ)やCC#121(オールノートオフ)を認識した場合は0に戻る。この値は、いかなる音源や動作モードでも有効である。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">unsigned char</SPAN> m_cNoteKeep[128]</TD>
+  <TD>これはm_cNoteの値と基本的に同じ値をとるが、CC#64(ホールドペダル)<!--やCC#120(オールサウンドオフ)やCC#121(オールノートオフ)-->が使われたとき異なる値となる。m_cNoteは、ホールドペダルが押されている場合でも、鍵盤が離されれば値は0に戻る。一方、m_cNoteKeepでは、ホールドペダルが押されている場合、鍵盤が離されても0に戻らない。0に戻るのは、鍵盤が離されており、かつホールドペダルが離された場合である。<!--又、逆に、オールサウンドオフやオールノートオフが使われた場合は、鍵盤が押された状態であっても0に戻る。従って、この値は物理的な鍵盤の押され具合とは必ずしも一致せず、むしろ、実際の発音状態に一致する。この値は、いかなる音源や動作モードでも有効である。--></TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">unsigned char</SPAN> m_cKeyAfterTouch[128]</TD>
+  <TD>このパートの現在の各鍵盤のキーアフタータッチの値を表す。[0]～[127]のインデックスはノートキーを表し、[60]が中央のドである。それぞれの値は0～127のいずれかとなる。0はその鍵盤にキーアフタータッチが働いていないことを意味する。1～127は、その鍵盤にキーアフタータッチがその量だけ働いていることを意味する。キーアフタータッチの値が働くと、そのキーの音質が変化するが、どのように変化するかは音源の設定により異なる。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">unsigned char</SPAN> m_cControlChange[128]</TD>
+  <TD>このパートの現在の各コントロールチェンジの値を表す。[0]～[127]のインデックスはCC#の値を表す。例えば、[0]はバンクセレクトMSB(=0又は126又は127)、[1]はモジュレーション(=0)、[5]はポルタメントタイム(=0)、[6]はデータエントリーMSB(=0)、[7]はボリューム(=100)、[10]はパン(=64)、[11]はエクスプレッション(=127)、[32]はバンクセレクトLSB(=0)、[38]はデータエントリーLSB(=0)[64]はホールドペダル(=0)、[65]はポルタメントスイッチ(=0)、[66]はソテヌートペダル(=0)、[67]はソフトペダル(=0)、[71]はフィルターレゾナンス(=64)、[72]はリリースタイム(=64)、[73]はアタックタイム(=64)、[74]はブライトネス(=64)、[75]はディケイタイム(=64)、[76]はビブラートレイト(=64)、[77]はビブラートデプス(=64)、[78]はビブラートディレイ(=64)、[91]はリバーブ(=40)、[93]はコーラス(=0)、[94]はディレイ(=0)、[98]はNRPNのLSB(=127)、[99]はNRPNのMSB(=127)、[100]はRPNのLSB(=127)、[101]はRPNのMSB(=127)である。それぞれの値は0～127のいずれかで、デフォルトの値は( )内に示した値である。音源やモジュールモードによっては効かないコントロールチェンジもある。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">long</SPAN> m_lProgramChange</TD>
+  <TD>このパートの現在のプログラムチェンジの値を表す。この値は0～127である。プログラムチェンジの値は、GMでは128種類の楽器を表すが、その他のモードでは、CC#0とCC#32との組み合わせによって、2097152種類の楽器を表すことができる。とは言え、実際に定義されている楽器の数は、GM2で256種類、GS(SC-8850)やXG(MU-2000)でも1000種類程度である。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">long</SPAN> m_lChannelAfterTouch</TD>
+  <TD>このパートの現在のチャンネルアフタータッチの値を表す。この値は0～127である。0はそのチャンネルにチャンネルアフタータッチが働いていないことを意味する。1～127は、その鍵盤にチャンネルアフタータッチがその量だけ働いていることを意味する。チャンネルアフタータッチの値が働くと、そのチャンネル全体の音質が変化するが、どのように変化するかは音源の設定により異なる。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">long</SPAN> m_lPitchBend</TD>
+  <TD>このパートの現在のピッチベンドの値を表す。この値は0～8192～16383であり、8192が中央値かつデフォルト値である。この値が変化したときに周波数がどの程度変わるかは、ピッチベンドセンシティビティの値に依存する。</TD>
+ </TR>
+</TABLE>
+
+<H3><A NAME="MIDIPart_CreateFunction">3-2.MIDIパートの生成</A></H3>
+
+<P>　MIDIPartオブジェクトをメモリ上に新規生成するには、MIDIPart_Create関数を使う。しかし、<SPAN CLASS="RED">MIDIPartオブジェクトは、MIDIStatusオブジェクトを生成したときに自動生成されるので、あなたがこの関数を呼び出す必要はないし、呼び出してはならない。</SPAN>この節は、ソースを理解する参考のために載せたものである。</P>
+
+<P>　MIDIPart_Create関数は、戻り値として正常終了時に生成したMIDIPartオブジェクトへのポインタを、異常終了時にNULLを返す。異常終了は、メモリの割り当てに失敗した場合、及び引数の指定が不正だった場合におこりうる。戻り値は必ずチェックし、異常終了時の回避処理をしておかなければ、ヌルポインターエラーになるであろう。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIPart_CreateFunctionList">▼List3-2.MIDIPart_Create関数の使い方</A></DIV>
+<PRE>
+	MIDIPart* pMIDIPart;
+	<SPAN CLASS="COMMENT">/* MIDIPartオブジェクトの生成 */</SPAN>
+	pMIDIPart = MIDIPart_Create (pMIDIStatus);
+	<SPAN CLASS="KEYWORD">if</SPAN> (pMIDIPart == NULL) {
+		<SPAN CLASS="COMMENT">/* 異常終了時の処理 */</SPAN>
+		printf (<SPAN CLASS="STRING">"MIDIPartオブジェクトの生成に失敗しました。\n"</SPAN>);
+		<SPAN CLASS="KEYWORD">return</SPAN> 0;
+	}
+	<SPAN CLASS="COMMENT">/* 正常終了時の処理 */</SPAN>
+	...
+</PRE>
+
+<P></P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIPart_CreateFunctionTable">▼Table3-2.MIDIPart_Create系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPart_Create">MIDIPart* MIDIPart_Create <BR>(MIDIPar* pParent);</A> </TD>
+  <TD>pParent:親のMIDIStatusオブジェクトへのポインタ</TD>
+  <TD>正常終了:MIDIPartオブジェクトへのポインタ<BR>異常終了:NULL</TD>
+  <TD>MIDIPartオブジェクトを新規に生成する。しかし、<SPAN CLASS="RED">MIDIPartオブジェクトは、MIDIStatusオブジェクトを生成したときに自動生成されるので、あなたがこの関数を呼び出す必要はないし、呼び出してはならない。</SPAN></TD>
+ </TR>
+</TABLE>
+
+<H3><A NAME="MIDIPart_DeleteFunction">3-3.MIDIパートの削除</A></H3>
+
+<P>　MIDIPartオブジェクトをメモリ上から削除するには、MIDIPart_Delete関数を使う。しかし、<SPAN CLASS="RED">MIDIPartオブジェクトは、MIDIStatusオブジェクトを削除したときに自動削除されるので、あなたがこの関数を呼び出す必要はないし、呼び出してはならない。</SPAN>この節は、ソースを理解する参考のために載せたものである。</P>
+
+<P><SPAN CLASS="RED">　<A HREF="#MIDIPart_CreateFunction">MIDIPart_Create系関数</A>で生成したMIDIPartオブジェクトは、使用し終わったらMIDIPart_Delete関数でメモリ上から削除しなければならない。</SPAN>MIDIステータスライブラリではメモリの自動解放(ガベージコレクション)を行わないので、この手続きは常に必要である。もし忘れれば、メモリリークが発生するであろう。</P>
+
+<P><SPAN CLASS="RED">　MIDIPartオブジェクトを削除した直後には、ポインタにNULLを代入しておくべきである。</SPAN>これをしなければ、このMIDIPartオブジェクトが既に削除されていることが外部からわからなくなってしまい、バグの原因となりうる。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIPart_DeleteFunctionList">▼List3-3.MIDIPart_Delete関数の使い方</A></DIV>
+<PRE>
+	MIDIPart_Delete (pMIDIPart);
+	pMIDIPart = NULL;
+</PRE>
+
+<P></P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIPart_DeleteFunctionTable">▼Table3-3.MIDIPart_Delete系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPart_Delete"><SPAN CLASS="KEYWORD">void</SPAN> MIDIPart_Delete <BR>(MIDIPart* pMIDIPart);</A> </TD>
+  <TD>pMIDIPart:MIDIPartオブジェクトへのポインタ</TD>
+  <TD>なし</TD>
+  <TD>MIDIPartオブジェクトを削除する。しかし、<SPAN CLASS="RED">MIDIPartオブジェクトは、MIDIStatusオブジェクトを削除したときに自動削除されるので、あなたがこの関数を呼び出す必要はないし、呼び出してはならない。</SPAN></TD>
+ </TR>
+</TABLE>
+
+<H3><A NAME="MIDIPart_GetFunction">3-4.MIDIパートの情報取得</A></H3>
+
+<P>　MIDIパートの各値は、MIDIPart_Get系関数を使ってその情報を得ることができる。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIPart_GetFunctionList">▼List3-4.MIDIPart_Get系関数の使い方</A></DIV>
+<PRE>
+	<SPAN CLASS="KEYWORD">unsigned char</SPAN> cNote[128];
+	<SPAN CLASS="KEYWORD">unsigned char</SPAN> cControlChange[128];
+	<SPAN CLASS="KEYWORD">long</SPAN> lProgramChange;
+	<SPAN CLASS="KEYWORD">long</SPAN> lPitchBend;
+	<SPAN CLASS="COMMENT">/* パート1へのポインタを取得 */</SPAN>
+	MIDIPart* pMIDIPart = MIDIStatus_GetMIDIPart (pMIDIStatus, 0);
+	<SPAN CLASS="COMMENT">/* パート1の鍵盤の押され具合を(C0～G#7)一括取得 */</SPAN>
+	MIDIPart_GetNote (pMIDIPart, cNote, 128);
+	<SPAN CLASS="COMMENT">/* パート1のコントローラーの値(CC#0～CC#127)を一括取得 */</SPAN>
+	MIDIPart_GetControlChange (pMIDIPart, cControlChange, 128);
+	<SPAN CLASS="COMMENT">/* パート1のプログラムチェンジの値を取得 */</SPAN>
+	lProgramChange = MIDIPart_GetProgramChange (pMIDIPart);
+	<SPAN CLASS="COMMENT">/* パート1のピッチベンドの値を取得 */</SPAN>
+	lPitchBend = MIDIPart_GetPitchBend (pMIDIPart); 
+</PRE>
+
+<P></P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIPart_GetFunctionTable">▼Table3-4.MIDIPart_Get系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPart_GetPartMode"><SPAN CLASS="KEYWORD">long</SPAN> MIDIPart_GetPartMode <BR>(MIDIPart* pMIDIPart);</A> </TD>
+  <TD>pMIDIPart:MIDIPartオブジェクトへのポインタ<BR></TD>
+  <TD>m_lPartModeの値(0～4)</TD>
+  <TD>このパートの現在のパートモードの値を取得する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPart_GetOmniMonoPolyMode"><SPAN CLASS="KEYWORD">long</SPAN> MIDIPart_GetOmniMonoPolyMode <BR>(MIDIPart* pMIDIPart);</A> </TD>
+  <TD>pMIDIPart:MIDIPartオブジェクトへのポインタ</TD>
+  <TD>m_lOmniMonoPolyModeの値(1～<U>3</U>～4)</TD>
+  <TD>このパートのオムニON/OFF、モノ/ポリのモードを取得する。1=オムニオン・ポリ、2=オムニオン・モノ、3=オムニオフ・ポリ、4=オムニオフ・モノ。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPart_GetChannelFineTuning"><SPAN CLASS="KEYWORD">long</SPAN> MIDIPart_GetChannelFineTuning <BR>(MIDIPart* pMIDIPart);</A> </TD>
+  <TD>pMIDIPart:MIDIPartオブジェクトへのポインタ<BR></TD>
+  <TD>m_lChannelFineTuningの値(0～<U>8192</U>～16383)</TD>
+  <TD>このパートの現在のチャンネルファインチューニングの値を取得する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPart_GetChannelCourseTuning"><SPAN CLASS="KEYWORD">long</SPAN> MIDIPart_GetChannelCourseTuning <BR>(MIDIPart* pMIDIPart);</A> </TD>
+  <TD>pMIDIPart:MIDIPartオブジェクトへのポインタ<BR></TD>
+  <TD>m_lChannelCourseTuningの値(40～<U>64</U>～88)</TD>
+  <TD>このパートの現在のチャンネルコースチューニング(チャンネルキーシフトとも言う)の値を取得する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPart_GetPitchBendSensitivity"><SPAN CLASS="KEYWORD">long</SPAN> MIDIPart_GetPitchBendSensitivity <BR>(MIDIPart* pMIDIPart);</A> </TD>
+  <TD>pMIDIPart:MIDIPartオブジェクトへのポインタ</TD>
+  <TD>m_lPitchBendSensitivityの値(0～<U>2</U>～24)</TD>
+  <TD>このパートの現在のピッチベンドセンシティビティの値を取得する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPart_GetModulationDepthRange"><SPAN CLASS="KEYWORD">long</SPAN> MIDIPart_GetModulationDepthRange <BR>(MIDIPart* pMIDIPart);</A> </TD>
+  <TD>pMIDIPart:MIDIPartオブジェクトへのポインタ</TD>
+  <TD>m_lModulationDepthRangeの値(0～)</TD>
+  <TD>このパートの現在のモジュレーションデプスレンジの値を取得する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPart_GetReceiveChannel"><SPAN CLASS="KEYWORD">long</SPAN> MIDIPart_GetReceiveChannel <BR>(MIDIPart* pMIDIPart);</A> </TD>
+  <TD>pMIDIPart:MIDIPartオブジェクトへのポインタ<BR></TD>
+  <TD>m_lReceiveChannelの値(0～15,16)</TD>
+  <TD>このパートの現在のレシーブチャンネルの値を取得する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPart_GetVelocitySenseDepth"><SPAN CLASS="KEYWORD">long</SPAN> MIDIPart_GetVelocitySenseDepth <BR>(MIDIPart* pMIDIPart);</A> </TD>
+  <TD>pMIDIPart:MIDIPartオブジェクトへのポインタ<BR></TD>
+  <TD>m_lVelocitySenseDepthの値(0～<U>64</U>～127)</TD>
+  <TD>このパートの現在のベロシティセンスデプスの値を取得する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPart_GetVelocitySenseOffset"><SPAN CLASS="KEYWORD">long</SPAN> MIDIPart_GetVelocitySenseOffset <BR>(MIDIPart* pMIDIPart);</A> </TD>
+  <TD>pMIDIPart:MIDIPartオブジェクトへのポインタ<BR></TD>
+  <TD>m_lVelocitySenseOffsetの値(0～<U>64</U>～127)</TD>
+  <TD>このパートの現在のベロシティセンスデプスの値を取得する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPart_GetKeyboardRangeLow"><SPAN CLASS="KEYWORD">long</SPAN> MIDIPart_GetKeyboardRangeLow <BR>(MIDIPart* pMIDIPart);</A> </TD>
+  <TD>pMIDIPart:MIDIPartオブジェクトへのポインタ<BR></TD>
+  <TD>m_lKeyboardRangeLowの値(<U>0</U>～127)</TD>
+  <TD>このパートの現在のキーボードレンジロー(ノートリミットローとも言う)の値を取得する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPart_GetKeyboardRangeHigh"><SPAN CLASS="KEYWORD">long</SPAN> MIDIPart_GetKeyboardRangeHigh <BR>(MIDIPart* pMIDIPart);</A> </TD>
+  <TD>pMIDIPart:MIDIPartオブジェクトへのポインタ<BR></TD>
+  <TD>m_lKeyboardRangeHighの値(0～<U>127</U>)</TD>
+  <TD>このパートの現在のキーボードレンジハイ(ノートリミットハイとも言う)の値を取得する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPart_GetNote"><SPAN CLASS="KEYWORD">long</SPAN> MIDIPart_GetNote <BR>(MIDIPart* pMIDIPart, <SPAN CLASS="KEYWORD">long</SPAN> lKey);</A> </TD>
+  <TD>pMIDIPart:MIDIPartオブジェクトへのポインタ<BR>lKey:キーのインデックス(0～127)</TD>
+  <TD>m_cNote[lKey]の値(0～127)</TD>
+  <TD>このパートの現在のノートの値をひとつ取得する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPart_GetNoteEx"><SPAN CLASS="KEYWORD">long</SPAN> MIDIPart_GetNoteEx <BR>(MIDIPart* pMIDIPart, <SPAN CLASS="KEYWORD">unsigned char</SPAN>* pBuf, <SPAN CLASS="KEYWORD">long</SPAN> lLen);</A> </TD>
+  <TD>pMIDIPart:MIDIPartオブジェクトへのポインタ<BR>pBuf:値を取得するためのunsigned char型配列へのポインタ<BR>lLen:unsigned char型配列の長さ</TD>
+  <TD>正常終了:0以外、異常終了:0</TD>
+  <TD>このパートの現在のノートの値(m_cNote[])をまとめてpBufに取得する。ノートの値を複数取得する場合は、<A HREF="#MIDIPart_GetNote">MIDIPart_GetNote</A>を複数回使うよりも、この関数を使った方が高速である。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPart_GetNoteKeep"><SPAN CLASS="KEYWORD">long</SPAN> MIDIPart_GetNoteKeep <BR>(MIDIPart* pMIDIPart, <SPAN CLASS="KEYWORD">long</SPAN> lKey);</A> </TD>
+  <TD>pMIDIPart:MIDIPartオブジェクトへのポインタ<BR>lKey:キーのインデックス(0～127)</TD>
+  <TD>m_cNoteKeep[lKey]の値(0～127)</TD>
+  <TD>このパートの現在のノートの値をひとつ取得する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPart_GetNoteKeepEx"><SPAN CLASS="KEYWORD">long</SPAN> MIDIPart_GetNoteKeepEx <BR>(MIDIPart* pMIDIPart, <SPAN CLASS="KEYWORD">unsigned char</SPAN>* pBuf, <SPAN CLASS="KEYWORD">long</SPAN> lLen);</A> </TD>
+  <TD>pMIDIPart:MIDIPartオブジェクトへのポインタ<BR>pBuf:値を取得するためのunsigned char型配列へのポインタ<BR>lLen:unsigned char型配列の長さ</TD>
+  <TD>正常終了:0以外、異常終了:0</TD>
+  <TD>このパートの現在のノートの値(m_cNoteKeep[])をまとめてpBufに取得する。ノートの値を複数取得する場合は、<A HREF="#MIDIPart_GetNote">MIDIPart_GetNote</A>を複数回使うよりも、この関数を使った方が高速である。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPart_GetKeyAfterTouch"><SPAN CLASS="KEYWORD">long</SPAN> MIDIPart_GetKeyAfterTouch <BR>(MIDIPart* pMIDIPart, <SPAN CLASS="KEYWORD">long</SPAN> lKey);</A> </TD>
+  <TD>pMIDIPart:MIDIPartオブジェクトへのポインタ<BR>lKey:キーのインデックス(0～127)</TD>
+  <TD>m_cKeyAfterTouch[lKey]の値(0～127)</TD>
+  <TD>このパートの現在のキーアフタータッチの値をひとつ取得する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPart_GetKeyAfterTouchEx"><SPAN CLASS="KEYWORD">long</SPAN> MIDIPart_GetKeyAfterTouchEx <BR>(MIDIPart* pMIDIPart, <SPAN CLASS="KEYWORD">unsigned char</SPAN>* pBuf, <SPAN CLASS="KEYWORD">long</SPAN> lLen);</A> </TD>
+  <TD>pMIDIPart:MIDIPartオブジェクトへのポインタ<BR>pBuf:値を取得するためのunsigned char型配列へのポインタ<BR>lLen:unsigned char型配列の長さ</TD>
+  <TD>正常終了:0以外、異常終了:0</TD>
+  <TD>このパートの現在のキーアフタータッチの値(m_cKeyAfterTouch[])をまとめてpBufに取得する。キーアフタータッチの値を複数取得する場合は、<A HREF="#MIDIPart_GetKeyAfterTouch">MIDIPart_GetKeyAfterTouch</A>を複数回使うよりも、この関数を使った方が高速である。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPart_GetControlChange"><SPAN CLASS="KEYWORD">long</SPAN> MIDIPart_GetControlChange <BR>(MIDIPart* pMIDIPart, <SPAN CLASS="KEYWORD">long</SPAN> lNum);</A> </TD>
+  <TD>pMIDIPart:MIDIPartオブジェクトへのポインタ<BR>lNum:コントロールチェンジナンバー(0～127)</TD>
+  <TD>m_cControlChange[lNum]の値(0～127)</TD>
+  <TD>このパートの現在のコントロールチェンジの値をひとつ取得する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPart_GetControlChangeEx"><SPAN CLASS="KEYWORD">long</SPAN> MIDIPart_GetControlChangeEx <BR>(MIDIPart* pMIDIPart, <SPAN CLASS="KEYWORD">unsigned char</SPAN>* pBuf, <SPAN CLASS="KEYWORD">long</SPAN> lLen);</A> </TD>
+  <TD>pMIDIPart:MIDIPartオブジェクトへのポインタ<BR>pBuf:値を取得するためのunsigned char型配列へのポインタ<BR>lLen:unsigned char型配列の長さ</TD>
+  <TD>正常終了:0以外、異常終了:0</TD>
+  <TD>このパートの現在のコントロールチェンジの値(m_cControlChange[])をまとめてpBufに取得する。コントロールチェンジの値を複数取得する場合は、<A HREF="#MIDIPart_GetControlChange">MIDIPart_GetContorlChange</A>を複数回使うよりも、この関数を使った方が高速である。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPart_GetRPNMSB"><SPAN CLASS="KEYWORD">long</SPAN> MIDIPart_GetRPNMSB <BR>(MIDIPart* pMIDIPart, <SPAN CLASS="KEYWORD">long</SPAN> lCC101, <SPAN CLASS="KEYWORD">long</SPAN> lCC100)</A> </TD>
+  <TD>pMIDIPart:MIDIPartオブジェクトへのポインタ<BR>lCC101:CC#101の値(0～127)<BR>lCC100:CC#100の値(0～127)</TD>
+  <TD>RPNによって指定したパラメータのMSB</TD>
+  <TD>このパートの現在のRPNによって指定されたパラメータのMSBを取得する。具体的に取得可能な項目は、ピッチベンドセンシティビティ(lCC101=0, lCC100=0)、チャンネルファインチューニングMSB(lCC101=0, lCC100=1)、チャンネルコースチューニング(lCC101=0, lCC100=2)、モジュレーションデプスレンジMSB(lCC101=0, lCC101=5)である。lCC101とlCC100にその他の値を指定しても、未定義の値を返す。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPart_GetRPNLSB"><SPAN CLASS="KEYWORD">long</SPAN> MIDIPart_GetRPNLSB <BR>(MIDIPart* pMIDIPart, <SPAN CLASS="KEYWORD">long</SPAN> lCC101, <SPAN CLASS="KEYWORD">long</SPAN> lCC100)</A> </TD>
+  <TD>pMIDIPart:MIDIPartオブジェクトへのポインタ<BR>lCC101:CC#101の値(0～127)<BR>lCC100:CC#100の値(0～127)</TD>
+  <TD>RPNによって指定したパラメータのLSB</TD>
+  <TD>このパートの現在のRPNによって指定されたパラメータのLSBを取得する。具体的に取得可能な項目は、チャンネルファインチューニングLSB(lCC101=0, lCC100=1)、モジュレーションデプスレンジLSB(lCC101=0, lCC101=5)である。lCC101とlCC100にその他の値を指定しても、未定義の値を返す。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPart_GetNRPNMSB"><SPAN CLASS="KEYWORD">long</SPAN> MIDIPart_GetNRPNMSB <BR>(MIDIPart* pMIDIPart, <SPAN CLASS="KEYWORD">long</SPAN> lCC99, <SPAN CLASS="KEYWORD">long</SPAN> lCC98)</A> </TD>
+  <TD>pMIDIPart:MIDIPartオブジェクトへのポインタ<BR>lCC99:CC#99の値(0～127)<BR>lCC98:CC#98の値(0～127)</TD>
+  <TD>NRPNによって指定したパラメータのMSB</TD>
+  <TD>このパートの現在のNRPNによって指定されたパラメータのMSBを取得する。具体的に取得可能な項目は、ビブラートレイト(lCC99=1, lCC98=8)、ビブラートデプス(lCC99=1, lCC98=9)、ビブラートディレイ(lCC99=1, lCC98=10)、カットオフフリーケンシー(lCC99=1, lCC98=32)、レゾナンス(lCC99=1, lCC98=32)、アタックタイム(lCC99=1, lCC98=99)、ディケイタイム(lCC99=1, lCC98=100)、リリースタイム(lCC99=1, lCC98=102)、ドラムピッチ(lCC99=24, lCC98=キー)、ドラムボリューム(lCC99=26, lCC98=キー)、ドラムパン(lCC99=28, lCC98=キー)、ドラムリバーブ(lCC99=29, lCC98=キー)、ドラムコーラス(lCC99=30, lCC98=キー)、ドラムディレイ(lCC99=31, lCC98=キー)である。lCC99とlCC98にその他の値を指定しても、未定義の値を返す。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPart_GetNRPNLSB"><SPAN CLASS="KEYWORD">long</SPAN> MIDIPart_GetNRPNLSB <BR>(MIDIPart* pMIDIPart, <SPAN CLASS="KEYWORD">long</SPAN> lCC99, <SPAN CLASS="KEYWORD">long</SPAN> lCC98)</A> </TD>
+  <TD>pMIDIPart:MIDIPartオブジェクトへのポインタ<BR>lCC99:CC#99の値(0～127)<BR>lCC98:CC#98の値(0～127)</TD>
+  <TD>NRPNによって指定したパラメータのLSB</TD>
+  <TD>このパートの現在のNRPNによって指定されたパラメータのLSBを取得する。具体的に取得可能な項目は、ひとつもない。lCC99とlCC98にその他の値を指定しても、未定義の値を返す。</TD>
+ </TR>
+
+ <TR>
+  <TD><A NAME="MIDIPart_GetProgramChange"><SPAN CLASS="KEYWORD">long</SPAN> MIDIPart_GetProgramChange <BR>(MIDIPart* pMIDIPart);</A> </TD>
+  <TD>pMIDIPart:MIDIPartオブジェクトへのポインタ</TD>
+  <TD>m_lProgramChangeの値(<U>0</U>～127)</TD>
+  <TD>このパートの現在のプログラムチェンジの値を取得する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPart_GetChannelAfterTouch"><SPAN CLASS="KEYWORD">long</SPAN> MIDIPart_GetChannelAfterTouch <BR>(MIDIPart* pMIDIPart);</A> </TD>
+  <TD>pMIDIPart:MIDIPartオブジェクトへのポインタ</TD>
+  <TD>m_lChannelAfterTouchの値(<U>0</U>～127)</TD>
+  <TD>このパートの現在のチャンネルアフタータッチの値を取得する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPart_GetPitchBend"><SPAN CLASS="KEYWORD">long</SPAN> MIDIPart_GetPitchBend <BR>(MIDIPart* pMIDIPart);</A> </TD>
+  <TD>pMIDIPart:MIDIPartオブジェクトへのポインタ</TD>
+  <TD>m_lPitchBendの値(0～<U>8192</U>～16383)</TD>
+  <TD>このパートの現在のピッチベンドの値を取得する。</TD>
+ </TR>
+</TABLE>
+
+<H3><A NAME="MIDIPart_SetFunction">3-5.MIDIパートの情報設定</A></H3>
+
+<P>　MIDIパートの各値は、MIDIPart_Set系関数を使ってその値を設定することができる。しかし、特にMIDIメッセージをもとにMIDIステータスの状態を更新するには、<A HREF="#MIDIStatus_PutMIDIMessage">MIDIStauts_PutMIDIMessage</A>関数が便利である。直接に値を設定することは、整合性がとれなくなるなどの危険性があるので、してはならない。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIPart_SetFunctionList">▼List3-5.MIDIPart_Set系関数の使い方</A></DIV>
+<PRE>
+	<SPAN CLASS="COMMENT">/* パート1へのポインタを取得 */</SPAN>
+	MIDIPart* pMIDIPart = MIDIStatus_GetMIDIPart (pMIDIStatus, 0);
+	<SPAN CLASS="COMMENT">/* パート1の中央のド(Key=60)をベロシティ100で押す。 */</SPAN>
+	MIDIPart_SetNote (pMIDIPart, 60, 100);
+</PRE>
+
+<P></P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIPart_SetFunctionTable">▼Table3-5.MIDIPart_Set系関数</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPart_SetPartMode"><SPAN CLASS="KEYWORD">long</SPAN> MIDIPart_SetPartMode <BR>(MIDIPart* pMIDIPart, <SPAN CLASS="KEYWORD">long</SPAN> lPartMode)</A> </TD>
+  <TD>pMIDIPart:MIDIPartオブジェクトへのポインタ<BR>lPartMode:設定するパートモード(0～4)</TD>
+  <TD>正常終了:0以外、異常終了:0</TD>
+  <TD>このパートの現在のパートモード(m_lPartMode)の値を設定する。この値は、0(ノーマル)、1(ドラム1)、2(ドラム2)、3(ドラム3)、4(ドラム4)のいずれかである。音源により2～4は使えるものと使えないものがある。例えば、R社のSC-8850では2まで使え、Y社のMU-2000では4まで使える。なお、モジュールモードがGM2の場合、パート10では0か1、パート11では0か2、その他のパートでは0しか指定してはならない。GM2では、CC#0の値が126のときノーマル、127のときドラムなので、ノーマル・ドラムを切り替えた際にはCC#0の値を手動で設定しなければならない。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPart_SetOmniMonoPolyMode"><SPAN CLASS="KEYWORD">long</SPAN> MIDIPart_SetOmniMonoPolyMode <BR>(MIDIPart* pMIDIPart, <SPAN CLASS="KEYWORD">long</SPAN> lOmniMonoPoly)</A> </TD>
+  <TD>pMIDIPart:MIDIPartオブジェクトへのポインタ<BR>lOmniMonoPoly:設定するチャンネルモード(1～4)</TD>
+  <TD>正常終了:0以外、異常終了:0</TD>
+  <TD>このパートの現在のチャンネルモード(m_lOmniMonoPolyMode)の値を設定する。この値は、1(オムニオン・ポリ)、2(オムニオン・モノ)、3(オムニオフ・ポリ)、4(オムニオフ・モノ)のいずれかである。ただし、多くの音源では1と2にはならない。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPart_SetChannelFineTuning"><SPAN CLASS="KEYWORD">long</SPAN> MIDIPart_SetChannelFineTuning <BR>(MIDIPart* pMIDIPart, <SPAN CLASS="KEYWORD">long</SPAN> lChannelFineTuning)</A> </TD>
+  <TD>pMIDIPart:MIDIPartオブジェクトへのポインタ<BR>lChannelFineTuning:設定するチャンネルファインチューニング(0～<U>8192</U>～16383)</TD>
+  <TD>正常終了:0以外、異常終了:0</TD>
+  <TD>このパートの現在のチャンネルファインチューニング(m_lChannelFineTuning)の値を設定する。8192がデフォルト値かつ中央で、0～16383の値をとる(100/8192セント単位で変化)。<BR><SMALL>※100セント=半音</SMALL></TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPart_SetChannelCoarseTuning"><SPAN CLASS="KEYWORD">long</SPAN> MIDIPart_SetChannelCoarseTuning <BR>(MIDIPart* pMIDIPart, <SPAN CLASS="KEYWORD">long</SPAN> lChannelCoarseTuning)</A> </TD>
+  <TD>pMIDIPart:MIDIPartオブジェクトへのポインタ<BR>lChannelCoarseTuning:設定するチャンネルファインチューニング(0～<U>64</U>～127)</TD>
+  <TD>正常終了:0以外、異常終了:0</TD>
+  <TD>このパートの現在のチャンネルコースチューニング(m_lChannelCoarseTuning)の値を設定する。チャンネルキーシフトとも言う。64がデフォルト値かつ中央で、可変範囲は、±12半音の音源の場合52～76、±24半音の音源の場合40～88、±48半音の音源の場合16～112である(半音単位で変化)。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPart_SetPitchBendSensitivity"><SPAN CLASS="KEYWORD">long</SPAN> MIDIPart_SetPitchBendSensitivity <BR>(MIDIPart* pMIDIPart, <SPAN CLASS="KEYWORD">long</SPAN> lPitchBendSensitivity)</A> </TD>
+  <TD>pMIDIPart:MIDIPartオブジェクトへのポインタ<BR>lPitchBendSnesitivity:設定するピッチベンドセンシティビティ(0～<U>2</U>～24)</TD>
+  <TD>正常終了:0以外、異常終了:0</TD>
+  <TD>このパートの現在のピッチベンドセンシティビティ(m_lPitchBendSensitivity)の値を設定する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPart_SetModulationDepthRange"><SPAN CLASS="KEYWORD">long</SPAN> MIDIPart_SetModulationDepthRange <BR>(MIDIPart* pMIDIPart, <SPAN CLASS="KEYWORD">long</SPAN> lModulationDepthRange)</A> </TD>
+  <TD>pMIDIPart:MIDIPartオブジェクトへのポインタ<BR>lModulationDepthRange:設定するモジュレーションデプスレンジ(0～16383)</TD>
+  <TD>正常終了:0以外、異常終了:0</TD>
+  <TD>このパートの現在のモジュレーションデプスレンジ(m_lModulationDepthRange)の値を設定する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPart_SetReceiveChannel"><SPAN CLASS="KEYWORD">long</SPAN> MIDIPart_SetReceiveChannel <BR>(MIDIPart* pMIDIPart, <SPAN CLASS="KEYWORD">long</SPAN> lReceiveChannel)</A> </TD>
+  <TD>pMIDIPart:MIDIPartオブジェクトへのポインタ<BR>lReceiveChannel:設定するレシーブチャンネル(0～16)</TD>
+  <TD>正常終了:0以外、異常終了:0</TD>
+  <TD>このパートの現在のレシーブチャンネル(m_lReceiveChannel)の値を設定する。16に設定するとどのチャンネルのMIDIメッセージも演奏しなくなる。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPart_SetVelocitySense"><SPAN CLASS="KEYWORD">long</SPAN> MIDIPart_SetVelocitySense <BR>(MIDIPart* pMIDIPart, <SPAN CLASS="KEYWORD">long</SPAN> lVelocitySense)</A> </TD>
+  <TD>pMIDIPart:MIDIPartオブジェクトへのポインタ<BR>lVelocitySense:設定するベロシティセンス(0～<U>64</U>～127)</TD>
+  <TD>正常終了:0以外、異常終了:0</TD>
+  <TD>このパートの現在のベロシティセンス(m_lVelocitySense)の値を設定する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPart_SetVelocityOffset"><SPAN CLASS="KEYWORD">long</SPAN> MIDIPart_SetVelocityOffset <BR>(MIDIPart* pMIDIPart, <SPAN CLASS="KEYWORD">long</SPAN> lVelocitySense)</A> </TD>
+  <TD>pMIDIPart:MIDIPartオブジェクトへのポインタ<BR>lVelocityOffset:設定するベロシティオフセット(0～<U>64</U>～127)</TD>
+  <TD>正常終了:0以外、異常終了:0</TD>
+  <TD>このパートの現在のベロシティオフセット(m_lVelocityOffset)の値を設定する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPart_SetKeyboardRangeLow"><SPAN CLASS="KEYWORD">long</SPAN> MIDIPart_SetKeyboardRangeLow <BR>(MIDIPart* pMIDIPart, <SPAN CLASS="KEYWORD">long</SPAN> lKeyboardRangeLow)</A> </TD>
+  <TD>pMIDIPart:MIDIPartオブジェクトへのポインタ<BR>lKeyboardRangeLow:設定するキーボードレンジロー(<U>0</U>～127)</TD>
+  <TD>正常終了:0以外、異常終了:0</TD>
+  <TD>このパートの現在のキーボードレンジロー(m_lKeyboardRangeLow)の値を設定する。ノートリミットローとも言う。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPart_SetKeyboardRangeHigh"><SPAN CLASS="KEYWORD">long</SPAN> MIDIPart_SetKeyboardRangeHigh <BR>(MIDIPart* pMIDIPart, <SPAN CLASS="KEYWORD">long</SPAN> lKeyboardRangeHigh)</A> </TD>
+  <TD>pMIDIPart:MIDIPartオブジェクトへのポインタ<BR>lKeyboardRangeHigh:設定するキーボードレンジハイ(0～<U>127</U>)</TD>
+  <TD>正常終了:0以外、異常終了:0</TD>
+  <TD>このパートの現在のキーボードレンジハイ(m_lKeyboardRangeHigh)の値を設定する。ノートリミットハイとも言う。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPart_SetNote"><SPAN CLASS="KEYWORD">long</SPAN> MIDIPart_SetNote <BR>(MIDIPart* pMIDIPart, <SPAN CLASS="KEYWORD">long</SPAN> lKey, <SPAN CLASS="KEYWORD">long</SPAN> lVel)</A> </TD>
+  <TD>pMIDIPart:MIDIPartオブジェクトへのポインタ<BR>lKey:設定するキー(0～127)<BR>lVel:設定するベロシティ(0～127)</TD>
+  <TD>正常終了:0以外、異常終了:0</TD>
+  <TD>このパートの現在の指定したキーのノート(m_cNote[lKey]とm_cNoteKeep[lKey])の値を設定する。ノートオフの状態にするには、lVelに0を指定する。m_cNote[lKey]には、指定値がそのまま設定される。m_cNoteKeep[lKey]には、現在のホールドペダルの押され具合などを考慮して、適切に設定される。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPart_SetKeyAfterTouch"><SPAN CLASS="KEYWORD">long</SPAN> MIDIPart_SetKeyAfterTouch <BR>(MIDIPart* pMIDIPart, <SPAN CLASS="KEYWORD">long</SPAN> lKey, <SPAN CLASS="KEYWORD">long</SPAN> lVal)</A> </TD>
+  <TD>pMIDIPart:MIDIPartオブジェクトへのポインタ<BR>lKey:設定するキー(0～127)<BR>lVal:設定する値(<U>0</U>～127)</TD>
+  <TD>正常終了:0以外、異常終了:0</TD>
+  <TD>このパートの現在の指定したキーのキーアフタータッチ(m_cKeyAfterTouch[lKey])の値を設定する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPart_SetControlChange"><SPAN CLASS="KEYWORD">long</SPAN> MIDIPart_SetControlChange <BR>(MIDIPart* pMIDIPart, <SPAN CLASS="KEYWORD">long</SPAN> lNum, <SPAN CLASS="KEYWORD">long</SPAN> lVal)</A> </TD>
+  <TD>pMIDIPart:MIDIPartオブジェクトへのポインタ<BR>lNum:設定するコントロールチェンジナンバー(0～127)<BR>lVal:設定する値(0～127)</TD>
+  <TD>正常終了:0以外、異常終了:0</TD>
+  <TD>このパートの現在の指定したコントロールチェンジ(m_cKeyAfterTouch[lNum])の値を設定する。この関数は、以下の追加機能をもつ。まず、ホールドペダルを離したとき、すなわちlNum=64(ホールドペダル)かつlVal=0のとき、必要に応じてm_cNoteKeep[j]の値を0に戻す。また、RPNとNRPNの設定にも対応している。すなわち、CC#101とCC#100が127ではない状態でlNum=6(データエントリーMSB)又はlNum=38(データエントリーLSB)が設定された場合、状況に応じてピッチベンドセンシティビティ、チャンネルファインチューニング、チャンネルコースチューニング、モジュレーションデプスレンジなどが変更される。また、CC#99とCC#98が127ではない状態でlNum=6(データエントリーMSB)又はlNum=38(データエントリーLSB)が設定された場合、状況に応じてビブラートレイト(CC#76)、ビブラートデプス(CC#77)、ビブラートディレイ(CC#78)、カットオフフリーケンシー(CC#74)、レゾナンス(CC#71)、アタックタイム(CC#73)、ディケイタイム(CC#75)、リリースタイム(CC#72)、ドラムピッチ、ドラムボリューム、ドラムパン、ドラムリバーブ、ドラムコーラス、ドラムディレイなどが変更される。さらには、lNum=120(オールサウンドオフ)又は123(オールノートオフ)のデータを設定した場合、このパートのすべてのm_cNote及びm_cNoteKeepを強制的に0にする。さらには、lNum=124(オムニオフ)又は125(オムニオン)又は126(モノ)又は127(ポリ)を指定した場合、このパートのすべてのm_cNote及びm_cNoteKeepを強制的に0にするのに加え、m_lOmniMonoPolyModeの値が変更される。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPart_SetRPNMSB"><SPAN CLASS="KEYWORD">long</SPAN> MIDIPart_SetRPNMSB <BR>(MIDIPart* pMIDIPart, <SPAN CLASS="KEYWORD">long</SPAN> lCC101, <SPAN CLASS="KEYWORD">long</SPAN> lCC100, <SPAN CLASS="KEYWORD">long</SPAN> lVal)</A> </TD>
+  <TD>pMIDIPart:MIDIPartオブジェクトへのポインタ<BR>lCC101:CC#101の値(0～127)<BR>lCC100:CC#100の値(0～127)<BR>lVal:設定する値(0～127)</TD>
+  <TD>正常終了:0以外、異常終了:0</TD>
+  <TD>このパートの現在のRPNによって指定されたパラメータのMSBを設定する。具体的に設定可能な項目は、ピッチベンドセンシティビティ(lCC101=0, lCC100=0)、チャンネルファインチューニングMSB(lCC101=0, lCC100=1)、チャンネルコースチューニング(lCC101=0, lCC100=2)、モジュレーションデプスレンジMSB(lCC101=0, lCC101=5)である。lCC101とlCC100にその他の値を指定しても、何も起こらない。また、この関数はm_cControlChange[101]とm_cControlChange[100]とm_cControlChange[6]の値をそれぞれlCC101とlCC100とlValの値に設定<SPAN CLASS="RED">しない。</SPAN></TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPart_SetRPNLSB"><SPAN CLASS="KEYWORD">long</SPAN> MIDIPart_SetRPNLSB <BR>(MIDIPart* pMIDIPart, <SPAN CLASS="KEYWORD">long</SPAN> lCC101, <SPAN CLASS="KEYWORD">long</SPAN> lCC100, <SPAN CLASS="KEYWORD">long</SPAN> lVal)</A> </TD>
+  <TD>pMIDIPart:MIDIPartオブジェクトへのポインタ<BR>lCC101:CC#101の値(0～127)<BR>lCC100:CC#100の値(0～127)<BR>lVal:設定する値(0～127)</TD>
+  <TD>正常終了:0以外、異常終了:0</TD>
+  <TD>このパートの現在のRPNによって指定されたパラメータのLSBを設定する。具体的に設定可能な項目は、チャンネルファインチューニングLSB(lCC101=0, lCC100=1)、モジュレーションデプスレンジLSB(lCC101=0, lCC101=5)である。lCC101とlCC100にその他の値を指定しても、何も起こらない。また、この関数はm_cControlChange[101]とm_cControlChange[100]とm_cControlChange[38]の値をそれぞれlCC101とlCC100とlValの値に設定<SPAN CLASS="RED">しない。</SPAN></TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPart_SetNRPNMSB"><SPAN CLASS="KEYWORD">long</SPAN> MIDIPart_SetNRPNMSB <BR>(MIDIPart* pMIDIPart, <SPAN CLASS="KEYWORD">long</SPAN> lCC99, <SPAN CLASS="KEYWORD">long</SPAN> lCC98, <SPAN CLASS="KEYWORD">long</SPAN> lVal)</A> </TD>
+  <TD>pMIDIPart:MIDIPartオブジェクトへのポインタ<BR>lCC99:CC#99の値(0～127)<BR>lCC98:CC#98の値(0～127)<BR>lVal:設定する値(0～127)</TD>
+  <TD>正常終了:0以外、異常終了:0</TD>
+  <TD>このパートの現在のNRPNによって指定されたパラメータのMSBを設定する。具体的に設定可能な項目は、ビブラートレイト(lCC99=1, lCC98=8)、ビブラートデプス(lCC99=1, lCC98=9)、ビブラートディレイ(lCC99=1, lCC98=10)、カットオフフリーケンシー(lCC99=1, lCC98=32)、レゾナンス(lCC99=1, lCC98=32)、アタックタイム(lCC99=1, lCC98=99)、ディケイタイム(lCC99=1, lCC98=100)、リリースタイム(lCC99=1, lCC98=102)、ドラムピッチ(lCC99=24, lCC98=キー)、ドラムボリューム(lCC99=26, lCC98=キー)、ドラムパン(lCC99=28, lCC98=キー)、ドラムリバーブ(lCC99=29, lCC98=キー)、ドラムコーラス(lCC99=30, lCC98=キー)、ドラムディレイ(lCC99=31, lCC98=キー)である。lCC99とlCC98にその他の値を指定しても、何も起こらない。また、この関数はm_cControlChange[99]とm_cControlChange[98]とm_cControlChange[6]の値をそれぞれlCC99とlCC98とlValの値に設定<SPAN CLASS="RED">しない。</SPAN></TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPart_SetNRPNLSB"><SPAN CLASS="KEYWORD">long</SPAN> MIDIPart_SetNRPNLSB <BR>(MIDIPart* pMIDIPart, <SPAN CLASS="KEYWORD">long</SPAN> lCC99, <SPAN CLASS="KEYWORD">long</SPAN> lCC98, <SPAN CLASS="KEYWORD">long</SPAN> lVal)</A> </TD>
+  <TD>pMIDIPart:MIDIPartオブジェクトへのポインタ<BR>lCC99:CC#99の値(0～127)<BR>lCC98:CC#98の値(0～127)<BR>lVal:設定する値(0～127)</TD>
+  <TD>正常終了:0以外、異常終了:0</TD>
+  <TD>このパートの現在のNRPNによって指定されたパラメータのLSBを設定する。具体的に設定可能な項目は、ひとつもない。lCC99とlCC98にその他の値を指定しても、何も起こらない。また、この関数はm_cControlChange[99]とm_cControlChange[98]とm_cControlChange[38]の値をそれぞれlCC99とlCC98とlValの値に設定<SPAN CLASS="RED">しない。</SPAN></TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPart_SetProgramChange"><SPAN CLASS="KEYWORD">long</SPAN> MIDIPart_SetProgramChange <BR>(MIDIPart* pMIDIPart, <SPAN CLASS="KEYWORD">long</SPAN> lNum)</A> </TD>
+  <TD>pMIDIPart:MIDIPartオブジェクトへのポインタ<BR>lNum:設定するプログラムナンバー(<U>0</U>～127)</TD>
+  <TD>正常終了:0以外、異常終了:0</TD>
+  <TD>このパートの現在のプログラムチェンジ(m_lProgramChange)の値を設定する。なお、パートモードがドラム1～4になっている場合、この関数を使うと対応するドラムセットアップはデフォルト値に初期化される。また、モジュールモードがGM2の場合、バンクセレクトMSB(m_cControlChange[32])の値によって、パートモードが切り替わる(パート10とパート11のみ)。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPart_SetChannelAfterTouch"><SPAN CLASS="KEYWORD">long</SPAN> MIDIPart_SetChannelAfterTouch <BR>(MIDIPart* pMIDIPart, <SPAN CLASS="KEYWORD">long</SPAN> lVal)</A> </TD>
+  <TD>pMIDIPart:MIDIPartオブジェクトへのポインタ<BR>lVal:設定する値(<U>0</U>～127)</TD>
+  <TD>正常終了:0以外、異常終了:0</TD>
+  <TD>このパートの現在のチャンネルアフタータッチ(m_lChannelAfterTouch)の値を設定する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPart_SetPitchBend"><SPAN CLASS="KEYWORD">long</SPAN> MIDIPart_SetPitchBend <BR>(MIDIPart* pMIDIPart, <SPAN CLASS="KEYWORD">long</SPAN> lVal)</A> </TD>
+  <TD>pMIDIPart:MIDIPartオブジェクトへのポインタ<BR>lVal:設定する値(0～<U>8192</U>～16383)</TD>
+  <TD>正常終了:0以外、異常終了:0</TD>
+  <TD>このパートの現在のピッチベンド(m_lChannelPitchBend)の値を設定する。</TD>
+ </TR>
+</TABLE>
+
+<H3><A NAME="MIDIPart_OtherFunction">3-6.MIDIパートその他の関数</A></H3>
+
+<P>　MIDIパートには、その他に以下のような便利な関数が用意されている。これらの関数は非常にユニークである。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIPart_OtherTable">▼Table3-6.MIDIPartのその他の関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPart_GetNumNote"><SPAN CLASS="KEYWORD">long</SPAN> MIDIPart_GetNumNote <BR>(MIDIPart* pMIDIPart)</A> </TD>
+  <TD>pMIDIPart:MIDIPartオブジェクトへのポインタ</TD>
+  <TD>現在押されている鍵盤の数(0～127)</TD>
+  <TD>指定したMIDIPartの、現在押されている鍵盤の数を返す。何も押されていない場合は0を返す。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPart_GetNumNoteKeep"><SPAN CLASS="KEYWORD">long</SPAN> MIDIPart_GetNumNoteKeep <BR>(MIDIPart* pMIDIPart)</A> </TD>
+  <TD>pMIDIPart:MIDIPartオブジェクトへのポインタ</TD>
+  <TD>現在押されている鍵盤の数(ホールド持続含む)(0～127)</TD>
+  <TD>この関数は、<A HREF="#MIDIPart_GetNumNote">MIDIPart_GetNumNote</A>とほとんど同じである。しかし、実際に鍵盤が押されていない鍵盤でも、ホールドペダルが押され続けていることによって鍵盤が押されていると同様であるとみなされる場合、その鍵盤も数える。従ってこの関数は、指定パートの現在の同時発音数を返すものである(1鍵盤につき1音消耗する場合。音色によっては、1鍵盤で2～4音消耗するものもある)。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPart_GetLowestNote"><SPAN CLASS="KEYWORD">long</SPAN> MIDIPart_GetLowestNote <BR>(MIDIPart* pMIDIPart)</A> </TD>
+  <TD>pMIDIPart:MIDIPartオブジェクトへのポインタ</TD>
+  <TD>現在押されている最も低い鍵盤(0～127)又は-1</TD>
+  <TD>指定したMIDIPartの、現在押されている最も低い鍵盤を返す。何も押されていない場合は-1を返す。ベースラインの追跡に便利である。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPart_GetLowestNoteKeep"><SPAN CLASS="KEYWORD">long</SPAN> MIDIPart_GetLowestNoteKeep <BR>(MIDIPart* pMIDIPart)</A> </TD>
+  <TD>pMIDIPart:MIDIPartオブジェクトへのポインタ</TD>
+  <TD>現在押されている最も低い鍵盤(ホールド持続含む)(0～127)又は-1</TD>
+  <TD>この関数は、<A HREF="#MIDIPart_GetLowestNote">MIDIPart_GetLowestNote</A>とほとんど同じである。しかし、実際に鍵盤が押されていない鍵盤でも、ホールドペダルが押され続けていることによって鍵盤が押されていると同様であるとみなされる場合、その鍵盤も含める。従ってこの関数は、指定パートの実際に鳴っている最も低いキーを返すものであるといえる。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPart_GetHighestNote"><SPAN CLASS="KEYWORD">long</SPAN> MIDIPart_GetHighestNote <BR>(MIDIPart* pMIDIPart)</A> </TD>
+  <TD>pMIDIPart:MIDIPartオブジェクトへのポインタ</TD>
+  <TD>現在押されている最も高い鍵盤(0～127)又は-1</TD>
+  <TD>指定したMIDIPartの、現在押されている最も高い鍵盤を返す。何も押されていない場合は-1を返す。メロディラインの探索に便利である。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPart_GetHighestNoteKeep"><SPAN CLASS="KEYWORD">long</SPAN> MIDIPart_GetHighestNoteKeep <BR>(MIDIPart* pMIDIPart)</A> </TD>
+  <TD>pMIDIPart:MIDIPartオブジェクトへのポインタ</TD>
+  <TD>現在押されている最も高い鍵盤(ホールド持続含む)(0～127)又は-1</TD>
+  <TD>この関数は、<A HREF="#MIDIPart_GetHighestNote">MIDIPart_GetHighestNote</A>とほとんど同じである。しかし、実際に鍵盤が押されていない鍵盤でも、ホールドペダルが押され続けていることによって鍵盤が押されていると同様であるとみなされる場合、その鍵盤も含める。従ってこの関数は、指定パートの実際に鳴っている最も高いキーを返すものであるといえる。</TD>
+ </TR>
+<!--
+ <TR>
+  <TD><A NAME="MIDIPart_GetChord"><SPAN CLASS="KEYWORD">long</SPAN> MIDIPart_GetChord <BR>(MIDIPart* pMIDIPart)</A> </TD>
+  <TD>pMIDIPart:MIDIPartオブジェクトへのポインタ</TD>
+  <TD>現在のコード</TD>
+  <TD>この関数は、指定したパートの鍵盤の押され具合から、現在のコードを推測し、そのコードネームを返す。この関数は推測値を返すので、返されたコードが必ずしも正しいとは限らない。例えば、指定したパート内で3つ以上の鍵盤が押されているときに高い精度でコードを識別するが、無音や単音や分散和音では全く識別できない。従って、指定したパートがコード認識用のダミーパートとして演奏されている場合に便利である。なお、この関数は2007年度以降のインプリメントの見込みである。戻り値は、上位から16ビットがルート("不明=0", "C"=1, "C#"=2, "D"=3, … , "B"=12)、下位16ビットが属性("不明"=0, "M"=1, "m"=2, "add9"=3, "7"=4, "M7"=5, "m7"=6, "dim"=7, "m7b5"=8, "aug"=9 "7sus4"=10, "6"=11)である。バスについては認識しないので、必要に応じて<A HREF="#MIDIPart_GetLowestNoteKeep">MIDIPart_GetLowestNoteKeep</A>関数で調べる必要がある。
+  </TD>
+ </TR>
+-->
+</TABLE>
+
+
+
+
+
+
+
+
+
+
+<H2><A NAME="MIDIDrumSetupReference">第4章：MIDIドラムセットアップリファレンス</A></H2>
+
+<H3><A NAME="MIDIDrumSetup_Struct">4-1.MIDIドラムセットアップの構造</A></H3>
+
+<P>　MIDIDrumSetup構造体は、現在の音源の状態のうち、特定のドラムセットアップに関係するパラメーターを保持している。これらの値を参照する場合は、<A HREF="#MIDIDrumSetup_GetFunction">MIDIDrumSetup_Get系関数</A>を使う。設定する場合は、<A HREF="#MIDIDrumSetup_SetFunction">MIDIDrumSetup_Set系関数</A>を使うか、親のMIDIStatusオブジェクトに対して<A HREF="#MIDIStatus_PutFunction">MIDIStatus_Put系関数</A>を使う。特にMIDIメッセージをもとにMIDIステータスの状態を更新するには、<A HREF="#MIDIStatus_PutMIDIMessage">MIDIStauts_PutMIDIMessage</A>関数が便利である。直接に値を設定することは、整合性がとれなくなるなどの危険性があるので、してはならない。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIDrumSetup_FieldTable">▼Table4-1.MIDIDrumSetup構造体のフィールドと使い方</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH WIDTH="25%">フィールド</TH>
+  <TH WIDTH="75%">使い方</TH>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">unsigned char</SPAN> m_cDrumPitch[128]</TD>
+  <TD>現在の楽器ごとのピッチを表す。この値は各々0～127であり、デフォルトでは64である。この値を変化させるにはNRPNを使う。すなわちCC#99で24→CC#98でノートキー→CC#6で値を設定する。又は専用のシステムエクスクルーシブメッセージを使う。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">unsigned char</SPAN> m_cDrumVolume[128]</TD>
+  <TD>現在の楽器ごとのボリュームを表す。この値は各々0～127であり、デフォルトでは64である。この値を変化させるにはNRPNを使う。すなわちCC#99で26→CC#98でノートキー→CC#6で値を設定する。又は専用のシステムエクスクルーシブメッセージを使う。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">unsigned char</SPAN> m_cDrumPan[128]</TD>
+  <TD>現在の楽器ごとのパンを表す。この値は各々0～127であり、デフォルトでは64である。この値を変化させるにはNRPNを使う。すなわちCC#99で28→CC#98でノートキー→CC#6で値を設定する。又は専用のシステムエクスクルーシブメッセージを使う。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">unsigned char</SPAN> m_cDrumReverb[128]</TD>
+  <TD>現在の楽器ごとのリバーブを表す。この値は各々0～127であり、デフォルトでは64である。この値を変化させるにはNRPNを使う。すなわちCC#99で29→CC#98でノートキー→CC#6で値を設定する。又は専用のシステムエクスクルーシブメッセージを使う。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">unsigned char</SPAN> m_cDrumChorus[128]</TD>
+  <TD>現在の楽器ごとのコーラスを表す。この値は各々0～127であり、デフォルトでは64である。この値を変化させるにはNRPNを使う。すなわちCC#99で30→CC#98でノートキー→CC#6で値を設定する。又は専用のシステムエクスクルーシブメッセージを使う。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">unsigned char</SPAN> m_cDrumDelay[128]</TD>
+  <TD>現在の楽器ごとのディレイを表す。この値は各々0～127であり、デフォルトでは64である。この値を変化させるにはNRPNを使う。すなわちCC#99で31→CC#98でノートキー→CC#6で値を設定する。又は専用のシステムエクスクルーシブメッセージを使う。</TD>
+ </TR>
+</TABLE>
+
+<H3><A NAME="MIDIDrumSetup_CreateFunction">4-2.MIDIドラムセットアップの生成</A></H3>
+
+<P>　MIDIDrumSetupオブジェクトをメモリ上に新規生成するには、MIDIDrumSetup_Create関数を使う。しかし、<SPAN CLASS="RED">MIDIDrumSetupオブジェクトは、MIDIStatusオブジェクトを生成したときに自動生成されるので、あなたがこの関数を呼び出す必要はないし、呼び出してはならない。</SPAN>この節は、ソースを理解する参考のために載せたものである。</P>
+
+<P>　MIDIDrumSetup_Create関数は、戻り値として正常終了時に生成したMIDIDrumSetupオブジェクトへのポインタを、異常終了時にNULLを返す。異常終了は、メモリの割り当てに失敗した場合、及び引数の指定が不正だった場合におこりうる。戻り値は必ずチェックし、異常終了時の回避処理をしておかなければ、ヌルポインターエラーになるであろう。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIDrumSetup_CreateFunctionList">▼List4-2.MIDIDrumSetup_Create関数の使い方</A></DIV>
+<PRE>
+	MIDIDrumSetup* pMIDIDrumSetup;
+	<SPAN CLASS="COMMENT">/* MIDIDrumSetupオブジェクトの生成 */</SPAN>
+	pMIDIDrumSetup = MIDIDrumSetup_Create (pMIDIStatus);
+	<SPAN CLASS="KEYWORD">if</SPAN> (pMIDIDrumSetup == NULL) {
+		<SPAN CLASS="COMMENT">/* 異常終了時の処理 */</SPAN>
+		printf (<SPAN CLASS="STRING">"MIDIDrumSetupオブジェクトの生成に失敗しました。\n"</SPAN>);
+		<SPAN CLASS="KEYWORD">return</SPAN> 0;
+	}
+	<SPAN CLASS="COMMENT">/* 正常終了時の処理 */</SPAN>
+	...
+</PRE>
+
+<P></P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIDrumSetup_CreateFunctionTable">▼Table4-2.MIDIDrumSetup_Create系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIDrumSetup_Create">MIDIDrumSetup* MIDIDrumSetup_Create <BR>(MIDIPar* pParent);</A> </TD>
+  <TD>pParent:親のMIDIStatusオブジェクトへのポインタ</TD>
+  <TD>正常終了:MIDIDrumSetupオブジェクトへのポインタ<BR>異常終了:NULL</TD>
+  <TD>MIDIDrumSetupオブジェクトを新規に生成する。しかし、<SPAN CLASS="RED">MIDIDrumSetupオブジェクトは、MIDIStatusオブジェクトを生成したときに自動生成されるので、あなたがこの関数を呼び出す必要はないし、呼び出してはならない。</SPAN></TD>
+ </TR>
+</TABLE>
+
+<H3><A NAME="MIDIDrumSetup_DeleteFunction">4-3.MIDIドラムセットアップの削除</A></H3>
+
+<P>　MIDIDrumSetupオブジェクトをメモリ上から削除するには、MIDIDrumSetup_Delete関数を使う。しかし、<SPAN CLASS="RED">MIDIDrumSetupオブジェクトは、MIDIStatusオブジェクトを削除したときに自動削除されるので、あなたがこの関数を呼び出す必要はないし、呼び出してはならない。</SPAN>この節は、ソースを理解する参考のために載せたものである。</P>
+
+<P><SPAN CLASS="RED">　<A HREF="#MIDIDrumSetup_CreateFunction">MIDIDrumSetup_Create系関数</A>で生成したMIDIDrumSetupオブジェクトは、使用し終わったらMIDIDrumSetup_Delete関数でメモリ上から削除しなければならない。</SPAN>MIDIステータスライブラリではメモリの自動解放(ガベージコレクション)を行わないので、この手続きは常に必要である。もし忘れれば、メモリリークが発生するであろう。</P>
+
+<P><SPAN CLASS="RED">　MIDIDrumSetupオブジェクトを削除した直後には、ポインタにNULLを代入しておくべきである。</SPAN>これをしなければ、このMIDIDrumSetupオブジェクトが既に削除されていることが外部からわからなくなってしまい、バグの原因となりうる。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIDrumSetup_DeleteFunctionList">▼List4-3.MIDIDrumSetup_Delete関数の使い方</A></DIV>
+<PRE>
+	MIDIDrumSetup_Delete (pMIDIDrumSetup);
+	pMIDIDrumSetup = NULL;
+</PRE>
+
+<P></P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIDrumSetup_DeleteFunctionTable">▼Table4-3.MIDIDrumSetup_Delete系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIDrumSetup_Delete"><SPAN CLASS="KEYWORD">void</SPAN> MIDIDrumSetup_Delete <BR>(MIDIDrumSetup* pMIDIDrumSetup);</A> </TD>
+  <TD>pMIDIDrumSetup:MIDIDrumSetupオブジェクトへのポインタ</TD>
+  <TD>なし</TD>
+  <TD>MIDIDrumSetupオブジェクトを削除する。しかし、<SPAN CLASS="RED">MIDIDrumSetupオブジェクトは、MIDIStatusオブジェクトを削除したときに自動削除されるので、あなたがこの関数を呼び出す必要はないし、呼び出してはならない。</SPAN></TD>
+ </TR>
+</TABLE>
+
+<H3><A NAME="MIDIDrumSetup_GetFunction">4-4.MIDIドラムセットアップの情報取得</A></H3>
+
+<P>　MIDIドラムセットアップの各値は、MIDIDrumSetup_Get系関数を使ってその情報を得ることができる。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIDrumSetup_GetFunctionList">▼List4-4.MIDIDrumSetup_Get系関数の使い方</A></DIV>
+<PRE>
+	<SPAN CLASS="KEYWORD">unsigned char</SPAN> cDrumPitch[128];
+	<SPAN CLASS="COMMENT">/* ドラムセットアップ1へのポインタを取得 */</SPAN>
+	MIDIDrumSetup* pMIDIDrumSetup = MIDIStatus_GetMIDIDrumSetup (pMIDIStatus, 0);
+	<SPAN CLASS="COMMENT">/* ドラムセットアップ1のドラムピッチを一括取得 */</SPAN>
+	MIDIDrumSetup_GetDrumPitch (pMIDIDrumSetup, cDrumPitch, 128);
+</PRE>
+
+<P></P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIDrumSetup_GetFunctionTable">▼Table4-4.MIDIDrumSetup_Get系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIDrumSetup_GetDrumPitch"><SPAN CLASS="KEYWORD">long</SPAN> MIDIDrumSetup_GetDrumPitch <BR>(MIDIDrumSetup* pMIDIDrumSetup, <SPAN CLASS="KEYWORD">long</SPAN> lKey);</A> </TD>
+  <TD>pMIDIDrumSetup:MIDIDrumSetupオブジェクトへのポインタ<BR>lKey:キーのインデックス(0～127)</TD>
+  <TD>m_cDrumPitch[lKey]の値(0～127)</TD>
+  <TD>現在の楽器ごとのピッチをひとつ取得する</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIDrumSetup_GetDrumPitchEx"><SPAN CLASS="KEYWORD">long</SPAN> MIDIDrumSetup_GetDrumPitchEx <BR>(MIDIDrumSetup* pMIDIDrumSetup, <SPAN CLASS="KEYWORD">unsigned char</SPAN>* pBuf, <SPAN CLASS="KEYWORD">long</SPAN> lLen);</A> </TD>
+  <TD>pMIDIDrumSetup:MIDIDrumSetupオブジェクトへのポインタ<BR>pBuf:値を取得するためのunsigned char型配列へのポインタ<BR>lLen:unsigned char型配列の長さ</TD>
+  <TD>正常終了:0以外、異常終了:0</TD>
+  <TD>現在の楽器ごとのピッチ(m_cDrumPitch[]の値)をまとめてpBufに取得する。なお、楽器ごとのピッチを複数取得する場合は、<A HREF="#MIDIDrumSetup_GetDrumPitch">MIDIDrumSetup_GetDrumPitch</A>を複数回使うよりも、この関数を使った方が高速である。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIDrumSetup_GetDrumVolume"><SPAN CLASS="KEYWORD">long</SPAN> MIDIDrumSetup_GetDrumVolume <BR>(MIDIDrumSetup* pMIDIDrumSetup, <SPAN CLASS="KEYWORD">long</SPAN> lKey);</A> </TD>
+  <TD>pMIDIDrumSetup:MIDIDrumSetupオブジェクトへのポインタ<BR>lKey:キーのインデックス(0～127)</TD>
+  <TD>m_cDrumVolume[lKey]の値(0～127)</TD>
+  <TD>現在の楽器ごとのボリュームをひとつ取得する</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIDrumSetup_GetDrumVolumeEx"><SPAN CLASS="KEYWORD">long</SPAN> MIDIDrumSetup_GetDrumVolumeEx <BR>(MIDIDrumSetup* pMIDIDrumSetup, <SPAN CLASS="KEYWORD">unsigned char</SPAN>* pBuf, <SPAN CLASS="KEYWORD">long</SPAN> lLen);</A> </TD>
+  <TD>pMIDIDrumSetup:MIDIDrumSetupオブジェクトへのポインタ<BR>pBuf:値を取得するためのunsigned char型配列へのポインタ<BR>lLen:unsigned char型配列の長さ</TD>
+  <TD>正常終了:0以外、異常終了:0</TD>
+  <TD>現在の楽器ごとのボリューム(m_cDrumVolume[]の値)をまとめてpBufに取得する。なお、楽器ごとのボリュームを複数取得する場合は、<A HREF="#MIDIDrumSetup_GetDrumVolume">MIDIDrumSetup_GetDrumVolume</A>を複数回使うよりも、この関数を使った方が高速である。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIDrumSetup_GetDrumPan"><SPAN CLASS="KEYWORD">long</SPAN> MIDIDrumSetup_GetDrumPan <BR>(MIDIDrumSetup* pMIDIDrumSetup, <SPAN CLASS="KEYWORD">long</SPAN> lKey);</A> </TD>
+  <TD>pMIDIDrumSetup:MIDIDrumSetupオブジェクトへのポインタ<BR>lKey:キーのインデックス(0～127)</TD>
+  <TD>m_cDrumPan[lKey]の値(0～127)</TD>
+  <TD>現在の楽器ごとのパンをひとつ取得する</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIDrumSetup_GetDrumPanEx"><SPAN CLASS="KEYWORD">long</SPAN> MIDIDrumSetup_GetDrumPanEx <BR>(MIDIDrumSetup* pMIDIDrumSetup, <SPAN CLASS="KEYWORD">unsigned char</SPAN>* pBuf, <SPAN CLASS="KEYWORD">long</SPAN> lLen);</A> </TD>
+  <TD>pMIDIDrumSetup:MIDIDrumSetupオブジェクトへのポインタ<BR>pBuf:値を取得するためのunsigned char型配列へのポインタ<BR>lLen:unsigned char型配列の長さ</TD>
+  <TD>正常終了:0以外、異常終了:0</TD>
+  <TD>現在の楽器ごとのパン(m_cDrumPan[]の値)をまとめてpBufに取得する。なお、楽器ごとのパンを複数取得する場合は、<A HREF="#MIDIDrumSetup_GetDrumPan">MIDIDrumSetup_GetDrumPan</A>を複数回使うよりも、この関数を使った方が高速である。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIDrumSetup_GetDrumReverb"><SPAN CLASS="KEYWORD">long</SPAN> MIDIDrumSetup_GetDrumReverb <BR>(MIDIDrumSetup* pMIDIDrumSetup, <SPAN CLASS="KEYWORD">long</SPAN> lKey);</A> </TD>
+  <TD>pMIDIDrumSetup:MIDIDrumSetupオブジェクトへのポインタ<BR>lKey:キーのインデックス(0～127)</TD>
+  <TD>m_cDrumReverb[lKey]の値(0～127)</TD>
+  <TD>現在の楽器ごとのリバーブをひとつ取得する</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIDrumSetup_GetDrumReverbEx"><SPAN CLASS="KEYWORD">long</SPAN> MIDIDrumSetup_GetDrumReverbEx <BR>(MIDIDrumSetup* pMIDIDrumSetup, <SPAN CLASS="KEYWORD">unsigned char</SPAN>* pBuf, <SPAN CLASS="KEYWORD">long</SPAN> lLen);</A> </TD>
+  <TD>pMIDIDrumSetup:MIDIDrumSetupオブジェクトへのポインタ<BR>pBuf:値を取得するためのunsigned char型配列へのポインタ<BR>lLen:unsigned char型配列の長さ</TD>
+  <TD>正常終了:0以外、異常終了:0</TD>
+  <TD>現在の楽器ごとのリバーブ(m_cDrumReverb[]の値)をまとめてpBufに取得する。なお、楽器ごとのリバーブを複数取得する場合は、<A HREF="#MIDIDrumSetup_GetDrumReverb">MIDIDrumSetup_GetDrumReverb</A>を複数回使うよりも、この関数を使った方が高速である。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIDrumSetup_GetDrumChorus"><SPAN CLASS="KEYWORD">long</SPAN> MIDIDrumSetup_GetDrumChorus <BR>(MIDIDrumSetup* pMIDIDrumSetup, <SPAN CLASS="KEYWORD">long</SPAN> lKey);</A> </TD>
+  <TD>pMIDIDrumSetup:MIDIDrumSetupオブジェクトへのポインタ<BR>lKey:キーのインデックス(0～127)</TD>
+  <TD>m_cDrumChorus[lKey]の値(0～127)</TD>
+  <TD>現在の楽器ごとのコーラスをひとつ取得する</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIDrumSetup_GetDrumChorusEx"><SPAN CLASS="KEYWORD">long</SPAN> MIDIDrumSetup_GetDrumChorusEx <BR>(MIDIDrumSetup* pMIDIDrumSetup, <SPAN CLASS="KEYWORD">unsigned char</SPAN>* pBuf, <SPAN CLASS="KEYWORD">long</SPAN> lLen);</A> </TD>
+  <TD>pMIDIDrumSetup:MIDIDrumSetupオブジェクトへのポインタ<BR>pBuf:値を取得するためのunsigned char型配列へのポインタ<BR>lLen:unsigned char型配列の長さ</TD>
+  <TD>正常終了:0以外、異常終了:0</TD>
+  <TD>現在の楽器ごとのコーラス(m_cDrumChorus[]の値)をまとめてpBufに取得する。なお、楽器ごとのコーラスを複数取得する場合は、<A HREF="#MIDIDrumSetup_GetDrumChorus">MIDIDrumSetup_GetDrumChorus</A>を複数回使うよりも、この関数を使った方が高速である。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIDrumSetup_GetDrumDelay"><SPAN CLASS="KEYWORD">long</SPAN> MIDIDrumSetup_GetDrumDelay <BR>(MIDIDrumSetup* pMIDIDrumSetup, <SPAN CLASS="KEYWORD">long</SPAN> lKey);</A> </TD>
+  <TD>pMIDIDrumSetup:MIDIDrumSetupオブジェクトへのポインタ<BR>lKey:キーのインデックス(0～127)</TD>
+  <TD>m_cDrumDelay[lKey]の値(0～127)</TD>
+  <TD>現在の楽器ごとのディレイをひとつ取得する</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIDrumSetup_GetDrumDelayEx"><SPAN CLASS="KEYWORD">long</SPAN> MIDIDrumSetup_GetDrumDelayEx <BR>(MIDIDrumSetup* pMIDIDrumSetup, <SPAN CLASS="KEYWORD">unsigned char</SPAN>* pBuf, <SPAN CLASS="KEYWORD">long</SPAN> lLen);</A> </TD>
+  <TD>pMIDIDrumSetup:MIDIDrumSetupオブジェクトへのポインタ<BR>pBuf:値を取得するためのunsigned char型配列へのポインタ<BR>lLen:unsigned char型配列の長さ</TD>
+  <TD>正常終了:0以外、異常終了:0</TD>
+  <TD>現在の楽器ごとのディレイ(m_cDrumDelay[]の値)をまとめてpBufに取得する。なお、楽器ごとのディレイを複数取得する場合は、<A HREF="#MIDIDrumSetup_GetDrumDelay">MIDIDrumSetup_GetDrumDelay</A>を複数回使うよりも、この関数を使った方が高速である。なお、XGではディレイはヴァリエーションと読み替えるものとする。</TD>
+ </TR>
+</TABLE>
+
+<H3><A NAME="MIDIDrumSetup_SetFunction">4-5.MIDIドラムセットアップの情報設定</A></H3>
+
+<P>　MIDIドラムセットアップの各値は、MIDIDrumSetup_Set系関数を使ってその値を設定することができる。しかし、特にMIDIメッセージをもとにMIDIステータスの状態を更新するには、<A HREF="#MIDIStatus_PutMIDIMessage">MIDIStauts_PutMIDIMessage</A>関数が便利である。直接に値を設定することは、整合性がとれなくなるなどの危険性があるので、してはならない。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIDrumSetup_GetFunctionList">▼List4-5.MIDIDrumSetup_Set系関数の使い方</A></DIV>
+<PRE>
+	<SPAN CLASS="COMMENT">/* ドラムセットアップ1へのポインタを取得 */</SPAN>
+	MIDIDrumSetup* pMIDIDrumSetup = MIDIStatus_GetMIDIDrumSetup (pMIDIStatus, 0);
+	<SPAN CLASS="COMMENT">/* ドラムセットアップ1のタンバリン(Key=54)に深いリバーブをかける */</SPAN>
+	MIDIDrumSetup_SetDrumReverb (pMIDIDrumSetup, 54, 127);
+</PRE>
+
+<P></P>
+
+
+<DIV CLASS="TITLE"><A NAME="MIDIDrumSetup_SetFunctionTable">▼Table4-5.MIDIDrumSetup_Set系関数</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIDrumSetup_SetDrumPitch"><SPAN CLASS="KEYWORD">long</SPAN> MIDIDrumSetup_SetDrumPitch <BR>(MIDIDrumSetup* pMIDIDrumSetup, <SPAN CLASS="KEYWORD">long</SPAN> lKey, <SPAN CLASS="KEYWORD">long</SPAN> lVal)</A> </TD>
+  <TD>pMIDIDrumSetup:MIDIDrumSetupオブジェクトへのポインタ<BR>lKey:キーのインデックス(0～127)<BR>lVal:設定する値(0～127)</TD>
+  <TD>正常終了:0以外、異常終了:0</TD>
+  <TD>現在の楽器ごとのピッチをひとつ設定する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIDrumSetup_SetDrumVolume"><SPAN CLASS="KEYWORD">long</SPAN> MIDIDrumSetup_SetDrumVolume <BR>(MIDIDrumSetup* pMIDIDrumSetup, <SPAN CLASS="KEYWORD">long</SPAN> lKey, <SPAN CLASS="KEYWORD">long</SPAN> lVal)</A> </TD>
+  <TD>pMIDIDrumSetup:MIDIDrumSetupオブジェクトへのポインタ<BR>lKey:キーのインデックス(0～127)<BR>lVal:設定する値(0～127)</TD>
+  <TD>正常終了:0以外、異常終了:0</TD>
+  <TD>現在の楽器ごとのボリュームをひとつ設定する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIDrumSetup_SetDrumPan"><SPAN CLASS="KEYWORD">long</SPAN> MIDIDrumSetup_SetDrumPan <BR>(MIDIDrumSetup* pMIDIDrumSetup, <SPAN CLASS="KEYWORD">long</SPAN> lKey, <SPAN CLASS="KEYWORD">long</SPAN> lVal)</A> </TD>
+  <TD>pMIDIDrumSetup:MIDIDrumSetupオブジェクトへのポインタ<BR>lKey:キーのインデックス(0～127)<BR>lVal:設定する値(0～127)</TD>
+  <TD>正常終了:0以外、異常終了:0</TD>
+  <TD>現在の楽器ごとのパンをひとつ設定する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIDrumSetup_SetDrumReverb"><SPAN CLASS="KEYWORD">long</SPAN> MIDIDrumSetup_SetDrumReverb <BR>(MIDIDrumSetup* pMIDIDrumSetup, <SPAN CLASS="KEYWORD">long</SPAN> lKey, <SPAN CLASS="KEYWORD">long</SPAN> lVal)</A> </TD>
+  <TD>pMIDIDrumSetup:MIDIDrumSetupオブジェクトへのポインタ<BR>lKey:キーのインデックス(0～127)<BR>lVal:設定する値(0～127)</TD>
+  <TD>正常終了:0以外、異常終了:0</TD>
+  <TD>現在の楽器ごとのリバーブをひとつ設定する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIDrumSetup_SetDrumChorus"><SPAN CLASS="KEYWORD">long</SPAN> MIDIDrumSetup_SetDrumChorus <BR>(MIDIDrumSetup* pMIDIDrumSetup, <SPAN CLASS="KEYWORD">long</SPAN> lKey, <SPAN CLASS="KEYWORD">long</SPAN> lVal)</A> </TD>
+  <TD>pMIDIDrumSetup:MIDIDrumSetupオブジェクトへのポインタ<BR>lKey:キーのインデックス(0～127)<BR>lVal:設定する値(0～127)</TD>
+  <TD>正常終了:0以外、異常終了:0</TD>
+  <TD>現在の楽器ごとのコーラスをひとつ設定する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIDrumSetup_SetDrumDelay"><SPAN CLASS="KEYWORD">long</SPAN> MIDIDrumSetup_SetDrumDelay <BR>(MIDIDrumSetup* pMIDIDrumSetup, <SPAN CLASS="KEYWORD">long</SPAN> lKey, <SPAN CLASS="KEYWORD">long</SPAN> lVal)</A> </TD>
+  <TD>pMIDIDrumSetup:MIDIDrumSetupオブジェクトへのポインタ<BR>lKey:キーのインデックス(0～127)<BR>lVal:設定する値(0～127)</TD>
+  <TD>正常終了:0以外、異常終了:0</TD>
+  <TD>現在の楽器ごとのディレイをひとつ設定する。XGではディレイはヴァリエーションと読み替えるものとする。</TD>
+ </TR>
+</TABLE>
+
+
+
+
+
+
+
+
+
+
+<H2><A NAME="APPENDIX_A">付録A　よくある質問(F.A.Q)</A></H2>
+
+<H4>Q.Microsoft Visual C++から使うにはどうしたらよいですか。</H4>
+<P>　C/C++では直接MIDIStatus.cをコンパイルして使うことができます。しかしここでは、コンパイル済みのMIDIStatus.dllにリンクして使う方法を説明します。DLLの関数を使う方法は、普通のWindows API関数を使う方法に似ていますが、MIDIStatusライブラリは追加されたAPI関数となるため、いくつかの追加作業が必要になります。</P>
+
+<DIV>(1)　<A HREF="../MIDIStatus.h">MIDIStatus.h</A>をVisualC++をインストールしたフォルダのincludeフォルダ内に、<A HREF="../Release/MIDIStatus.lib">MIDIStatus.lib</A>をVisualC++をインストールしたフォルダのlibフォルダ内に、<A HREF="../Release/MIDIStatus.dll">MIDIStatus.dll</A>をc:\windows\System32\内(32bitOSの場合)、c:\windows\SysWOW64\内(64bitOSの場合)にそれぞれ保存します。</DIV>
+<DIV>(2)　VisualC++でプロジェクトワークスペースを構築します。</DIV>
+<DIV>(3)　「ビルド(B)」-「(プロジェクト名)のプロパティ」から「(プロジェクト名)のプロパティページ」というダイアログを表示させ、その中の「構成とプロパティ」の「リンカ」の「入力」の中に、「追加の依存ファイル」という項目があるので、<STRONG>"MIDIStatus.lib"</STRONG>を追加します。これを忘れるとリンク時にエラーになります。デバッグ版とリリース版がある場合は両方とも追加するのを忘れないようにしてください。</DIV>
+<DIV>(4)　ソースを記述します。なお、MIDIStatusライブラリを使うソース(Cファイル)の冒頭に、<STRONG>#include &lt;MIDIStatus.h&gt;</STRONG>を記述する必要があります。以下に簡単な例を示します。</DIV>
+<PRE>
+<SPAN CLASS="COMMENT">/* MIDIStatusオブジェクトのマスターボリュームを127から100に変更する */</SPAN>
+<SPAN CLASS="KEYWORD">#include</SPAN> &lt;stdio.h&gt;
+<SPAN CLASS="KEYWORD">#include</SPAN> &lt;MIDIStatus.h&gt;
+<SPAN CLASS="KEYWORD">int</SPAN> main () {
+	<SPAN CLASS="KEYWORD">long</SPAN> lMasterVolume;
+	<SPAN CLASS="KEYWORD">unsinged char</SPAN> cMIDIMessage[] = {0xF0, 0x7F, 0x7F, 0x04, 0x01, 0x00, 0x64, 0xF7};
+	MIDIStatus* pMIDIStatus = MIDIStatus_Create (MIDISTATUS_MODENATIVE, 16, 4);
+	<SPAN CLASS="KEYWORD">if</SPAN> (pMIDIStatus == NULL) {
+		printf (<SPAN CLASS="STRING">"MIDIStatusオブジェクトが生成できません。\n"</SPAN>);
+		<SPAN CLASS="KEYWORD">return</SPAN> 0;
+	}
+	<SPAN CLASS="COMMENT">/* デフォルトのマスターボリュームは127である */</SPAN>
+	lMasterVolume = MIDIStatus_GetMasterVolume (pMIDIStatus);
+	printf (<SPAN CLASS="STRING">"現在のマスターボリューム=%d\n"</SPAN>, lMasterVolume);
+	<SPAN CLASS="COMMENT">/* マスターボリュームを100にする */</SPAN>
+	MIDIStatus_PutMIDIMessage (pMIDIStatus, cMIDIMessage, 8);
+	lMasterVolume = MIDIStatus_GetMasterVolume (pMIDIStatus);
+	printf (<SPAN CLASS="STRING">"現在のマスターボリューム=%d\n"</SPAN>, lMasterVolume);
+	MIDIStatus_Delete (pMIDIStatus);
+	pMIDIStatus = NULL;
+	<SPAN CLASS="KEYWORD">return</SPAN> 1;
+}
+</PRE>
+<DIV>(5)　コンパイル・リンクをします。</DIV>
+
+<H4>Q.Microsoft Visual Basicから使うにはどうしたらよいですか。</H4>
+<P>　MIDIStatusライブラリをVisual Basicから使うには、DLLの関数をWindows API関数のように呼び出します。DLLの関数を呼び出すには、Declare宣言を記述する必要がありますが、既に<A HREF="../MIDIStatus.bas">MIDIStatus.bas</A>が用意してあります。</P>
+<DIV>(1)　<A HREF="../MIDIStatus.bas">MIDIStatus.bas</A>を任意のフォルダに、<A HREF="../Release/MIDIStatus.dll">MIDIStatus.dll</A>をc:\windows\System32\内(32bitOSの場合)、c:\windows\SysWOW64\内(64bitOSの場合)にそれぞれ保存します。</DIV>
+<DIV>(2)　Visual Basicでプロジェクトワークスペースを構築します。</DIV>
+<DIV>(3)　Visual Basicの「ファイル」の「インポート」より、先ほど保存した<STRONG>"MIDIStatus.bas"</STRONG>をインポートします。</DIV>
+<DIV>(4)　フォーム上にCommand1とText1を配置します。</DIV>
+<DIV>(5)　ソースを記述します。以下に簡単な例を示します</DIV>
+<PRE>
+<SPAN CLASS="COMMENT">/* MIDIStatusオブジェクトのマスターボリュームを127から100に変更する */</SPAN>
+<SPAN CLASS="KEYWORD">Option Explicit</SPAN>
+<SPAN CLASS="KEYWORD">Dim</SPAN> pMIDIStatus <SPAN CLASS="KEYWORD">As Long</SPAN>
+
+<SPAN CLASS="KEYWORD">Private Sub</SPAN> Form_Load()
+	pMIDIStatus = MIDIStatus_Create(MIDISTATUS_MODENATIVE, 16, 4)
+	<SPAN CLASS="KEYWORD">If</SPAN> (pMIDIStatus = 0) <SPAN CLASS="KEYWORD">Then</SPAN>
+		MsgBox (<SPAN CLASS="STRING">"MIDIStatusオブジェクトが生成できません。"</SPAN>)
+		Unload Me
+	<SPAN CLASS="KEYWORD">End If</SPAN>
+	<SPAN CLASS="Comment">' デフォルトのマスターボリュームは127である</SPAN>
+	<SPAN CLASS="KEYWORD">Dim</SPAN> lMasterVolume <SPAN CLASS="KEYWORD">As Long</SPAN>
+	lMasterVolume = MIDIStatus_GetMasterVolume(pMIDIStatus)
+	Text1.Text = <SPAN CLASS="STRING">"現在のマスターボリューム="</SPAN> & lMasterVolume
+<SPAN CLASS="KEYWORD">End Sub</SPAN>
+
+<SPAN CLASS="KEYWORD">Private Sub</SPAN> Command1_Click()
+	<SPAN CLASS="Comment">' マスターボリューム100にする</SPAN>
+	<SPAN CLASS="KEYWORD">Dim</SPAN> byMIDIMessage(8) <SPAN CLASS="KEYWORD">As Byte</SPAN>
+	byMIDIMessage(0) = &amp;HF0
+	byMIDIMessage(1) = &amp;H7F
+	byMIDIMessage(2) = &amp;H7F
+	byMIDIMessage(3) = &amp;H04
+	byMIDIMessage(4) = &amp;H01
+	byMIDIMessage(5) = &amp;H00
+	byMIDIMessage(6) = &amp;H64
+	byMIDIMessage(7) = &amp;HF7
+	MIDIStatus_PutMIDIMessage(pMIDIStatus, byMIDIMessage(0), 8)
+	<SPAN CLASS="KEYWORD">Dim</SPAN> lMasterVolume <SPAN CLASS="KEYWORD">As Long</SPAN>
+	lMasterVolume = MIDIStatus_GetMasterVolume(pMIDIStatus)
+	Text1.Text = <SPAN CLASS="STRING">"現在のマスターボリューム="</SPAN> & lMasterVolume
+<SPAN CLASS="KEYWORD">End Sub</SPAN>
+
+<SPAN CLASS="KEYWORD">Private Sub</SPAN> Form_Unload (Cancel <SPAN CLASS="KEYWORD">As Integer</SPAN>)
+	MIDIStatus_Delete(pMIDIStatus)
+	pMIDIStatus = 0
+<SPAN CLASS="KEYWORD">End Sub</SPAN>
+</PRE>
+<DIV>(6)　コンパイル・リンクをします。</DIV>
+
+
+<H4>Q.C++専用のライブラリはないのですか？</H4>
+<P>　C++ではC言語のライブラリを使うことができますので、今のところ用意していません。しかし、オブジェクト指向のC++でCの関数を呼び出すことは、デザイン上奇妙であります。誰かがいつか、C++用のMIDIStatusライブラリを作ってくださることを望みます</P>
+
+<H4>Q.Java用のライブラリはないのですか？</H4>
+<P>　はい、ございません。JavaはOSに依存しない利点を生かして普及していますが、大変遅くて重いという弱点をもちます。一方、MIDIステータスを使うアプリケーションは、高いリアルタイム性、レスポンスの速さなどが何よりも求められます。筆者は、Javaはこのような要求に耐えられないものと考えています。ゆえに、Java用のライブラリはあえて製作していないのです。</P>
+
+<H4>Q.Linux用のダイナミックリンクライブラリはないのですか？</H4>
+<P>はい、今のところございません。このソースを元に、誰か作ってくださることを望みます。</P>
+
+<H4>Q.Windows:MIDIStatus.dllが見つかりません。</H4>
+<P>　Windowsでは、デフォルトの設定ではダイナミックリンクライブラリ(*.dll)を表示しないようになっています。dllファイルを表示するには、エクスプローラー又はマイコンピューターの「ツール」メニューの「フォルダオプション」を選び、「表示」タブにある「すべてのファイルとフォルダを表示する」をONにします。これをしていない場合、検索をかけても表示されないことがありますのでご注意ください。</P>
+<P>　また、アプリケーションの実行開始時にDLLが見つからないというエラーが起こる場合は、dllの設置フォルダを間違えていないかご確認ください。Windows95/98/MEは次の順序でDLLを探索します。</P>
+<DIV>(1) 実行ファイル(*.exe)を含むディレクトリ</DIV>
+<DIV>(2) カレントディレクトリ</DIV>
+<DIV>(3) Windowsの32ビットシステムディレクトリ(通常はc\windows\system32)</DIV>
+<DIV>(4) Windowsの16ビットシステムディレクトリ(通常はc\windows\system)</DIV>
+<DIV>(5) Windowsディレクトリ(通常はc\windows)</DIV>
+<DIV>(6) 環境変数PATHに設定されているディレクトリ</DIV>
+<P>　また、Windows2000/XPでは次の順序でDLLを検索します。</P>
+<DIV>(1) 実行ファイル(*.exe)を含むディレクトリ</DIV>
+<DIV>(2) Windowsの32ビットシステムディレクトリ(通常はc\windows\system32)</DIV>
+<DIV>(3) Windowsの16ビットシステムディレクトリ(通常はc\windows\system)</DIV>
+<DIV>(4) Windowsディレクトリ(通常はc\windows)</DIV>
+<DIV>(5) カレントディレクトリ</DIV>
+<DIV>(6) 環境変数PATHに設定されているディレクトリ</DIV>
+<P>　2つ以上のヴァージョンを持っていると、誤って古い方のDLLを読み込む恐れがあります。また、共用ディレクトリに置く場合、古いDLLを新しいDLLに上書きすると、古いDLLで動いていたアプリケーションが動かなくなることがあります。このため、デバッグなど特殊な場合を除き、DLLは実行ファイル(*.exe)を含むディレクトリに置く方が無難です。</P>
+
+<H4>Q.このライブラリを使ったソフトウェアを、このライブラリを含んだ形で配布・販売してもよろしいですか？</H4>
+<P>　はい、よろしいです。このライブラリは<A HREF="../license.txt">GNU 劣等一般公衆利用許諾契約書(LGPL)</A>に基づいて公開されています。あなたは次の２つの方法にて、あなたのソフトウェアを配布・販売することができます。使用目的や販売価格による制限はございません。作者に許可をとる必要もありません。</P>
+
+<P><STRONG>a)ダイナミックリンクをする場合(DLLのみを使用する場合)</STRONG><BR>
+　あなたのソフトウェアは、どのようなライセンスでも配布・販売ことができます。例えば、ソースを添付するしないか、コピーや再配布を許可するかしないは、あなたが自由に決めることができます。あなたがしなければならないことは、作品はMIDIStatusライブラリを使用していること、及びMIDIStatusライブラリの著作者はくず／おーぷんMIDIぷろじぇくとであることを明示しておくことです。</P>
+
+<P><STRONG>b)ソースをプログラムに埋め込む場合、又はスタティックリンクをする場合</STRONG><BR>
+　あなたのソフトウェアは、LGPLかGPLの下で配布・販売することができます。すなわち、少なくともソースを公開し、コピーや再配布をすることをユーザーに許可しなければなりません。(ソースは同梱されている必要はなく、ネットワーク上からダウンロードできるようにしていても構いません。) あなたがしなければならないことは、あなたのソフトウェア全体がLGPLかGPLの下で配布されていること、作品はMIDIStatusライブラリを使用していること、及びMIDIStatusライブラリの著作者はくず／おーぷんMIDIぷろじぇくとであることを明示しておくことです。この方法では、より積極的にソフトウェアを普及させることができるでしょう。もしあなたがソースを公開したくなかったり、誰かに無断転載されることを望まないのであれば、a)の方法を使うことをお勧めします。</P>
+
+<H4>Q.このライブラリのサポートはしていないのですか？</H4>
+<P>　このライブラリのサポートは、<A HREF="http://openmidiproject.sourceforge.jp/index.html">おーぷんMIDIぷろじぇくと</A>の掲示板にてしております。ただし、必ずしも返答があることを保証するものではありません。また、「まじめなソフト開発を始めるので、有料でもいいからきちんとサポートしてほしい」と言われましても、そもそも筆者は会社に行っていて音信不通なので、きちんとサポートをすることができません。どうしても連絡をとりたい場合は、<A HREF="mailto:ee65051@yahoo.co.jp">こちら</A>にメールをしてください。</P>
+
+
+<H2><A NAME="APPENDIX_B">付録B　キー・ナンバー対応表</A></H2>
+
+<P>ノートキー：ノートオンイベント・ノートオフイベント・キーアフタータッチの2バイト目(key)の値。チャンネル10以外(n!=9)の場合。</P>
+
+<P>ドラムキー：ノートオンイベント・ノートオフイベント・キーアフタータッチの2バイト目(key)の値。チャンネル10(n=9)の場合。ただし、音源によってはチャンネル10以外もドラムにできるものがある。</P>
+
+<P>コントロールチェンジ：コントロールチェンジの2バイト目(num)の値。</P>
+
+<P>プログラムチェンジ：プログラムチェンジの2バイト目(num)の値。</P>
+
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH>値</TH>
+  <TH>16進</TH>
+  <TH>ノートキー</TH>
+  <TH>ドラムキー</TH>
+  <TH>コントロールチェンジ</TH>
+  <TH>プログラムチェンジ</TH>
+ </TR>
+ <TR>
+  <TD>0</TD>
+  <TD>0x00</TD>
+  <TD>C0</TD>
+  <TD>-</TD>
+  <TD>Bank Select MSB</TD>
+  <TD>Acoustic Grand Piano</TD>
+ </TR>
+ <TR>
+  <TD>1</TD>
+  <TD>0x01</TD>
+  <TD>C#0=Db0</TD>
+  <TD>-</TD>
+  <TD>Modulation MSB</TD>
+  <TD>Bright Acoustic Piano</TD>
+ </TR>
+ <TR>
+  <TD>2</TD>
+  <TD>0x02</TD>
+  <TD>D0</TD>
+  <TD>-</TD>
+  <TD>Breath Controller MSB</TD>
+  <TD>Electric Grand Piano</TD>
+ </TR>
+ <TR>
+  <TD>3</TD>
+  <TD>0x03</TD>
+  <TD>D#0=Eb0</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Honky-tonk Piano</TD>
+ </TR>
+ <TR>
+  <TD>4</TD>
+  <TD>0x04</TD>
+  <TD>E0</TD>
+  <TD>-</TD>
+  <TD>Foot Controller MSB</TD>
+  <TD>Electric Piano 1</TD>
+ </TR>
+ <TR>
+  <TD>5</TD>
+  <TD>0x05</TD>
+  <TD>F0</TD>
+  <TD>-</TD>
+  <TD>Portamento Time MSB</TD>
+  <TD>Electric Piano 2</TD>
+ </TR>
+ <TR>
+  <TD>6</TD>
+  <TD>0x06</TD>
+  <TD>F#0=Gb0</TD>
+  <TD>-</TD>
+  <TD>Data Entry MSB</TD>
+  <TD>Harpsichord</TD>
+ </TR>
+ <TR>
+  <TD>7</TD>
+  <TD>0x07</TD>
+  <TD>G0</TD>
+  <TD>-</TD>
+  <TD>Channel Volume MSB</TD>
+  <TD>Clavi</TD>
+ </TR>
+ <TR>
+  <TD>8</TD>
+  <TD>0x08</TD>
+  <TD>G#0=Ab0</TD>
+  <TD>-</TD>
+  <TD>Balance MSB</TD>
+  <TD>Celesta</TD>
+ </TR>
+ <TR>
+  <TD>9</TD>
+  <TD>0x09</TD>
+  <TD>A0</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Glockenspiel</TD>
+ </TR>
+ <TR>
+  <TD>10</TD>
+  <TD>0x0A</TD>
+  <TD>A#0=Bb0</TD>
+  <TD>-</TD>
+  <TD>Pan MSB</TD>
+  <TD>Music Box</TD>
+ </TR>
+ <TR>
+  <TD>11</TD>
+  <TD>0x0B</TD>
+  <TD>B0</TD>
+  <TD>-</TD>
+  <TD>Expression MSB</TD>
+  <TD>Vibraphone</TD>
+ </TR>
+ <TR>
+  <TD>12</TD>
+  <TD>0x0C</TD>
+  <TD>C1</TD>
+  <TD>-</TD>
+  <TD>Effect Control 1 MSB</TD>
+  <TD>Marimba</TD>
+ </TR>
+ <TR>
+  <TD>13</TD>
+  <TD>0x0D</TD>
+  <TD>C#1=Db1</TD>
+  <TD>-</TD>
+  <TD>Effect Control 2 MSB</TD>
+  <TD>Xylophone</TD>
+ </TR>
+ <TR>
+  <TD>14</TD>
+  <TD>0x0E</TD>
+  <TD>D1</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Tubular Bells</TD>
+ </TR>
+ <TR>
+  <TD>15</TD>
+  <TD>0x0F</TD>
+  <TD>D#1=Eb1</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Dulcimer</TD>
+ </TR>
+ <TR>
+  <TD>16</TD>
+  <TD>0x10</TD>
+  <TD>E1</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Drawbar Organ</TD>
+ </TR>
+ <TR>
+  <TD>17</TD>
+  <TD>0x11</TD>
+  <TD>F1</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Percussive Organ</TD>
+ </TR>
+ <TR>
+  <TD>18</TD>
+  <TD>0x12</TD>
+  <TD>F#1=Gb1</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Rock Organ</TD>
+ </TR>
+ <TR>
+  <TD>19</TD>
+  <TD>0x13</TD>
+  <TD>G1</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Church Organ</TD>
+ </TR>
+ <TR>
+  <TD>20</TD>
+  <TD>0x14</TD>
+  <TD>G#1=Ab1</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Reed Organ</TD>
+ </TR>
+ <TR>
+  <TD>21</TD>
+  <TD>0x15</TD>
+  <TD>A1</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Accordion</TD>
+ </TR>
+ <TR>
+  <TD>22</TD>
+  <TD>0x16</TD>
+  <TD>A#1=Bb1</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Harmonica</TD>
+ </TR>
+ <TR>
+  <TD>23</TD>
+  <TD>0x17</TD>
+  <TD>B1</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Tango Accordion</TD>
+ </TR>
+ <TR>
+  <TD>24</TD>
+  <TD>0x18</TD>
+  <TD>C2</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Acoustic Guitar (nylon)</TD>
+ </TR>
+ <TR>
+  <TD>25</TD>
+  <TD>0x19</TD>
+  <TD>C#2=Db2</TD>
+  <TD>Snare Roll</TD>
+  <TD>-</TD>
+  <TD>Acoustic Guitar (steel)</TD>
+ </TR>
+ <TR>
+  <TD>26</TD>
+  <TD>0x1A</TD>
+  <TD>D2</TD>
+  <TD>Finger Snap</TD>
+  <TD>-</TD>
+  <TD>Electric Guitar (jazz)</TD>
+ </TR>
+ <TR>
+  <TD>27</TD>
+  <TD>0x1B</TD>
+  <TD>D#2=Eb2</TD>
+  <TD>High Q</TD>
+  <TD>-</TD>
+  <TD>Electric Guitar (clean)</TD>
+ </TR>
+ <TR>
+  <TD>28</TD>
+  <TD>0x1C</TD>
+  <TD>E2</TD>
+  <TD>Slap</TD>
+  <TD>-</TD>
+  <TD>Electric Guitar (muted)</TD>
+ </TR>
+ <TR>
+  <TD>29</TD>
+  <TD>0x1D</TD>
+  <TD>F2</TD>
+  <TD>Scratch Push</TD>
+  <TD>-</TD>
+  <TD>Overdriven Guitar</TD>
+ </TR>
+ <TR>
+  <TD>30</TD>
+  <TD>0x1E</TD>
+  <TD>F#2=Gb2</TD>
+  <TD>Scratch Pull</TD>
+  <TD>-</TD>
+  <TD>Distortion Guitar</TD>
+ </TR>
+ <TR>
+  <TD>31</TD>
+  <TD>0x1F</TD>
+  <TD>G2</TD>
+  <TD>Sticks</TD>
+  <TD>-</TD>
+  <TD>Guitar Harmonics</TD>
+ </TR>
+ <TR>
+  <TD>32</TD>
+  <TD>0x20</TD>
+  <TD>G#2=Ab2</TD>
+  <TD>Square Click</TD>
+  <TD>Bank Select LSB</TD>
+  <TD>Acoustic Bass</TD>
+ </TR>
+ <TR>
+  <TD>33</TD>
+  <TD>0x21</TD>
+  <TD>A2</TD>
+  <TD>Metronome Click</TD>
+  <TD>Modulation LSB</TD>
+  <TD>Electric Bass (finger)</TD>
+ </TR>
+ <TR>
+  <TD>34</TD>
+  <TD>0x22</TD>
+  <TD>A#2=Bb2</TD>
+  <TD>Metronome Bell</TD>
+  <TD>Breath Controller LSB</TD>
+  <TD>Electric Bass (pick)</TD>
+ </TR>
+ <TR>
+  <TD>35</TD>
+  <TD>0x23</TD>
+  <TD>B2</TD>
+  <TD>Standard Kick 2</TD>
+  <TD>-</TD>
+  <TD>Fretless Bass</TD>
+ </TR>
+ <TR>
+  <TD>36</TD>
+  <TD>0x24</TD>
+  <TD>C3</TD>
+  <TD>Standard Kick 1</TD>
+  <TD>Foot Controller LSB</TD>
+  <TD>Slap Bass 1</TD>
+ </TR>
+ <TR>
+  <TD>37</TD>
+  <TD>0x25</TD>
+  <TD>C#3=Db3</TD>
+  <TD>Side Stick</TD>
+  <TD>Portamento Time LSB</TD>
+  <TD>Slap Bass 2</TD>
+ </TR>
+ <TR>
+  <TD>38</TD>
+  <TD>0x26</TD>
+  <TD>D3</TD>
+  <TD>Standard Snare 1</TD>
+  <TD>Data Entry LSB</TD>
+  <TD>Synth Bass 1</TD>
+ </TR>
+ <TR>
+  <TD>39</TD>
+  <TD>0x27</TD>
+  <TD>D#3=Eb3</TD>
+  <TD>Hand Clap</TD>
+  <TD>Channel Volume LSB</TD>
+  <TD>Synth Bass 2</TD>
+ </TR>
+ <TR>
+  <TD>40</TD>
+  <TD>0x28</TD>
+  <TD>E3</TD>
+  <TD>Standard Snare 2</TD>
+  <TD>Balance LSB</TD>
+  <TD>Violin</TD>
+ </TR>
+ <TR>
+  <TD>41</TD>
+  <TD>0x29</TD>
+  <TD>F3</TD>
+  <TD>Low Tom 2</TD>
+  <TD>-</TD>
+  <TD>Viola</TD>
+ </TR>
+ <TR>
+  <TD>42</TD>
+  <TD>0x2A</TD>
+  <TD>F#3=Gb3</TD>
+  <TD>Closed Hi-hat</TD>
+  <TD>Pan LSB</TD>
+  <TD>Cello</TD>
+ </TR>
+ <TR>
+  <TD>43</TD>
+  <TD>0x2B</TD>
+  <TD>G3</TD>
+  <TD>Low Tom 1</TD>
+  <TD>Expression LSB</TD>
+  <TD>Contrabass</TD>
+ </TR>
+ <TR>
+  <TD>44</TD>
+  <TD>0x2C</TD>
+  <TD>G#3=Ab3</TD>
+  <TD>Pedal Hi-hat</TD>
+  <TD>Effect Control 1 LSB</TD>
+  <TD>Tremolo Strings</TD>
+ </TR>
+ <TR>
+  <TD>45</TD>
+  <TD>0x2D</TD>
+  <TD>A3</TD>
+  <TD>Mid Tom 2</TD>
+  <TD>Effect Control 2 LSB</TD>
+  <TD>Pizzicato Strings</TD>
+ </TR>
+ <TR>
+  <TD>46</TD>
+  <TD>0x2E</TD>
+  <TD>A#3=Bb3</TD>
+  <TD>Open Hi-hat</TD>
+  <TD>-</TD>
+  <TD>Orchestral Harp</TD>
+ </TR>
+ <TR>
+  <TD>47</TD>
+  <TD>0x2F</TD>
+  <TD>B3</TD>
+  <TD>Mid Tom 1</TD>
+  <TD>-</TD>
+  <TD>Timpani</TD>
+ </TR>
+ <TR>
+  <TD>48</TD>
+  <TD>0x30</TD>
+  <TD>C4</TD>
+  <TD>High Tom 2</TD>
+  <TD>-</TD>
+  <TD>String Ensemble 1</TD>
+ </TR>
+ <TR>
+  <TD>49</TD>
+  <TD>0x31</TD>
+  <TD>C#4=Db4</TD>
+  <TD>Crash Cymbal 1</TD>
+  <TD>-</TD>
+  <TD>String Ensemble 2</TD>
+ </TR>
+ <TR>
+  <TD>50</TD>
+  <TD>0x32</TD>
+  <TD>D4</TD>
+  <TD>High Tom 1</TD>
+  <TD>-</TD>
+  <TD>SynthStrings 1</TD>
+ </TR>
+ <TR>
+  <TD>51</TD>
+  <TD>0x33</TD>
+  <TD>D#4=Eb4</TD>
+  <TD>Ride Cymbal 1</TD>
+  <TD>-</TD>
+  <TD>SynthStrings 2</TD>
+ </TR>
+ <TR>
+  <TD>52</TD>
+  <TD>0x34</TD>
+  <TD>E4</TD>
+  <TD>Chinese Cymbal</TD>
+  <TD>-</TD>
+  <TD>Choir Aahs</TD>
+ </TR>
+ <TR>
+  <TD>53</TD>
+  <TD>0x35</TD>
+  <TD>F4</TD>
+  <TD>Ride Bell</TD>
+  <TD>-</TD>
+  <TD>Voice Oohs</TD>
+ </TR>
+ <TR>
+  <TD>54</TD>
+  <TD>0x36</TD>
+  <TD>F#4=Gb4</TD>
+  <TD>Tambourine</TD>
+  <TD>-</TD>
+  <TD>Synth Vox</TD>
+ </TR>
+ <TR>
+  <TD>55</TD>
+  <TD>0x37</TD>
+  <TD>G4</TD>
+  <TD>Splash Cymbal</TD>
+  <TD>-</TD>
+  <TD>Orchestra Hit</TD>
+ </TR>
+ <TR>
+  <TD>56</TD>
+  <TD>0x38</TD>
+  <TD>G#4=Ab4</TD>
+  <TD>Cowbell</TD>
+  <TD>-</TD>
+  <TD>Trumpet</TD>
+ </TR>
+ <TR>
+  <TD>57</TD>
+  <TD>0x39</TD>
+  <TD>A4</TD>
+  <TD>Crash Cymbal 2</TD>
+  <TD>-</TD>
+  <TD>Trombone</TD>
+ </TR>
+ <TR>
+  <TD>58</TD>
+  <TD>0x3A</TD>
+  <TD>A#4=Bb4</TD>
+  <TD>Vibra-slap</TD>
+  <TD>-</TD>
+  <TD>Tuba</TD>
+ </TR>
+ <TR>
+  <TD>59</TD>
+  <TD>0x3B</TD>
+  <TD>B4</TD>
+  <TD>Ride Cymbal 2</TD>
+  <TD>-</TD>
+  <TD>Muted Trumpet</TD>
+ </TR>
+ <TR>
+  <TD>60</TD>
+  <TD>0x3C</TD>
+  <TD>C5</TD>
+  <TD>High Bongo</TD>
+  <TD>-</TD>
+  <TD>French Horn</TD>
+ </TR>
+ <TR>
+  <TD>61</TD>
+  <TD>0x3D</TD>
+  <TD>C#5=Db5</TD>
+  <TD>Low Bongo</TD>
+  <TD>-</TD>
+  <TD>Brass Section</TD>
+ </TR>
+ <TR>
+  <TD>62</TD>
+  <TD>0x3E</TD>
+  <TD>D5</TD>
+  <TD>Mute High Conga</TD>
+  <TD>-</TD>
+  <TD>Synth Brass 1</TD>
+ </TR>
+ <TR>
+  <TD>63</TD>
+  <TD>0x3F</TD>
+  <TD>D#5=Eb5</TD>
+  <TD>Open High Conga</TD>
+  <TD>-</TD>
+  <TD>Synth Brass 2</TD>
+ </TR>
+ <TR>
+  <TD>64</TD>
+  <TD>0x40</TD>
+  <TD>E5</TD>
+  <TD>Low Conga</TD>
+  <TD>Hold Pedal 1</TD>
+  <TD>Soprano Sax</TD>
+ </TR>
+ <TR>
+  <TD>65</TD>
+  <TD>0x41</TD>
+  <TD>F5</TD>
+  <TD>High Timbale</TD>
+  <TD>Portament Pedal</TD>
+  <TD>Alto Sax</TD>
+ </TR>
+ <TR>
+  <TD>66</TD>
+  <TD>0x42</TD>
+  <TD>F#5=Gb5</TD>
+  <TD>Low Timbale</TD>
+  <TD>Sotenuto Pedal</TD>
+  <TD>Tenor Sax</TD>
+ </TR>
+ <TR>
+  <TD>67</TD>
+  <TD>0x43</TD>
+  <TD>G5</TD>
+  <TD>High Agogo</TD>
+  <TD>Soft Pedal</TD>
+  <TD>Baritone Sax</TD>
+ </TR>
+ <TR>
+  <TD>68</TD>
+  <TD>0x44</TD>
+  <TD>G#5=Ab5</TD>
+  <TD>Low Agogo</TD>
+  <TD>Legato Pedal</TD>
+  <TD>Oboe</TD>
+ </TR>
+ <TR>
+  <TD>69</TD>
+  <TD>0x45</TD>
+  <TD>A5</TD>
+  <TD>Cabasa</TD>
+  <TD>Hold Pedal 2</TD>
+  <TD>English Horn</TD>
+ </TR>
+ <TR>
+  <TD>70</TD>
+  <TD>0x46</TD>
+  <TD>A#5=Bb5</TD>
+  <TD>Maracas</TD>
+  <TD>Sound Variation</TD>
+  <TD>Bassoon</TD>
+ </TR>
+ <TR>
+  <TD>71</TD>
+  <TD>0x47</TD>
+  <TD>B5</TD>
+  <TD>Short Hi Whistle</TD>
+  <TD>Harmonic Contents</TD>
+  <TD>Clarinet</TD>
+ </TR>
+ <TR>
+  <TD>72</TD>
+  <TD>0x48</TD>
+  <TD>C6</TD>
+  <TD>Long Low Whistle</TD>
+  <TD>Release Time</TD>
+  <TD>Piccolo</TD>
+ </TR>
+ <TR>
+  <TD>73</TD>
+  <TD>0x49</TD>
+  <TD>C#6=Db6</TD>
+  <TD>Short Gurio</TD>
+  <TD>Attack Time</TD>
+  <TD>Flute</TD>
+ </TR>
+ <TR>
+  <TD>74</TD>
+  <TD>0x4A</TD>
+  <TD>D6</TD>
+  <TD>Long Gurio</TD>
+  <TD>Brightness</TD>
+  <TD>Recorder</TD>
+ </TR>
+ <TR>
+  <TD>75</TD>
+  <TD>0x4B</TD>
+  <TD>D#6=Eb6</TD>
+  <TD>Claves</TD>
+  <TD>Decay Time</TD>
+  <TD>Pan Flute</TD>
+ </TR>
+ <TR>
+  <TD>76</TD>
+  <TD>0x4C</TD>
+  <TD>E6</TD>
+  <TD>High Wood Block</TD>
+  <TD>Vibrato rate</TD>
+  <TD>Blown Bottle</TD>
+ </TR>
+ <TR>
+  <TD>77</TD>
+  <TD>0x4D</TD>
+  <TD>F6</TD>
+  <TD>Low Wood Block</TD>
+  <TD>Vibrato deapth</TD>
+  <TD>Shakuhachi</TD>
+ </TR>
+ <TR>
+  <TD>78</TD>
+  <TD>0x4E</TD>
+  <TD>F#6=Gb6</TD>
+  <TD>Mute Cuica</TD>
+  <TD>Vibrato deray</TD>
+  <TD>Whistle</TD>
+ </TR>
+ <TR>
+  <TD>79</TD>
+  <TD>0x4F</TD>
+  <TD>G6</TD>
+  <TD>Open Cuica</TD>
+  <TD>Sound Controller 10</TD>
+  <TD>Ocarina</TD>
+ </TR>
+ <TR>
+  <TD>80</TD>
+  <TD>0x50</TD>
+  <TD>G#6=Ab6</TD>
+  <TD>Mute Triangle</TD>
+  <TD>-</TD>
+  <TD>Lead 1 (square)</TD>
+ </TR>
+ <TR>
+  <TD>81</TD>
+  <TD>0x51</TD>
+  <TD>A6</TD>
+  <TD>Open Triangle</TD>
+  <TD>-</TD>
+  <TD>Lead 2 (sawtooth)</TD>
+ </TR>
+ <TR>
+  <TD>82</TD>
+  <TD>0x52</TD>
+  <TD>A#6=Bb6</TD>
+  <TD>Shaker</TD>
+  <TD>-</TD>
+  <TD>Lead 3 (calliope)</TD>
+ </TR>
+ <TR>
+  <TD>83</TD>
+  <TD>0x53</TD>
+  <TD>B6</TD>
+  <TD>Jingle Bell</TD>
+  <TD>-</TD>
+  <TD>Lead 4 (chiff)</TD>
+ </TR>
+ <TR>
+  <TD>84</TD>
+  <TD>0x54</TD>
+  <TD>C7</TD>
+  <TD>Bell Tree</TD>
+  <TD>Portament Control</TD>
+  <TD>Lead 5 (charang)</TD>
+ </TR>
+ <TR>
+  <TD>85</TD>
+  <TD>0x55</TD>
+  <TD>C#7=Db7</TD>
+  <TD>Castanets</TD>
+  <TD>-</TD>
+  <TD>Lead 6 (voice)</TD>
+ </TR>
+ <TR>
+  <TD>86</TD>
+  <TD>0x56</TD>
+  <TD>D7</TD>
+  <TD>Mute Surdo</TD>
+  <TD>-</TD>
+  <TD>Lead 7 (fifths)</TD>
+ </TR>
+ <TR>
+  <TD>87</TD>
+  <TD>0x57</TD>
+  <TD>D#7=Eb7</TD>
+  <TD>Open Surdo</TD>
+  <TD>-</TD>
+  <TD>Lead 8 (bass + lead)</TD>
+ </TR>
+ <TR>
+  <TD>88</TD>
+  <TD>0x58</TD>
+  <TD>E7</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Pad 1 (new age)</TD>
+ </TR>
+ <TR>
+  <TD>89</TD>
+  <TD>0x59</TD>
+  <TD>F7</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Pad 2 (warm)</TD>
+ </TR>
+ <TR>
+  <TD>90</TD>
+  <TD>0x5A</TD>
+  <TD>F#7=Gb7</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Pad 3 (polysynth)</TD>
+ </TR>
+ <TR>
+  <TD>91</TD>
+  <TD>0x5B</TD>
+  <TD>G7</TD>
+  <TD>-</TD>
+  <TD>Reverb</TD>
+  <TD>Pad 4 (choir)</TD>
+ </TR>
+ <TR>
+  <TD>92</TD>
+  <TD>0x5C</TD>
+  <TD>G#7=Ab7</TD>
+  <TD>-</TD>
+  <TD>Effect 2 Depth</TD>
+  <TD>Pad 5 (bowed)</TD>
+ </TR>
+ <TR>
+  <TD>93</TD>
+  <TD>0x5D</TD>
+  <TD>A7</TD>
+  <TD>-</TD>
+  <TD>Chorus</TD>
+  <TD>Pad 6 (metallic)</TD>
+ </TR>
+ <TR>
+  <TD>94</TD>
+  <TD>0x5E</TD>
+  <TD>A#7=Bb7</TD>
+  <TD>-</TD>
+  <TD>Effect 4 Depth</TD>
+  <TD>Pad 7 (halo)</TD>
+ </TR>
+ <TR>
+  <TD>95</TD>
+  <TD>0x5F</TD>
+  <TD>B7</TD>
+  <TD>-</TD>
+  <TD>Effect 5 Depth</TD>
+  <TD>Pad 8 (sweep)</TD>
+ </TR>
+ <TR>
+  <TD>96</TD>
+  <TD>0x60</TD>
+  <TD>C8</TD>
+  <TD>-</TD>
+  <TD>Data Increment</TD>
+  <TD>FX 1 (rain)</TD>
+ </TR>
+ <TR>
+  <TD>97</TD>
+  <TD>0x61</TD>
+  <TD>C#8=Db8</TD>
+  <TD>-</TD>
+  <TD>Data Decrement</TD>
+  <TD>FX 2 (soundtrack)</TD>
+ </TR>
+ <TR>
+  <TD>98</TD>
+  <TD>0x62</TD>
+  <TD>D8</TD>
+  <TD>-</TD>
+  <TD>NRPN LSB</TD>
+  <TD>FX 3 (crystal)</TD>
+ </TR>
+ <TR>
+  <TD>99</TD>
+  <TD>0x63</TD>
+  <TD>D#8=Eb8</TD>
+  <TD>-</TD>
+  <TD>NRPN MSB</TD>
+  <TD>FX 4 (atmosphere)</TD>
+ </TR>
+ <TR>
+  <TD>100</TD>
+  <TD>0x64</TD>
+  <TD>E8</TD>
+  <TD>-</TD>
+  <TD>RPN LSB</TD>
+  <TD>FX 5 (brightness)</TD>
+ </TR>
+ <TR>
+  <TD>101</TD>
+  <TD>0x65</TD>
+  <TD>F8</TD>
+  <TD>-</TD>
+  <TD>RPN MSB</TD>
+  <TD>FX 6 (goblins)</TD>
+ </TR>
+ <TR>
+  <TD>102</TD>
+  <TD>0x66</TD>
+  <TD>F#8=Gb8</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>FX 7 (echoes)</TD>
+ </TR>
+ <TR>
+  <TD>103</TD>
+  <TD>0x67</TD>
+  <TD>G8</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>FX 8 (sci-fi)</TD>
+ </TR>
+ <TR>
+  <TD>104</TD>
+  <TD>0x68</TD>
+  <TD>G#8=Ab8</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Sitar</TD>
+ </TR>
+ <TR>
+  <TD>105</TD>
+  <TD>0x69</TD>
+  <TD>A8</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Banjo</TD>
+ </TR>
+ <TR>
+  <TD>106</TD>
+  <TD>0x6A</TD>
+  <TD>A#8=Bb8</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Shamisen</TD>
+ </TR>
+ <TR>
+  <TD>107</TD>
+  <TD>0x6B</TD>
+  <TD>B8</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Koto</TD>
+ </TR>
+ <TR>
+  <TD>108</TD>
+  <TD>0x6C</TD>
+  <TD>C9</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Kalimba</TD>
+ </TR>
+ <TR>
+  <TD>109</TD>
+  <TD>0x6D</TD>
+  <TD>C#9=Db9</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Bag pipe</TD>
+ </TR>
+ <TR>
+  <TD>110</TD>
+  <TD>0x6E</TD>
+  <TD>D9</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Fiddle</TD>
+ </TR>
+ <TR>
+  <TD>111</TD>
+  <TD>0x6F</TD>
+  <TD>D#9=Eb9</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Shanai</TD>
+ </TR>
+ <TR>
+  <TD>112</TD>
+  <TD>0x70</TD>
+  <TD>E9</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Tinkle Bell</TD>
+ </TR>
+ <TR>
+  <TD>113</TD>
+  <TD>0x71</TD>
+  <TD>F9</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Agogo</TD>
+ </TR>
+ <TR>
+  <TD>114</TD>
+  <TD>0x72</TD>
+  <TD>F#9=Gb9</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Steel Drums</TD>
+ </TR>
+ <TR>
+  <TD>115</TD>
+  <TD>0x73</TD>
+  <TD>G9</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Woodblock</TD>
+ </TR>
+ <TR>
+  <TD>116</TD>
+  <TD>0x74</TD>
+  <TD>G#9=Ab9</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Taiko</TD>
+ </TR>
+ <TR>
+  <TD>117</TD>
+  <TD>0x75</TD>
+  <TD>A9</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Melodic Tom</TD>
+ </TR>
+ <TR>
+  <TD>118</TD>
+  <TD>0x76</TD>
+  <TD>A#9=Bb9</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Synth Drum</TD>
+ </TR>
+ <TR>
+  <TD>119</TD>
+  <TD>0x77</TD>
+  <TD>B9</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Reverse Cymbal</TD>
+ </TR>
+ <TR>
+  <TD>120</TD>
+  <TD>0x78</TD>
+  <TD>C10</TD>
+  <TD>-</TD>
+  <TD>All Sound Off</TD>
+  <TD>Guitar Fret Noise</TD>
+ </TR>
+ <TR>
+  <TD>121</TD>
+  <TD>0x79</TD>
+  <TD>C#10=Db10</TD>
+  <TD>-</TD>
+  <TD>Reset All Controller</TD>
+  <TD>Breath Noise</TD>
+ </TR>
+ <TR>
+  <TD>122</TD>
+  <TD>0x7A</TD>
+  <TD>D10</TD>
+  <TD>-</TD>
+  <TD>Local Control</TD>
+  <TD>Seashore</TD>
+ </TR>
+ <TR>
+  <TD>123</TD>
+  <TD>0x7B</TD>
+  <TD>D#10=Eb10</TD>
+  <TD>-</TD>
+  <TD>All Note Off</TD>
+  <TD>Bird Tweet</TD>
+ </TR>
+ <TR>
+  <TD>124</TD>
+  <TD>0x7C</TD>
+  
+  <TD>E10</TD>
+  <TD>-</TD>
+  <TD>Omni Mode Off</TD>
+  <TD>Telephone Ring</TD>
+ </TR>
+ <TR>
+  <TD>125</TD>
+  <TD>0x7D</TD>
+  <TD>F10</TD>
+  <TD>-</TD>
+  <TD>Omni Mode On</TD>
+  <TD>Helicopter</TD>
+ </TR>
+ <TR>
+  <TD>126</TD>
+  <TD>0x7E</TD>
+  <TD>F#10=Gb10</TD>
+  <TD>-</TD>
+  <TD>Mono Mode On</TD>
+  <TD>Applause</TD>
+ </TR>
+ <TR>
+  <TD>127</TD>
+  <TD>0x7F</TD>
+  <TD>G10</TD>
+  <TD>-</TD>
+  <TD>Poly Mode On</TD>
+  <TD>Gunshot</TD>
+ </TR>
+</TABLE>
+
+
+
+<H2><A NAME="APPENDIX_C">付録C　MIDIメッセージ早見表</A></H2>
+
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH VALIGN="MIDDLE">　
+  </TH>
+  <TH WIDTH="20%" VALIGN="MIDDLE">
+   1バイト目<BR>
+   ステータスバイト(0x80以上)
+  </TH>
+  <TH WIDTH="20%" VALIGN="MIDDLE">
+   2バイト目<BR>
+   データバイト(0x7F以下)
+  </TH>
+  <TH WIDTH="20%" VALIGN="MIDDLE">
+   3バイト目<BR>
+   データバイト(0x7F以下)
+  </TH>
+  <TH WIDTH="20%" VALIGN="MIDDLE">
+   特記事項<BR>
+  </TH>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE" ROWSPAN=7>
+   <FONT COLOR="#000000">チャンネルボイスメッセージ</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">★ノートオフ：0x8n<BR>(nはチャンネル、以下同様)</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">キー：0x00(C0)～0x7F(G9)</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">ベロシティ：0x00(0)～0x7F(127)</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE" BGCOLOR="#E0E0E0">
+   <FONT COLOR="#000000">指定した音の発音を止める。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">★ノートオン：0x9n</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">キー：0x00(C0)～0x7F(G9)</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">ベロシティ：0x00(0)～0x7F(127)</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE" BGCOLOR="#E0E0E0">
+   <FONT COLOR="#000000">指定した音を発音する。ただしベロシティが0の場合はノートオフと解釈する。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#800080">★キーアフター：0xAn</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#800080">キー：0x00(C0)～0x7F(G9)</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#800080">値：0x00(0)～0x7F(127)</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE" BGCOLOR="#E0E0E0">
+   <FONT COLOR="#800080">指定した音を発音した後、鍵盤を押さえる圧力を上下左右に変化させると送信され、そのキーの音質が変化する。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#008000">★コントローラー：0xBn</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#008000">番号：0x00(CC#0)～0x7F(CC#127)</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#008000">値：0x00(0)～0x7F(127)</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE" BGCOLOR="#E0E0E0">
+   <FONT COLOR="#008000">モジュレーション(CC#1)、ヴォリューム(CC#7)、パン(CC#10)、エクスプレッション(CC#11)、サスティンペダル(CC#64)、リバーブ(CC#91)、コーラス(CC#93)、ディレイ(CC#94)などを設定する。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#808000">★パッチチェンジ：0xCn</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#808000">番号：0x00(Piano1)～0x7F(GunShot)</FONT>
+  </TD>
+  <TD WIDTH=400 VALIGN="MIDDLE" COLSPAN=2 BGCOLOR="#E0E0E0">
+   <FONT COLOR="#808000">楽器を選択する。ただし10チャンネル(n=9)の場合は、ドラムセットを選択する。バンクも指定したい場合はこのメッセージの前にバンクセレクト(CC#0とCC#32)を使うことにより、最大2097152種類の音色を選択することができる。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#0000FF">★チャンネルアフタータッチ：0xDn</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#0000FF">値：0x00(0)～0x7F(127)</FONT>
+  </TD>
+  <TD WIDTH=400 VALIGN="MIDDLE" BGCOLOR="#E0E0E0" COLSPAN=2>
+   <FONT COLOR="#0000FF">ある音を発音した後、鍵盤を押さえる圧力を上下左右に変化させると送信され、そのチャンネル全体の音質が変化する。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#F000F0">★ピッチベンド：0xEn</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#F000F0">LSB(下位7ビット)：0x00～0x7F</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#F000F0">MSB(上位7ビット)：0x00～0x7F</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE" BGCOLOR="#E0E0E0">
+   <FONT COLOR="#F000F0">ピッチを変化させるのに使う。値は0～8192～16383で表す。中央はLSB=0x00, MSB=0x40、最低値はLSB=0x00, MSB=0x00、最高値はLSB=0x7F, MSB=0x7Fである。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD WIDTH=100 VALIGN="MIDDLE">
+   <FONT COLOR="#000000">★システムエクスクルーシヴメッセージ</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#800080">スタートオブエクスクルーシヴ：0xF0</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#800080">2バイト目以降には任意の長さのデータ配列(0x00～0x7F)が続く。データはエンドオブエクスクルーシヴ(0xF7)で終了する。</FONT>
+  </TD>
+  <TD WIDTH=400 VALIGN="MIDDLE" BGCOLOR="#E0E0E0" COLSPAN=2>
+   <FONT COLOR="#800080">音源の設定を操作する場合に使う。例えばGMリセットは{0xF0, 0x7E, 0x7F, 0x09, 0x01, 0xF7}である。システムエクスクルーシヴメッセージは、音源により意味が異なるため、互換性が乏しい。また、SMPTE/MTCによる同期を行うためにも使える。{0xF0, 0x7F, 0x7F, 0x01, 0x01, 0xhr, 0xmn, 0xsc, 0xfr, 0xF7}という10バイトのシステムエクスクルーシヴメッセージは、1メッセージで1つの時刻を表すことができる。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD WIDTH=100 VALIGN="MIDDLE" ROWSPAN=4>
+   <FONT COLOR="#000000">システムコモンメッセージ</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">MIDIタイムコードクォーターフレーム：0xF1</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">値：0x00～0x7F</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE" BGCOLOR="#E0E0E0" COLSPAN=2>
+   <FONT COLOR="#000000">SMPTE/MTCによる同期を行うために使う。このMIDIメッセージは8メッセージで1つの時刻を表す。値を2進法で表したものを0abcdefgとすると、abc=0のときdefgはフレームカウント下位4ビット、abc=1のときdefgはフレームカウント上位4ビット、abc=2のときdefgは秒カウント下位4ビット、abc=3のときdefgは秒カウント上位4ビット、abc=4のときdefgは分カウント下位4ビット、nnn=5のときdefgは分カウント上位4ビット、abc=6のときdefgは時カウント下位4ビット、abc=7のときdeは時カウント上位2ビット、fgはフレームレート(00は24fps、01は25fps、02は29.97fps、03は30fps)を、それぞれ意味する。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">ソングポジションセレクタ：0xF2</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">LSB(下位7ビット)：0x00～0x7F</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">MSB(上位7ビット)：0x00～0x7F</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE" BGCOLOR="#E0E0E0">
+   <FONT COLOR="#000000">再生開始位置を指定するのに使う。値は0～16383で、6MIDIタイミングクロックを1(つまり16分音符の長さを1)として計測する。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">ソングセレクト：0xF3</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">ソングナンバー：0x00(0)～0x7F(127)</FONT>
+  </TD>
+  <TD WIDTH=400 VALIGN="MIDDLE" BGCOLOR="#E0E0E0" COLSPAN=2>
+   <FONT COLOR="#000000">受信デバイスが複数のシーケンスやドラムパターンを扱える場合、それらを選択するのに使う。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">チェーンリクエスト</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE" BGCOLOR="#E0E0E0" COLSPAN=3>
+   <FONT COLOR="#000000">アナログシンセサイザーのチューニングのために用いられる。現在ではほとんど使われない。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE" ROWSPAN=6>
+   <FONT COLOR="#000000">システムリアルタイムメッセージ</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">MIDIタイミングクロック：0xF8</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE" BGCOLOR="#E0E0E0" COLSPAN=3>
+   <FONT COLOR="#000000">MIDIタイミングクロックによる同期を行うときに使う。送信間隔はテンポに依存し、4分音符あたり24回の速度で流す。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">スタート：0xFA</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE" BGCOLOR="#E0E0E0" COLSPAN=3 ROWSPAN=3>
+   <FONT COLOR="#000000">MIDIメッセージでシーケンサーの再生／停止を制御するのに使う。スタートは、シーケンスの先頭から再生開始することを意味する。ストップは停止することを意味する。コンティニューは前回停止した位置から再生を開始することを意味する。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">コンティニュー：0xFB</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">ストップ：0xFC</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">アクティブセンシング：0xFE</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE" BGCOLOR="#E0E0E0" COLSPAN=3>
+   <FONT COLOR="#000000">ケーブルの接続をチェックするため、約300ミリ秒毎に断続的に流される。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">システムリセット：0xFF</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE" BGCOLOR="#E0E0E0" COLSPAN=3>
+   <FONT COLOR="#000000">音源を初期化するのに使う。めったに使われない。</FONT>
+  </TD>
+ </TR>
+</TABLE>
+<DIV>注：★印のものは、MIDIStatusライブラリが<A HREF="#MIDIStatus_PutMIDIMessage">MIDIStatus_PutMIDIMessage</A>関数により認識可能であることを意味する。ただし、システムエクスクルーシブメッセージは、MIDI1.0/GM/GM2/GS/XGで定義されているものに限る。</DIV>
+
+
+
+<H2><A NAME="APPENDIX_D">付録D　更新履歴</A></H2>
+
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH>
+   ヴァージョン番号
+  </TH>
+  <TH>
+   リリース年月日
+  </TH>
+  <TH>
+   修正事項
+  </TH>
+ </TR>
+ <TR>
+  <TD>
+   β0.1
+  </TD>
+  <TD>
+   2005年9月18日
+  </TD>
+  <TD>
+   <UL>
+    <LI>多くのバグを抱えながらもとりあえず初リリース</LI>
+   </UL>
+  </TD>
+ </TR>
+ <TR>
+  <TD>
+   β0.2
+  </TD>
+  <TD>
+   2006年8月06日
+  </TD>
+  <TD>
+   <UL>
+    <LI>仕様細部決定、それに伴う取説とソースの修正</LI>
+   </UL>
+  </TD>
+ </TR>
+ <TR>
+  <TD>
+   β0.3
+  </TD>
+  <TD>
+   2007年1月18日
+  </TD>
+  <TD>
+   <UL>
+    <LI>データ構造変更(MIDIStatus構造体、MIDIPart構造体、MIDIDrumSetup構造体)</LI>
+    <LI><A HREF="#MIDIStatus_Create">MIDIStatus_Create</A>関数の引数仕様変更</LI>
+    <LI><A HREF="#MIDIStatus_PutMIDIMessage">MIDIStatus_PutMIDIMessage</A>でGM/GS/XG/GM2のシステムエクスクルーシブメッセージを認識するように改良</LI>
+    <LI>公式ガイドブックの修正</LI>
+    <LI>プロジェクトホームページを<A HREF="http://www.geocities.jp/ee65051/index.html">おーぷんMIDIぷろじぇくと</A>に変更</LI>
+   </UL>
+  </TD>
+ </TR>
+ <TR>
+  <TD>
+   β0.4
+  </TD>
+  <TD>
+   2007年12月28日
+  </TD>
+  <TD>
+   <UL>
+    <LI>公式ガイドブックのHTMLタグ不整合訂正、及びW3C HTML4.01の基準に適合化</LI>
+   </UL>
+  </TD>
+ </TR>
+ <TR>
+  <TD>
+   β0.5
+  </TD>
+  <TD>
+   2008年3月31日
+  </TD>
+  <TD>
+   <UL>
+    <LI>プロジェクトホームページを<A HREF="http://openmidiproject.sourceforge.jp/index.html">http://openmidiproject.sourceforge.jp/index.html</A>に変更</LI>
+    <LI>MIN,MAX,CLIPマクロを新たに定義</LI>
+   </UL>
+  </TD>
+ </TR>
+ <TR>
+  <TD>
+   0.6
+  </TD>
+  <TD>
+   2009年12月26日
+  </TD>
+  <TD>
+   <UL>
+    <LI><A HREF="#MIDIStatus_PutMIDIMessage">MIDIStatus_PutMIDIMessage</A>でノートオフメッセージを送信しても、鍵盤の押され具合がそのままである(離鍵されない)バグを修正</LI>
+   </UL>
+  </TD>
+ </TR>
+ <TR>
+  <TD>
+   0.7
+  </TD>
+  <TD>
+   2012年12月02日
+  </TD>
+  <TD>
+   <UL>
+    <LI><A HREF="#MIDIPart_GetNote">MIDIPart_GetNote</A>で、誤った値を取得するバグを修正。</LI>
+    <LI><A HREF="#MIDIPart_SetNRPNMSB">MIDIPart_SetNRPNMSB</A>で、ドラムアタックタイムの設定時に誤った値を設定するバグを修正。</LI>
+    <LI><A HREF="#MIDIPart_GetNRPNMSB">MIDIPart_GetNRPNMSB</A>で、ドラムピッチファインの取得時に誤った値を取得するバグを修正。</LI>
+    <LI><A HREF="#MIDIStatus_GetMasterReverbEx">MIDIStatus_GetMasterReverbEx</A>で、指定数のマスターリバーブ設定値を取得できないバグを修正。</LI>
+    <LI><A HREF="#MIDIStatus_GetMasterChorusEx">MIDIStatus_GetMasterChorusEx</A>で、指定数のマスターコーラス設定値を取得できないバグを修正。</LI>
+    <LI><A HREF="#MIDIStatus_GetMasterDelayEx">MIDIStatus_GetMasterDelayEx</A>で、指定数のマスターディレイ設定値を取得できないバグを修正。</LI>
+    <LI><A HREF="#MIDIStatus_GetMasterEqualizerEx">MIDIStatus_GetMasterEqualizerEx</A>で、指定数のマスターイコライザ設定値を取得できないバグを修正。</LI>
+    <LI><A HREF="#MIDIStatus_SetModuleMode">MIDIStatus_SetModuleMode</A>の型を<SPAN CLASS="KEYWORD">void</SPAN>から<SPAN CLASS="KEYWORD">long</SPAN>に修正。</LI>
+    <LI><A HREF="#MIDIStatus_SetMasterReverbType">MIDIStatus_SetMasterReverbType</A>の型を<SPAN CLASS="KEYWORD">void</SPAN>から<SPAN CLASS="KEYWORD">long</SPAN>に修正。</LI>
+    <LI><A HREF="#MIDIStatus_SetMasterChorusType">MIDIStatus_SetMasterChorusType</A>の型を<SPAN CLASS="KEYWORD">void</SPAN>から<SPAN CLASS="KEYWORD">long</SPAN>に修正。</LI>
+    <LI><A HREF="#MIDIStatus_SetMasterDelayType">MIDIStatus_SetMasterDelayType</A>の型を<SPAN CLASS="KEYWORD">void</SPAN>から<SPAN CLASS="KEYWORD">long</SPAN>に修正。</LI>
+    <LI><A HREF="#MIDIStatus_SetMasterEqualizerType">MIDIStatus_SetMasterEqualizerType</A>の型を<SPAN CLASS="KEYWORD">void</SPAN>から<SPAN CLASS="KEYWORD">long</SPAN>に修正。</LI>
+    <LI><A HREF="#MIDIStatus_PutMIDIMessage">MIDIStatus_PutMIDIMessage</A>で、ユニバーサルシステムエクスクルーシヴメッセージによるマスターファインチューニング、マスターリバーブタイプ、マスターリバーブタイム、マスターコーラスタイプの設定、及びGSシステムエクスクルーシヴメッセージによるベロシティセンスデプスの設定が誤っているバグを修正。</LI>
+    <LI>文字列がANSIとUNICODEの両方に対応。なお、今までのC/C++ソースコードはそのまま使えるが、再コンパイルは必要である。</LI>
+    <LI>MIDIStatus_Save(非公式関数)のpszFileNameを<SPAN CLASS="KEYWORD">const char</SPAN>*型から<SPAN CLASS="KEYWORD">const</SPAN> TCHAR*型に変更。</LI>
+    <LI>MIDIStatus_Load(非公式関数)のpszFileNameを<SPAN CLASS="KEYWORD">const char</SPAN>*型から<SPAN CLASS="KEYWORD">const</SPAN> TCHAR*型に変更。</LI>
+    <LI>MIDIStatus.basを添付</LI>
+   </UL>
+  </TD>
+ </TR>
+ <TR>
+  <TD>
+   0.8
+  </TD>
+  <TD>
+   2013年03月03日
+  </TD>
+  <TD>
+   <UL>
+    <LI><A HREF="#MIDIStatus_PutMIDIMessage">MIDIStatus_PutMIDIMessage</A>で、ユニバーサルシステムエクスクルーシヴメッセージによるマスターリバーブタイプ、マスターコーラスタイプの設定が誤っているバグを修正。</LI>
+   </UL>
+  </TD>
+ </TR>
+ <TR>
+  <TD>
+   0.9
+  </TD>
+  <TD>
+   2014年4月29日
+  </TD>
+  <TD>
+   <UL>
+    <LI>開発環境を、古いVisualC++ 4.0から新しいVisualC++ 2008 Service Pack1に移行した。</LI>
+    <LI>CC#64(ホールドペダル)などのコントロールチェンジの値は、63と64の間をしきい値とみなすように修正。</LI>
+   </UL>
+  </TD>
+ </TR>
+</TABLE>
+
+</BODY>
+</HTML>
+
+
+
+
+
+

@@ -1,0 +1,4641 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML LANG="ja">
+<HEAD>
+<TITLE>MIDIInstrumentライブラリ　公式ガイドブック</TITLE>
+<META http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+<STYLE TYPE="text/css">
+<!--
+H1 {FONT-SIZE:36px; BORDER-WIDTH:1px; BORDER-COLOR:#000000; BORDER-STYLE:SOLID; PADDING:20px; BACKGROUND-COLOR:#E0E0D0; TEXT-ALIGN:CENTER;}
+H2 {FONT-SIZE:28px; BORDER-WIDTH:1px; BORDER-COLOR:#000000; BORDER-STYLE:SOLID; PADDING:20px; BACKGROUND-COLOR:#E0E0D0}
+H3 {FONT-SIZE:24px;}
+H4 {FONT-SIZE:16px;}
+H5 {FONT-SIZE:14px;}
+H6 {FONT-SIZE:12px;}
+P {FONT-SIZE:12px; LINE-HEIGHT:18px;}
+DIV {FONT-SIZE:12px; LINE-HEIGHT:18px;}
+DIV.INDEX {FONT-SIZE:14px; LINE-HEIGHT:18px;}
+DIV.TITLE {FONT-SIZE:12px; LINE-HEIGHT:18px;}
+SPAN.RED {FONT-SIZE:12px; COLOR:#FF0000; LINE-HEIGHT:18px;}
+SPAN.KEYWORD {FONT-SIZE:12px; COLOR:#0000FF; LINE-HEIGHT:18px;}
+SPAN.COMMENT {FONT-SIZE:12px; COLOR:#008000; LINE-HEIGHT:18px;}
+SPAN.STRING {FONT-SIZE:12px; COLOR:#808000; LINE-HEIGHT:18px;}
+LI {FONT-SIZE:12px; LINE-HEIGHT:18px;}
+TABLE {FONT-SIZE:12px; LINE-HEIGHT:18px;}
+TH {BACKGROUND-COLOR:#FFE0B0; FONT-WEIGHT:NORMAL;}
+TR {BACKGROUND-COLOR:#FFFFD0; FONT-WIEGHT:NORMAL;}
+PRE {FONT-SIZE:12px; LINE-HEIGHT:18px; BACKGROUND-COLOR:#E0E0E0; PADDING:1px;}
+-->
+</STYLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFFF" ALINK="#0040FF" VLINK="#0040FF">
+
+<H1>MIDIInstrumentライブラリ<BR>公式ガイドブック<BR><FONT SIZE=3>(C)2002-2014 くず  / おーぷんMIDIぷろじぇくと</FONT></H1>
+
+<H3>はじめに</H3>
+
+<P>　MIDIInstrumentライブラリは、フリーでオープンソースの、MIDIインストゥルメント定義ファイルの読み込み・編集用ライブラリである。。このライブラリは、インストゥルメント定義ファイルの生成・ファイル入力(Cakewalk用インストゥルメント定義ファイル(*.ins)に完全互換)、音色名の追加・変更・参照・削除、コントローラー名の追加・変更・参照・削除など、MIDIインストゥルメント定義のあらゆる要素に迅速にアクセスする関数を提供する。</P>
+
+<P>　MIDIInstrumentライブラリは普通のC言語で書かれているが、ソースのほか、ダイナミックリンクライブラリ(*.dll)の形で提供される。ゆえに、C/C++からはもちろんのこと、Visual BasicやDelphiから使用することもできる。最新のMIDIInstrumentライブラリは、2014年現在<A HREF="http://openmidiproject.sourceforge.jp/index.html">おーぷんMIDIぷろじぇくと</A>からダウンロードできる。</P>
+
+<P>　本書はMIDIInstrumentライブラリの使い方を解説した公式ガイドブックである。本書は、サンプルコードと関数リファレンスを交えつつ、Cマガ風味に仕上げた。<SPAN CLASS="RED">本書はインストゥルメント定義ファイルの仕様を解説したものではない。</SPAN>とは言え、インストゥルメント定義ファイルの仕様に関する知識があれば、この本を簡単に理解できるであろう。</P>
+
+<P>　本書は、基本的なMIDIの知識とC言語の知識があることを前提に書かれている。従って、MIDIとは何かとか、4分音符とは何かとか、構造体とは何かとか、ポインタとは何かとかについては、一切述べていない。MIDIやC言語については、良質な市販の本が多く出版されているので、そちらを参照されたい。</P>
+
+<H3>謝辞</H3>
+
+<P>　MIDIInstrumentライブラリは、音源エディッタやMIDIシーケンサーなど、MIDI音源を扱うあらゆるアプリケーションの中核となるべく、数年がかりで開発された。当初の開発のきっかけは、MIDI音源に内蔵されている音色名やコントロールチェンジ名を記述したファイルを読み込むライブラリが欲しかったからである。しかし、sourceforgeを見てもわかるように、画像やオーディオ関係の作成編集ライブラリが充実しているのに比べて、MIDI関係のライブラリは無いに等しかった。そこで筆者はこのライブラリを製作することを決意した。</P>
+
+<P>　思えば、本ライブラリがリリースできたのは奇跡的である。筆者は会社から帰ってきてから深夜に開発を進めたため、時間は限りなく足りなかった。その上不況は深刻で、金欠病でもあった。そのようなさなか、昔から愛用のノートパソコンがついに壊れた。やがて筆者は疲れていたのか、電車内で失神したのである。幸いにも入院せずに済んだが、今後の人生に暗い影を落とした。</P>
+
+<P>　リリースにあたっては、まず、書庫部の皆様にお礼を述べなければならない。書庫部にはベテランのプログラマがおり、彼らの刺激なくしてはこのライブラリはリリースできなかったであろう。中でもあましんさんは、もともと正常だった筆者をこちらの世界に導いた人物として重要である。彼無くしては、筆者はいまだにC言語やMIDIの存在を知らなかった恐れすらある。そして最後に、あらゆる面においていつも筆者を支えてくださった家族の皆に、深く感謝の意とお礼を申し上げたい。</P>
+
+<H3>もくじ</H3>
+<DIV CLASS="INDEX"><A HREF="#MIDIOverview">第1章　概略</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIOverview_MIDI">1-1.MIDIについて</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIOverview_MIDIInstrumentDefinitionFile">1-2.MIDIインストゥルメント定義ファイルについて</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIOverview_CakewalkInstrumentDefinitionFile">1-3.Cakewalk用インストゥルメント(*.ins)について</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIOverview_LoadInstrumentDefinitionFileAndGetInfo">1-4.インストゥルメント定義ファイルの読み込みと情報取得</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIOverview_ANSI_UNICODE">1-5.ANSIとUNICODEの使い分けについて</A></DIV>
+
+<DIV CLASS="INDEX"><A HREF="#MIDIPatchNameTableReference">第2章　MIDIパッチ名テーブルリファレンス</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIPatchNameTable_Struct">2-1.MIDIパッチ名テーブルの構造</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIPatchNameTable_CreateFunction">2-2.MIDIパッチ名テーブルの生成</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIPatchNameTable_DeleteFunction">2-3.MIDIパッチ名テーブルの削除</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIPatchNameTable_GetFunction">2-4.MIDIパッチ名テーブルの情報取得</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIPatchNameTable_SetFunction">2-5.MIDIパッチ名テーブルの情報設定</A></DIV>
+
+<DIV CLASS="INDEX"><A HREF="#MIDINoteNameTableReference">第3章　MIDIノート名テーブルリファレンス</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDINoteNameTable_Struct">3-1.MIDIノート名テーブルの構造</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDINoteNameTable_CreateFunction">3-2.MIDIノート名テーブルの生成</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDINoteNameTable_DeleteFunction">3-3.MIDIノート名テーブルの削除</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDINoteNameTable_GetFunction">3-4.MIDIノート名テーブルの情報取得</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDINoteNameTable_SetFunction">3-5.MIDIノート名テーブルの情報設定</A></DIV>
+
+<DIV CLASS="INDEX"><A HREF="#MIDIControllerNameTableReference">第4章　MIDIコントローラ名テーブルリファレンス</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIControllerNameTable_Struct">4-1.MIDIコントローラ名テーブルの構造</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIControllerNameTable_CreateFunction">4-2.MIDIコントローラ名テーブルの生成</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIControllerNameTable_DeleteFunction">4-3.MIDIコントローラ名テーブルの削除</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIControllerNameTable_GetFunction">4-4.MIDIコントローラ名テーブルの情報取得</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIControllerNameTable_SetFunction">4-5.MIDIコントローラ名テーブルの情報設定</A></DIV>
+
+<DIV CLASS="INDEX"><A HREF="#MIDIRPNNameTableReference">第5章　MIDIRPN名テーブルリファレンス</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIRPNNameTable_Struct">5-1.MIDIRPN名テーブルの構造</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIRPNNameTable_CreateFunction">5-2.MIDIRPN名テーブルの生成</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIRPNNameTable_DeleteFunction">5-3.MIDIRPN名テーブルの削除</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIRPNNameTable_GetFunction">5-4.MIDIRPN名テーブルの情報取得</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIRPNNameTable_SetFunction">5-5.MIDIRPN名テーブルの情報設定</A></DIV>
+
+<DIV CLASS="INDEX"><A HREF="#MIDINRPNNameTableReference">第6章　MIDINRPN名テーブルリファレンス</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDINRPNNameTable_Struct">6-1.MIDINRPN名テーブルの構造</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDINRPNNameTable_CreateFunction">6-2.MIDINRPN名テーブルの生成</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDINRPNNameTable_DeleteFunction">6-3.MIDINRPN名テーブルの削除</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDINRPNNameTable_GetFunction">6-4.MIDINRPN名テーブルの情報取得</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDINRPNNameTable_SetFunction">6-5.MIDINRPN名テーブルの情報設定</A></DIV>
+
+<DIV CLASS="INDEX"><A HREF="#MIDIInstrumentDefinitionReference">第7章　MIDIインストゥルメント定義リファレンス</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIInstrumentDefinition_Struct">7-1.MIDIインストゥルメント定義の構造</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIInstrumentDefinition_CreateFunction">7-2.MIDIインストゥルメント定義の生成</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIInstrumentDefinition_DeleteFunction">7-3.MIDIインストゥルメント定義の削除</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIInstrumentDefinition_GetFunction">7-4.MIDIインストゥルメント定義の情報取得</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIInstrumentDefinition_SetFunction">7-5.MIDIインストゥルメント定義の情報設定</A></DIV>
+
+<DIV CLASS="INDEX"><A HREF="#MIDIInstrumentReference">第8章　MIDIインストゥルメントリファレンス</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIInstrument_Struct">8-1.MIDIインストゥルメントの構造</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIInstrument_CreateFunction">8-2.MIDIインストゥルメントの生成</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIInstrument_DeleteFunction">8-3.MIDIインストゥルメントの削除</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIInstrument_AddFunction">8-4.MIDIインストゥルメントへの各種テーブル追加</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIInstrument_RemoveFunction">8-5.MIDIインストゥルメントからの各種テーブル除去</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIInstrument_GetFunction">8-6.MIDIインストゥルメント内の各種テーブル・インストゥルメント定義の取得</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIInstrument_forEachMacro">8-7.MIDIインストゥルメント内の各種テーブル・インストゥルメント定義へのアクセス</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIInstrument_LoadFunction">8-8.MIDIインストゥルメントのファイル読み込み</A></DIV>
+<DIV CLASS="INDEX">　　<A HREF="#MIDIInstrument_SaveFunction">8-9.MIDIインストゥルメントのファイル書き出し</A></DIV>
+
+
+<DIV CLASS="INDEX"><A HREF="#APPENDIX_A">付録A　よくある質問(F.A.Q)</A></DIV>
+<DIV CLASS="INDEX"><A HREF="#APPENDIX_B">付録B　キー・ナンバー対応表</A></DIV>
+<DIV CLASS="INDEX"><A HREF="#APPENDIX_C">付録C　MIDIメッセージ早見表</A></DIV>
+<DIV CLASS="INDEX"><A HREF="#APPENDIX_D">付録D　更新履歴</A></DIV>
+
+
+<H2><A NAME="MIDIOverview">第1章：概略</A></H2>
+
+
+<H3><A NAME="MIDIOverview_MIDI">1-1.MIDIについて</A></H3>
+<P>　MIDIとは<U>M</U>usical <U>I</U>nstrument <U>D</U>igital <U>I</U>nterfaceの略で、電子楽器の間で情報を通信するための規格である。その中でも中核となるのが、MIDI音源と呼ばれる機器である。MIDI音源は電子楽器の一種であり、さまざまな音色を内蔵している。MIDI音源は予め内蔵された音色しか使えないが、シンセサイザーを用いれば内蔵された音色を自由に加工・変形・合成して新しい音色を作り出すことができる。</P>
+
+<P>　MIDI音源の基本的な使い方は、MIDI対応キーボードで演奏をして音を鳴らすというものである。最近では、コンピュータの普及により、パソコンで再生してMIDI音源を演奏することもできるようになった。自動演奏をする場合の演奏方法を記述したものがMIDIデータである。</P>
+
+<DIV>▼Fig1-1-1　MIDIの構成</DIV>
+<IMG SRC="MIDIDR02.gif" WIDTH=600 HEIGHT=360 ALT="">
+
+<H3><A NAME="MIDIOverview_MIDIInstrumentDefinitionFile">1-2.MIDIインストゥルメント定義ファイルについて</A></H3>
+
+<P>　MIDI音源には、さまざまな音色や、コントロールチェンジが搭載されており、それぞれ番号ごとに名前が付けられている。これらの名称は取扱説明書に記載されている。例えば、バンク0のプログラムナンバー0=Acoustic Ground Piano, バンク0のプログラムナンバー48=Strings Ensamble, コントロールチェンジ7=Volume, コントロールチェンジ10=Panというように名付けられている。これらの名前は、GM/GS/XG/GM2の規格である限り、大体統一されている。これらの規格でない独自の音源の場合(シンセサイザーなど)は、全く別の音色やコントロールチェンジが割り当てられていることが多い。</P>
+
+<P>　通常のソフトウェアは、MIDIメッセージで番号のみを指定するが、その番号に割り当てられている名前を知る手段はない。機種によっては名前を音源から吸い出すこともできるが、双方向通信が必要になる上、時間がかかるので、通常このようなことはしない。代わりに、あらかじめ番号と名前を列挙したテキストファイルを音源別に用意し、それをソフトウェアに読み込ませることで、ソフトウェア上で番号と名前の両方を表示できるようにしている。このテキストファイルを、インストゥルメント定義ファイルという。</P>
+
+<P>　インストゥルメント定義ファイルには、パッチ名(プログラムナンバーごとの音色名)の一覧、ドラムキー名(ドラム楽器における鍵盤別音色名)の一覧、コントロールチェンジ名の一覧、RPNチェンジ名の一覧、NRPNチェンジ名の一覧、などが記述されているのが一般的であり、多くの場合、1音源につき1ファイルが用意されている。ファイル用意するのはソフトメーカーであったり、ボランティアの製作者であったりする。これらはメモ帳などのテキストエディタで(面倒ではあるが)、音源の取扱説明書を見ながら作ることができる。</P>
+
+<P>　ここで問題なのは、インストゥルメント定義ファイルのフォーマットが、ソフトウェアにより異なることである。テキストファイルなので、フォーマットを調べてそれに見習うことはできるが、同じ音源なのにソフトウェア別にインストゥルメント定義ファイルを作ることは非常に無駄である。現にYAMAHA製音源にはYAMAHAフォーマットのインストゥルメント定義ファイルのみ用意され、Roland製音源にはRolandフォーマットのインストゥルメント定義ファイルのみ用意されているという状況であり、ご使用の音源メーカーとご使用のMIDIシーケンサーのメーカーが異なる場合は、そのシーケンサー用のインストゥルメント定義ファイルを自作しなければならなかった。</P>
+
+<P>　結果的には、Cakewalk用インストゥルメント定義ファイル、Cubase用インストゥルメント定義ファイル、SSW(SingSongWriter)用インストゥルメント定義ファイルなどが生き残り、他のフォーマットは淘汰されていったようである。そこで、比較的普及率が高く、テキスト編集もしやすい、Cakewalk用インストゥルメント定義ファイル(*.ins)に完全互換した、インストゥルメント定義ファイル入力・編集用ライブラリを作成するものとした。</P>
+
+<H3><A NAME="MIDIOverview_CakewalkInstrumentDefinitionFile">1-3.Cakewalk用インストゥルメント定義ファイルについて</A></H3>
+
+<P>　Cakewalk用インストゥルメント定義ファイル(*.ins)は、パッチ名(音色名)の一覧、ドラムキー名の一覧、コントロールチェンジ名の一覧、RPNチェンジ名の一覧、NRPNチェンジ名の一覧などが記述されたテキストファイル(拡張子は*.ins)である。基本的には、1ファイルにつき1音源の記述をするが、1ファイルに複数音源の定義を記述することもできる。以下に、Roland SC-8850用のCakewalk用インストゥルメント定義ファイルの一部を示す。</P>
+
+<PRE>
+<SPAN CLASS="COMMENT">; Roland SC-8850 Instrument Definition File</SPAN>
+
+<SPAN CLASS="COMMENT">; ----------------------------------------------------------------------</SPAN>
+
+<SPAN CLASS="RED">.Patch Names</SPAN>
+
+
+[Roland SC-8850 Capital Tones]
+0=Piano 1
+1=Piano 2
+2=Piano 3
+3=Honky-tonk
+4=E.Piano 1
+5=E.Piano 2
+6=Harpsichord
+7=Clav.
+8=Celesta
+9=Glockenspiel
+10=Music Box
+11=Vibraphone
+12=Marimba
+13=Xylophone
+14=Tubular-bell
+15=Santur
+16=Organ 1
+17=Organ 2
+18=Organ 3
+19=Church Org.1
+20=Reed Organ
+21=Accordion Fr
+22=Harmonica
+23=Bandoneon
+24=Nylon-str.Gt
+25=Steel-str.Gt
+26=Jazz Gt.
+27=Clean Gt.
+28=Muted Gt.
+29=Overdrive Gt
+30=DistortionGt
+31=Gt.Harmonics
+32=Acoustic Bs.
+33=Fingered Bs.
+34=Picked Bass
+35=Fretless Bs.
+36=Slap Bass 1
+37=Slap Bass 2
+38=Synth Bass 1
+39=Synth Bass 2
+40=Violin    :
+41=Viola     :
+42=Cello     :
+43=Contrabass
+44=Tremolo Str
+45=PizzicatoStr
+46=Harp
+47=Timpani
+48=Strings
+49=Slow Strings
+50=Syn.Strings1
+51=Syn.Strings2
+52=Choir Aahs
+53=Voice Oohs
+54=SynVox
+55=OrchestraHit
+56=Trumpet
+57=Trombone
+58=Tuba
+59=MutedTrumpet
+60=French Horns
+61=Brass 1
+62=Synth Brass1
+63=Synth Brass2
+64=Soprano Sax
+65=Alto Sax
+66=Tenor Sax
+67=Baritone Sax
+68=Oboe
+69=English Horn
+70=Bassoon
+71=Clarinet
+72=Piccolo
+73=Flute
+74=Recorder
+75=Pan Flute
+76=Bottle Blow
+77=Shakuhachi
+78=Whistle
+79=Ocarina
+80=Square Wave
+81=Saw Wave
+82=Syn.Calliope
+83=Chiffer Lead
+84=Charang
+85=Solo Vox
+86=5th Saw Wave
+87=Bass & Lead
+88=Fantasia
+89=Warm Pad
+90=Polysynth
+91=Space Voice
+92=Bowed Glass
+93=Metal Pad
+94=Halo Pad
+95=Sweep Pad
+96=Ice Rain
+97=Soundtrack
+98=Crystal
+99=Atmosphere
+100=Brightness
+101=Goblin
+102=Echo Drops
+103=Star Theme
+104=Sitar
+105=Banjo
+106=Shamisen
+107=Koto
+108=Kalimba
+109=Bagpipe
+110=Fiddle
+111=Shanai
+112=Tinkle Bell
+113=Agogo
+114=Steel Drums
+115=Woodblock
+116=Taiko
+117=Melo. Tom 1
+118=Synth Drum
+119=Reverse Cym.
+120=Gt.FretNoise
+121=Breath Noise
+122=Seashore
+123=Bird
+124=Telephone 1
+125=Helicopter
+126=Applause
+127=Gun Shot
+
+[Roland SC-8850 Drumsets]
+0=STANDARD 1
+1=STANDARD 2 [Pro]
+2=STANDARD L/R
+8=ROOM
+9=HIP HOP
+10=JUNGLE
+11=TECHNO
+12=ROOM L/R
+13=HOUSE
+16=POWER [Pro]
+24=ELECTRONIC [Pro]
+25=TR-808 [Pro]
+26=DANCE
+27=CR-78 [Pro]
+28=TR-606 [Pro]
+29=TR-707 [Pro]
+30=TR-909 [Pro]
+32=JAZZ
+33=JAZZ L/R
+40=BRUSH [Pro]
+41=BRUSH 2
+42=BRUSH 2 L/R
+48=ORCHESTRA [Pro]
+49=ETHNIC [Pro]
+50=KICK & SNARE
+51=KICK & SNARE 2
+52=ASIA
+53=CYMBAL&amp;CLAPS [Pro]
+54=GAMELAN 1
+55=GAMELAN 2
+56=SFX [Pro]
+57=RHYTHM FX [Pro]
+58=RHYTHM FX 2 [Pro]
+59=RHYTHM FX 3 [Pro]
+60=SFX 2
+61=VOICE
+62=CYM&amp;CLAPS 2
+
+[Roland SC-8850 Var #01]
+(中略)
+
+[Roland SC-8850 Var #02]
+(中略)
+
+[Roland SC-8850 Var #03]
+(中略)
+
+[Roland SC-8850 Var #04]
+(中略)
+
+(以下のテーブル中略)
+
+
+<SPAN CLASS="COMMENT">; ----------------------------------------------------------------------</SPAN>
+
+<SPAN CLASS="RED">.Note Names</SPAN>
+
+
+[Roland SC-8850 STANDARD 1 Set]
+0=[88] Standard 1 Kick 1
+1=[88] Standard 1 Kick 2
+2=[88] Standard 2 Kick 1
+3=[88] Standard 2 Kick 2
+4=[55] Kick Drum 1
+5=[55] Kick Drum 2
+6=[88] Jazz Kick 1
+7=[88] Jazz Kick 2
+8=[88] Room Kick 1
+9=[88] Room Kick 2
+10=[88] Power Kick 1
+11=[88] Power Kick 2
+12=[88] Electric Kick 2
+13=[88] Electric Kick 1
+14=[88] TR-808 Kick
+15=[88] TR-909 Kick
+16=[88] Dance Kick
+17=[Pro] Voice One
+18=[Pro] Voice Two
+19=[Pro] Voice Three
+20=Room Kick 2
+21=Room Kick 1
+22=MC-500 Beep 1
+23=MC-500 Beep 2
+24=Concert SD
+25=Snare Roll
+26=Finger Snap 2
+27=High Q
+28=Slap
+29=Scratch Push
+30=Scratch Pull
+31=Sticks
+32=Square Click
+33=Metronome Click
+34=Metronome Bell
+35=Standard 1 Kick 2
+36=Standard 1 Kick 1
+37=Side Stick
+38=Standard 1 Snare 1
+39=TR-909 Hand Clap
+40=Standard 1 Snare 2
+41=Low Tom 2
+42=Closed Hi-Hat 1
+43=Low Tom 1
+44=Pedal Hi-Hat
+45=Mid Tom 2
+46=Open Hi-Hat 1
+47=Mid Tom 1
+48=High Tom 2
+49=Crash Cymbal 1
+50=High Tom 1
+51=Ride Cymbal 1
+52=Chinese Cymbal
+53=Ride Bell
+54=Tambourine
+55=Splash Cymbal
+56=Cowbell
+57=Crash Cymbal 2
+58=Vibra-slap
+59=Ride Cymbal 2
+60=High Bongo
+61=Low Bongo
+62=Mute High Conga
+63=Open High Conga
+64=Low Conga
+65=High Timbale
+66=Low Timbale
+67=High Agogo
+68=Low Agogo
+69=Cabasa
+70=Maracas
+71=Short High Whistle
+72=Long Low Whistle
+73=Short Guiro
+74=Long Guiro
+75=Claves
+76=High Wood Block
+77=Low Wood Block
+78=Mute Cuica
+79=Open Cuica
+80=Mute Triangle
+81=Open Triangle
+82=Shaker
+83=Jingle Bell
+84=Bell Tree
+85=Castanets
+86=Mute Surdo
+87=Open Surdo
+88=Applause 2
+95=Room Snare 1
+96=Room Snare 2
+97=[88] Standard 1 Snare1
+98=[88] Standard 1 Snare 2
+99=[88] Standard 2 Snare 1
+100=[88] Standard 2 Snare 2
+101=[55] Snare Drum 2
+102=[Pro] Standard 1 Snare 1
+103=[Pro] Standard 1 Snare 2
+104=[Pro] Standard 1 Snare 3
+105=[88] Jazz Snare 1
+106=[88] Jazz Snare 2
+107=[88] Room Snare 1
+108=[88] Room Snare 2
+109=[88] Power Snare 1
+110=[88] Power Snare 2
+111=[55] Gated Snare
+112=[88] Dance Snare 1
+113=[88] Dance Snare 2
+114=[88] Disco Snare
+115=[88] Electric Snare 2
+116=[55] Electric Snare
+117=[88] Electric Snare 3
+118=[Pro] TR-707 Snare 1
+119=[88] TR-808 Snare 1
+120=[88] TR-808 Snare 2
+121=[88] TR-909 Snare 1
+122=[88] TR-909 Snare 2
+123=[Pro] Rap Snare
+124=[Pro] Jungle Snare 1
+125=[Pro] House Snare 1
+126=[88] House Snare
+127=[Pro] House Snare 2
+
+[Roland SC-8850 STANDARD 2 Set]
+(中略)
+
+[Roland SC-8850 STANDARD L/R Set]
+(中略)
+
+[Roland SC-8850 ROOM Set]
+(中略)
+
+(以下のテーブル中略)
+
+<SPAN CLASS="COMMENT">; ----------------------------------------------------------------------</SPAN>
+
+<SPAN CLASS="RED">.Controller Names</SPAN>
+
+
+[Roland SC-8850 Controllers]
+0=Bank Select MSB
+1=Modulation
+2=Breath Controller
+4=Foot Controller
+5=Portamento Time
+6=Data Entry MSB
+7=Volume
+8=Balance
+10=Pan
+11=Expression
+32=Bank Select LSB
+38=Data Entry LSB
+64=Hold 1
+65=Portamento
+66=Sostenuto
+67=Soft
+71=Resonance
+72=Release Time
+73=Attack Time
+74=Cutoff Frequency
+75=Decay Time
+76=Vibrato Rate
+77=Vibrato Depth
+78=Vibrato Delay
+84=Portamento Control
+91=Reverb Send Level
+93=Chorus Send Level
+94=Delay Send Level
+96=Data Increment
+97=Data Decrement
+98=NRPN LSB
+99=NRPN MSB
+100=RPN LSB
+101=RPN MSB
+120=All Sound Off
+121=Reset All Controller
+123=All Note Off
+124=Omni Mode Off
+125=Omni Mode On
+126=Mono Mode On
+127=Poly Mode On
+
+
+<SPAN CLASS="COMMENT">; ----------------------------------------------------------------------</SPAN>
+
+<SPAN CLASS="RED">.RPN Names</SPAN>
+
+
+[Roland SC-8850 RPN]
+0=Pitch Bend Sensitivity
+1=Master Fine Tuning
+2=Master Coarse Tuning
+5=Moduration Sensitivity
+
+<SPAN CLASS="COMMENT">; ----------------------------------------------------------------------</SPAN>
+
+<SPAN CLASS="RED">.NRPN Names</SPAN>
+
+
+[Roland SC-8850 NRPN]
+136=Vibrato Rate
+137=Vibrato Depth
+138=Vibrato Delay
+160=Cutoff Frequency
+161=Resonance
+227=Attack Time
+228=Decay Time
+230=Release Time
+3072=Drum Pitch Coarse #0
+(中略)
+4095=Drum Delay Level #127
+
+<SPAN CLASS="COMMENT">; ----------------------------------------------------------------------</SPAN>
+
+<SPAN CLASS="RED">.Instrument Definitions</SPAN>
+
+
+[Roland SC-8850]
+Control=Roland SC-8850 Controllers
+RPN=Roland SC-8850 RPN
+NRPN=Roland SC-8850 NRPN
+Patch[0]=Roland SC-8850 Capital Tones
+Patch[1]=Roland SC-55 Map Capital Tones
+Patch[2]=Roland SC-88 Map Capital Tones
+Patch[3]=Roland SC-88Pro Map Capital Tones
+Patch[4]=Roland SC-8850 Map Capital Tones
+Patch[128]=Roland SC-8850 Var #01
+Patch[129]=Roland SC-55 Map Var #01
+Patch[130]=Roland SC-88 Map Var #01
+Patch[131]=Roland SC-88Pro Map Var #01
+Patch[132]=Roland SC-8850 Map Var #01
+Patch[256]=Roland SC-8850 Var #02
+Patch[257]=Roland SC-55 Map Var #02
+Patch[258]=Roland SC-88 Map Var #02
+Patch[259]=Roland SC-88Pro Map Var #02
+Patch[260]=Roland SC-8850 Map Var #02
+Patch[384]=Roland SC-8850 Var #03
+Patch[385]=Roland SC-55 Map Var #03
+Patch[386]=Roland SC-88 Map Var #03
+Patch[387]=Roland SC-88Pro Map Var #03
+Patch[388]=Roland SC-8850 Map Var #03
+Patch[512]=Roland SC-8850 Var #04
+Patch[513]=Roland SC-55 Map Var #04
+Patch[514]=Roland SC-88 Map Var #04
+Patch[515]=Roland SC-88Pro Map Var #04
+Patch[516]=Roland SC-8850 Map Var #04
+(中略)
+Patch[16129]=Roland SC-55 Map CM-64(PCM)
+Patch[16257]=Roland SC-55 Map CM-64(LA)
+Patch[*]=1..128
+
+[Roland SC-8850 Drumsets]
+Control=Roland SC-8850 Controllers
+RPN=Roland SC-8850 RPN
+NRPN=Roland SC-8850 NRPN
+Patch[0]=Roland SC-8850 Drumsets
+Patch[1]=Roland SC-55 Map Drumsets
+Patch[2]=Roland SC-88 Map Drumsets
+Patch[3]=Roland SC-88Pro Map Drumsets
+Patch[4]=Roland SC-8850 Map Drumsets
+Patch[*]=1..128
+Key[*,*]=0..127
+Key[0,0]=Roland SC-8850 STANDARD 1 Set
+Key[1,0]=Roland SC-55 STANDARD Set
+Key[2,0]=Roland SC-88 STANDARD 1 Set
+Key[3,0]=Roland SC-88Pro STANDARD 1 Set
+Key[4,0]=Roland SC-8850 STANDARD 1 Set
+Key[0,1]=Roland SC-8850 STANDARD 2 Set
+Key[2,1]=Roland SC-88 STANDARD 2 Set
+Key[3,1]=Roland SC-88Pro STANDARD 2 Set
+Key[4,1]=Roland SC-8850 STANDARD 2 Se
+Key[0,2]=Roland SC-8850 STANDARD L/R Set
+Key[3,2]=Roland SC-88Pro STANDARD 3 Set
+Key[4,2]=Roland SC-8850 STANDARD L/R Set
+Key[0,8]=Roland SC-8850 ROOM Set
+Key[1,8]=Roland SC-55 ROOM Set
+Key[2,8]=Roland SC-88 ROOM Set
+Key[3,8]=Roland SC-88Pro ROOM Set
+Key[4,8]=Roland SC-8850 ROOM Set
+(中略)
+Key[1,127]=Roland SC-55 CM-64/32L Set
+Drum[*,*]=1
+</PRE>
+
+<P>Cakewalk用インストゥルメント定義ファイルは、大きく分けて次の6つのセクションから成る。各のセクション内には、複数個のテーブルが存在し、それぞれのテーブルには[ ]で独自のテーブル名がつけられている。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIOverView_AboutCakewalkInstrumentDefinitionFile">▼Table1-3.Cakewalk用インストゥルメント定義ファイル(*.ins)の各セクションの解説と文法</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH WIDTH="10%">セクション名</TH>
+  <TH WIDTH="40%">解説</TH>
+  <TH WIDTH="50%">文法</TH>
+ </TR>
+ <TR>
+  <TD>.Patch Names</TD>
+  <TD>パッチ名(プログラムナンバーに対する音色名)を列挙するセクション。このセクション内には、複数個のテーブルが存在し、それぞれには[ ]で独自のテーブル名が付けられている。ひとつのテーブルにつき、最大128個(0～127、欠番があってもよい)の音色名を定義できる。</TD>
+  <TD>[パッチテーブル名]<BR>プログラムナンバー=音色名<BR>プログラムナンバー=音色名<BR>……<BR>プログラムナンバー=音色名<BR><BR>※プログラムナンバー=0～127</TD>
+ </TR>
+ <TR>
+  <TD>.Note Names</TD>
+  <TD>ノート名(主に楽器がドラムの場合の鍵盤別音色名)を列挙するセクション。このセクション内には、複数個のテーブルが存在し、それぞれには[ ]で独自のテーブル名が付けられている。ひとつのテーブルにつき、最大128個(0～127、欠番があってもよい)の鍵盤別音色名を定義できる。</TD>
+  <TD>[ノートテーブル名]<BR>キーナンバー=鍵盤別音色名<BR>キーナンバー=鍵盤別音色名<BR>……<BR>キーナンバー=鍵盤別音色名<BR><BR>※キーナンバー=0～127</TD>
+ </TR>
+ <TR>
+  <TD>.Controller Names</TD>
+  <TD>コントローラー名を列挙するセクション。このセクション内には、ひとつ又は複数個のテーブルが存在し、それぞれには[ ]で独自のテーブル名が付けられている。ひとつのテーブルにつき、最大128個(0～127、欠番があってもよい)のコントローラー名を定義できる。</TD>
+  <TD>[コントローラテーブル名]<BR>コントロールチェンジナンバー=コントロール項目名<BR>コントロールチェンジナンバー=コントロール項目名<BR>……<BR>コントロールチェンジナンバー=コントロール項目名<BR><BR>※コントロールチェンジナンバー=0～127</TD>
+ </TR>
+ <TR>
+  <TD>.RPN Names</TD>
+  <TD>RPN名を列挙するセクション。このセクション内には、複数個のテーブルが存在し、それぞれには[ ]で独自のテーブル名が付けられている。ひとつのテーブルにつき、最大16384個(0～16383、欠番があってもよい)のRPN名を定義できる。<BR>※RPNとは、CC#101(=Bank Select MSB)とCC#100(=Bank Select LSB)の組み合わせで16384種類の中からRPNナンバー(コントロールする項目)を指定し、CC#6(=Data Entry MSB)で値を指定するものである。</TD>
+  <TD>[RPNテーブル名]<BR>RPNナンバー=コントロール項目名<BR>RPNナンバー=コントロール項目名<BR>……<BR>RPNナンバー=コントロール項目名<BR><BR>※RPNナンバー=0～16383(CC#101の値*128+CC#100の値)</TD>
+ </TR>
+ <TR>
+  <TD>.NRPN Names</TD>
+  <TD>NRPN名を列挙するセクション。このセクション内には、ひとつ又は複数個のテーブルが存在し、それぞれには[ ]で独自のテーブル名が付けられている。ひとつのテーブルにつき、最大16384個(0～16383、欠番があってもよい)のNRPN名を定義できる。<BR>※NRPNとは、CC#99(=Bank Select MSB)とCC#98(=Bank Select LSB)の組み合わせで16384種類の中からNRPNナンバー(コントロールする項目)を指定し、CC#6(=Data Entry MSB)で値を指定するものである。</TD>
+  <TD>[NRPNテーブル名]<BR>NRPNナンバー=コントロール項目名<BR>NRPNナンバー=コントロール項目名<BR>……<BR>NRPNナンバー=コントロール項目名<BR><BR>※NRPNナンバー=0～16383(CC#99の値*128+CC#98の値)</TD>
+ </TR>
+ <TR>
+  <TD>.Instrument Definitions</TD>
+  <TD>インストゥルメント定義を列挙するセクション。このセクション内には、音源1台あたり2つのテーブルが存在し、それぞれには[ ]で独自のテーブル名が付けられている。テーブルのひとつは、通常モード用であり、テーブルのもうひとつは、ドラムモード用である。その他のモードをもつ音源や、複数台の音源について定義したファイルでは、3つ以上のテーブルが存在する。ひとつのテーブルにつき、利用するコントローラ名テーブル、RPN名テーブル、NRPN名テーブル、パッチ名テーブル、ノート名テーブルを、上記に列挙したテーブルの中から指定する。ただし、パッチテーブルについては、パッチバンク番号ごとに指定する(最大16384個)。ノート名テーブルについては、パッチバンク番号(最大16384個)ごと、かつプログラムナンバー(最大128個)ごとに指定する。<BR>※ここでのバンクとは、CC#0(=Bank Select MSB)とCC#32(=Bank Select LSB)で指定される、音色選択用のバンクを表す。</TD>
+  <TD>[インストゥルメント定義名]<BR>Control=コントローラテーブル名<BR>RPN=RPNテーブル名<BR>NRPN=NRPNテーブル名<BR>Patch[パッチバンク番号]=パッチテーブル名<BR>Patch[パッチバンク番号]=パッチテーブル名<BR>……<BR>Key[パッチバンク番号,プログラムナンバー]=ノートテーブル名<BR>Key[パッチバンク番号,プログラムナンバー]=ノートテーブル名<BR>……<BR><BR>※パッチバンク番号=0～16383(CC#0の値*128+CC#32の値)<BR>※プログラムナンバー=0～127</TD>
+ </TR>
+</TABLE>
+
+
+<H3><A NAME="MIDIOverview_LoadInstrumentDefinitionFileAndGetInfo">1-4.インストゥルメント定義ファイルの読み込みと情報取得</A></H3>
+
+<P>　次のソースコードはSC-8850.insに含まれるすべてのMIDIインストゥルメント定義(恐らくはSC-8850通常とSC-8850ドラムセットの2つ)について、バンク番号0番(CC#0=0,CC#32=0)のパッチ名テーブルを取得し、そのパッチ名テーブルに含まれる最大128個の音色名をすべて出力する。</P>
+
+<PRE>
+<SPAN CLASS="COMMENT">/* インストゥルメント定義ファイルから楽器別に音色名リストを抽出 */</SPAN>
+<SPAN CLASS="KEYWORD">#include</SPAN> &lt;stdio.h&gt;
+<SPAN CLASS="KEYWORD">#include</SPAN> &lt;MIDIInstrument.h&gt;
+
+<SPAN CLASS="KEYWORD">int</SPAN> main () {
+	MIDIInstrument* pMIDIInstrument = NULL;
+	MIDIInstrumentDefinition* pMIDIInstrumentDef = NULL;
+	MIDIPatchNameTable* pMIDIPatchNameTable = NULL;
+	<SPAN CLASS="KEYWORD">char</SPAN> szTitle[256];
+	<SPAN CLASS="KEYWORD">char</SPAN> szName[256];
+	<SPAN CLASS="KEYWORD">long</SPAN> j = 0;
+	<SPAN CLASS="KEYWORD">long</SPAN> ret = 0;
+
+	<SPAN CLASS="COMMENT">/* MIDIインストゥルメント定義ファイルの読み込み */</SPAN>
+	<SPAN CLASS="RED">pMIDIInstrument = MIDIInstrument_Load ("SC-8850.ins");</SPAN>
+	<SPAN CLASS="KEYWORD">if</SPAN> (pMIDIInstrument == NULL) {
+		printf (<SPAN CLASS="STRING">"MIDIインストゥルメントファイルが読み込めません。\n"</SPAN>);
+		<SPAN CLASS="KEYWORD">return</SPAN> 0;
+	}
+
+	<SPAN CLASS="COMMENT">/* このファイルに含まれるすべてのMIDIインストゥルメント定義ごとに */</SPAN>
+	<SPAN CLASS="RED">forEachInstrumentDefinition (pMIDIInstrument, pMIDIInstrumentDef)</SPAN> {
+		<SPAN CLASS="COMMENT">/* インストゥルメント定義名の表示 */</SPAN>
+		<SPAN CLASS="RED">MIDIInstrumentDefinition_GetTitle (pMIDIInstrumentDef, szTitle, 255);</SPAN>
+		printf (<SPAN CLASS="STRING">"[%s]\n"</SPAN>, szTitle);
+		<SPAN CLASS="COMMENT">/* バンク番号0番(CC#0=0,CC#32=0)のパッチ名テーブルを取得する。 */</SPAN>
+		<SPAN CLASS="RED">pMIDIPatchNameTable = MIDIInstrumentDefinition_GetPatchNameTable 
+			(pMIDIInstrumentDef, 0);</SPAN>
+		<SPAN CLASS="KEYWORD">if</SPAN> (pMIDIPatchNameTable) {
+			<SPAN CLASS="COMMENT">/* このパッチ名テーブルのタイトルを表示する */</SPAN>
+			<SPAN CLASS="RED">MIDIPatchNameTable_GetTitle (pMIDIPatchNameTable, szTitle, 255);</SPAN>
+			printf (<SPAN CLASS="STRING">"    PatchNameTable(0)=%s\n"</SPAN>, szTitle);
+			<SPAN CLASS="COMMENT">/* このパッチ名テーブルの内容をすべて表示する(欠番は除く) */</SPAN>
+			<SPAN CLASS="KEYWORD">for</SPAN> (j = 0; j &lt; 128; j++) {
+				<SPAN CLASS="RED">ret = MIDIPatchNameTable_GetName (pMIDIPatchNameTable, j, szName, 255);</SPAN>
+				<SPAN CLASS="KEYWORD">if</SPAN> (ret &gt; 0) {
+					printf (<SPAN CLASS="STRING">"        %d=%s\n"</SPAN>, j, szName);
+				}
+			}
+		}
+	}
+	<SPAN CLASS="RED">MIDIInstrument_Delete (pMIDIInstrument);</SPAN>
+	pMIDIInstrument = NULL;
+	getchar ();
+	<SPAN CLASS="KEYWORD">return</SPAN> 1;
+}
+</PRE>
+
+
+<P>　このプログラムでは、まず1つのMIDInstrumentオブジェクトをファイルから読み込むことによって生成している。ファイルからの読み込みには、<A HREF="#MIDIInstrument_Load">MIDIInstrument_Load</A>関数を使っている。そして、そのファイル内に含まれるすべてのMIDIインストゥルメント定義にアクセスしようとしている。1ファイルあたり1音源の記述である場合、2つのMIDIインストゥルメント定義が含まれる。ひとつは通常用、もうひとつはドラムセット用である。一方で、1ファイルあたり複数の音源の記述がある場合、(2*n)個のインストゥルメント定義が記述されている。各インストゥルメント定義へのアクセスは、<A HREF="#MIDIInstrument_GetFirstInstrumentDefinition">MIDIInstrument_GetFirstInstrumentDefinition</A>関数と<A HREF="#MIDIInstrumentDefinition_GetNextInstrumentDefinition">MIDIInstrumentDefinition_GetNextInstrumentDefinition</A>関数を使うことにより、先頭から順番にアクセスすることができるが、ここでは、便利な<A HREF="#MIDIInstrument_forEachInstrumentDefinition">forEachInstrumentDefinition</A>マクロを採用している。</P>
+
+<P>　MIDIインストゥルメント定義が取得できたら、まずはそのタイトルを出力している。MIDIインストゥルメント定義のタイトル取得には、<A HREF="#MIDIInstrumentDefinition_GetTitle">MIDIInstrumentDefinition_GetTitle</A>関数を用いた。この例では、恐らく[Roland SC-8850]と[Roland SC-8850 Drumsets]というタイトルの2つのMIDIインストゥルメント定義が取得できるであろう。</P>
+
+<P>次に、そのMIDIインストゥルメント定義の、バンク0(CC#0=0, CC#32=0)のパッチ名テーブルのタイトルと、その中に含まれるすべての音色名を出力している。バンク0のパッチ名テーブルを取得するのには、<A HREF="#MIDIInstrumentDefinition_GetPatchNameTable">MIDIInstrumentDefinition_GetPatchNameTable</A>関数を使った。その後、<A HREF="#MIDIPatchNameTable_GetTitle">MIDIPatchNameTable_GetTitle</A>関数でパッチ名テーブルのタイトルを取得し、<A HREF="#MIDIPatchNameTable_GetName">MIDIPatchNameTable_GetName</A>関数を複数回使ってプログラムナンバー0番～127番の音色名を取得している。</P>
+
+<P>　最後に忘れてはならないのは、生成したMIDIInstrumentオブジェクトは削除しなければならないことである。ここでは<A HREF="#MIDIInstrument_Delete">MIDIInstrument_Delete</A>関数を使っている。</P>
+
+
+<P>出力結果は次のようになる。</P>
+
+<PRE>
+[Roland SC-8850]
+    PatchNameTable(0)=Roland SC-8850 Capital Tones
+        0=Piano 1
+        1=Piano 2
+        2=Piano 3
+        3=Honky-tonk
+        4=E.Piano 1
+        5=E.Piano 2
+        6=Harpsichord
+        7=Clav.
+        8=Celesta
+        9=Glockenspiel
+        10=Music Box
+        11=Vibraphone
+        12=Marimba
+        13=Xylophone
+        14=Tubular-bell
+        15=Santur
+        16=Organ 1
+        17=Organ 2
+        18=Organ 3
+        19=Church Org.1
+        20=Reed Organ
+        21=Accordion Fr
+        22=Harmonica
+        23=Bandoneon
+        24=Nylon-str.Gt
+        25=Steel-str.Gt
+        26=Jazz Gt.
+        27=Clean Gt.
+        28=Muted Gt.
+        29=Overdrive Gt
+        30=DistortionGt
+        31=Gt.Harmonics
+        32=Acoustic Bs.
+        33=Fingered Bs.
+        34=Picked Bass
+        35=Fretless Bs.
+        36=Slap Bass 1
+        37=Slap Bass 2
+        38=Synth Bass 1
+        39=Synth Bass 2
+        40=Violin    :
+        41=Viola     :
+        42=Cello     :
+        43=Contrabass
+        44=Tremolo Str
+        45=PizzicatoStr
+        46=Harp
+        47=Timpani
+        48=Strings
+        49=Slow Strings
+        50=Syn.Strings1
+        51=Syn.Strings2
+        52=Choir Aahs
+        53=Voice Oohs
+        54=SynVox
+        55=OrchestraHit
+        56=Trumpet
+        57=Trombone
+        58=Tuba
+        59=MutedTrumpet
+        60=French Horns
+        61=Brass 1
+        62=Synth Brass1
+        63=Synth Brass2
+        64=Soprano Sax
+        65=Alto Sax
+        66=Tenor Sax
+        67=Baritone Sax
+        68=Oboe
+        69=English Horn
+        70=Bassoon
+        71=Clarinet
+        72=Piccolo
+        73=Flute
+        74=Recorder
+        75=Pan Flute
+        76=Bottle Blow
+        77=Shakuhachi
+        78=Whistle
+        79=Ocarina
+        80=Square Wave
+        81=Saw Wave
+        82=Syn.Calliope
+        83=Chiffer Lead
+        84=Charang
+        85=Solo Vox
+        86=5th Saw Wave
+        87=Bass & Lead
+        88=Fantasia
+        89=Warm Pad
+        90=Polysynth
+        91=Space Voice
+        92=Bowed Glass
+        93=Metal Pad
+        94=Halo Pad
+        95=Sweep Pad
+        96=Ice Rain
+        97=Soundtrack
+        98=Crystal
+        99=Atmosphere
+        100=Brightness
+        101=Goblin
+        102=Echo Drops
+        103=Star Theme
+        104=Sitar
+        105=Banjo
+        106=Shamisen
+        107=Koto
+        108=Kalimba
+        109=Bagpipe
+        110=Fiddle
+        111=Shanai
+        112=Tinkle Bell
+        113=Agogo
+        114=Steel Drums
+        115=Woodblock
+        116=Taiko
+        117=Melo. Tom 1
+        118=Synth Drum
+        119=Reverse Cym.
+        120=Gt.FretNoise
+        121=Breath Noise
+        122=Seashore
+        123=Bird
+        124=Telephone 1
+        125=Helicopter
+        126=Applause
+        127=Gun Shot
+
+[Roland SC-8850 Drumsets]
+    PatchNameTable(0)=Roland SC-8850 Drumsets
+        0=STANDARD 1
+        1=STANDARD 2 [Pro]
+        2=STANDARD L/R
+        8=ROOM
+        9=HIP HOP
+        10=JUNGLE
+        11=TECHNO
+        12=ROOM L/R
+        13=HOUSE
+        16=POWER [Pro]
+        24=ELECTRONIC [Pro]
+        25=TR-808 [Pro]
+        26=DANCE
+        27=CR-78 [Pro]
+        28=TR-606 [Pro]
+        29=TR-707 [Pro]
+        30=TR-909 [Pro]
+        32=JAZZ
+        33=JAZZ L/R
+        40=BRUSH [Pro]
+        41=BRUSH 2
+        42=BRUSH 2 L/R
+        48=ORCHESTRA [Pro]
+        49=ETHNIC [Pro]
+        50=KICK & SNARE
+        51=KICK & SNARE 2
+        52=ASIA
+        53=CYMBAL&amp;CLAPS [Pro]
+        54=GAMELAN 1
+        55=GAMELAN 2
+        56=SFX [Pro]
+        57=RHYTHM FX [Pro]
+        58=RHYTHM FX 2 [Pro]
+        59=RHYTHM FX 3 [Pro]
+        60=SFX 2
+        61=VOICE
+        62=CYM&amp;CLAPS 2
+</PRE>
+
+
+
+<H3><A NAME="MIDIOverview_ANSI_UNICODE">1-5.ANSIとUNICODEの使い分けについて</A></H3>
+
+<P>MIDIInstrumentライブラリ0.6から文字列がANSIとUNICODEの両対応になった。今まではANSIのみに対応していた。今までのC/C++ソースコードはそのまま使用できるが、再コンパイルは必要である。プリプロセッサでUNICODEが定義されているときのみUNICODEとなり、その他の場合はANSIとなる。</P>
+
+<H4>構造体の文字列フィールドはchar*型からvoid*型になった。</H4>
+
+<P>文字列フィールドは<SPAN class="keyword">char</SPAN>*型であったが、ANSIでは<SPAN class="keyword">char</SPAN>*型、UNICODEではwchar_t*型とするために、<SPAN class="keyword">void</SPAN>*型とした。実際、プログラマーはこの点を気にする必要はない。</P>
+
+<H4>関数の文字列はchar*型はTCHAR*型となった。</H4>
+
+<P>関数の文字列は<SPAN class="keyword">char</SPAN>*型であったが、ANSIでは<SPAN class="keyword">char</SPAN>*型、UNICODEではwchar_t型とするために、TCHAR型とした。</P>
+<PRE>
+<SPAN class="keyword">#ifdef</SPAN> UNICODE
+<SPAN class="keyword">typedef</SPAN> TCHAR wchar_t;
+<SPAN class="keyword">#else</SPAN>
+<SPAN class="keyword">typedef</SPAN> TCHAR <SPAN class="keyword">char</SPAN>;
+<SPAN class="keyword">#endif</SPAN>
+</PRE>
+
+
+<P>実際の関数は、次のようにANSI用とUNICODE用の2種類が用意されている。これは、普通のWindowsAPI関数と同じ手法である。</P>
+<PRE>
+<SPAN class="keyword">long</SPAN> MIDIInstrument_LoadA (<SPAN class="keyword">const char</SPAN>* pszFileName);
+<SPAN class="keyword">long</SPAN> MIDIInstrument_LoadW (<SPAN class="keyword">const</SPAN> wchar_t* pszFileName);
+<SPAN class="keyword">#ifdef</SPAN> UNICODE
+MIDIInstrument_Load MIDIInstrument_LoadW
+<SPAN class="keyword">#else</SPAN>
+MIDIInstrument_Load MIDIInstrument_LoadA
+<SPAN class="keyword">#endif</SPAN>
+</PRE>
+
+<H4>文字列の長さの単位はバイトから文字になった。</H4>
+
+<P>文字列の長さの単位はバイトであったが、文字になった。1文字の長さは、ANSIでは1バイト、UNICODEでは2バイトとなる。</P>
+
+
+
+<H2><A NAME="MIDIPatchNameTableReference">第2章：MIDIパッチ名テーブルリファレンス</A></H2>
+
+<H3><A NAME="MIDIPatchNameTable_Struct">2-1.MIDIパッチ名テーブルの構造</A></H3>
+
+<P>　MIDIパッチ名テーブルは、テーブルのタイトル、及び最大128個(0～127, 欠番があってもよい)の音色名を保持している。これらの値は必要に応じて、参照・設定できるが、これらの値を直接操作するのは危険である。必ずGet/Set系関数を通して参照・設定されたい。</P>
+<P>　また、1つのMIDIインストゥルメントオブジェクトには、複数個のMIDIパッチ名テーブルを含む。これらは、双方向リンクリストとして列挙されており、次のパッチ名テーブルへのポインタ、前のパッチ名テーブルへのポインタ、及びMIDIインストゥルメントオブジェクトへのポインタを保持している。これらのポインタの接続処理は自動でなされるので、直接操作してはならない。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIPatchNameTable_Struct">▼Table2-1.MIDIPatchNameTable構造体のフィールドと使い方</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH WIDTH="25%">フィールド</TH>
+  <TH WIDTH="75%">使い方</TH>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">void</SPAN>* m_pszTitle</TD>
+  <TD>このテーブルのタイトル文字列へのポインタ。NULLの場合、無タイトルを意味する。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">long</SPAN> m_lTitleLen</TD>
+  <TD>このテーブルのタイトル文字列の文字数+1[文字]。+1は最後のヌル文字に該当する。0の場合、無タイトルを意味する。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">void</SPAN>* m_pszName[128]</TD>
+  <TD>128個それぞれの音色名文字列へのポインタ(文字列へのポインタが128個ある)。NULLの場合、その音色番号には名前がないことを意味する。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">long</SPAN> m_lNameLen[128]</TD>
+  <TD>128個それぞれの音色名文字列の文字数+1[文字]。+1は最後のヌル文字に該当する。0の場合、その音色番号には名前がないことを意味する。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">struct</SPAN> tagMIDIPatchNameTable* m_pBasedOn</TD>
+  <TD>ベースになっているパッチ名テーブルへのポインタ。これがNULL以外の場合、音色名が欠番になっていてもベースのパッチ名テーブルを参照する。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">struct</SPAN> tagMIDIPatchNameTable* m_pNextPatchNameTable</TD>
+  <TD>次のパッチ名テーブルへのポインタ。なければNULL。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">struct</SPAN> tagMIDIPatchNameTable* m_pPrevPatchNameTable</TD>
+  <TD>前のパッチ名テーブルへのポインタ。なければNULL。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">void</SPAN>* pParent</TD>
+  <TD>このパッチ名テーブルが属している親の<A HREF="#MIDIInstrumentReference">MIDIインストゥルメント</A>オブジェクトへのポインタ。なければNULL。</TD>
+ </TR>
+</TABLE>
+
+<H3><A NAME="MIDIPatchNameTable_CreateFunction">2-2.MIDIパッチ名テーブルの生成</A></H3>
+
+<P>　MIDIパッチ名テーブルをメモリ上に新規生成するには、MIDIPatchNameTable_Create関数を使う。</P>
+
+<P>　MIDIPatchNameTable_Create関数は、正常終了時には生成したMIDIパッチ名テーブルオブジェクトへのポインタを、異常終了時にはNULLを返す。異常終了は、メモリの割り当てに失敗した場合、及び引数の指定が不正だった場合におこりうる。戻り値は必ずチェックし、異常終了時の回避処理をしておかなければ、ヌルポインターエラーになるであろう。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIPatchNameTable_CreateFunctionList">▼List2-2.MIDIPatchNameTable_Create関数の使い方</A></DIV>
+<PRE>
+	MIDIPatchNameTable* pMIDIPatchNameTable;
+	<SPAN CLASS="COMMENT">/* MIDIパッチ名テーブルの生成 */</SPAN>
+	<SPAN CLASS="RED">pMIDIPatchNameTable = MIDIPatchNameTable_Create ();</SPAN>
+	<SPAN CLASS="KEYWORD">if</SPAN> (pMIDIPatchNameTable == NULL) {
+		<SPAN CLASS="COMMENT">/* 異常終了時の処理 */</SPAN>
+		printf (<SPAN CLASS="STRING">"MIDIパッチ名テーブルの生成に失敗しました。\n"</SPAN>);
+		<SPAN CLASS="KEYWORD">return</SPAN> 0;
+	}
+	<SPAN CLASS="COMMENT">/* 正常終了時の処理 */</SPAN>
+	...
+</PRE>
+
+<P></P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIPatchNameTable_CreateFunctionTable">▼Table2-2.MIDIPatchNameTable_Create系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPatchNameTable_Create">MIDIPatchNameTable* MIDIPatchNameTable_Create <BR>();</A> </TD>
+  <TD>なし<BR></TD>
+  <TD>正常終了:MIDIパッチ名テーブルへのポインタ<BR>異常終了:NULL</TD>
+  <TD>MIDIパッチ名テーブルを新規に生成する。初期状態では、タイトルと全ての音色名はNULLであるので、<A HREF="#MIDIPatchNameTable_SetTitle">MIDIPatchNameTable_SetTitle</A>関数や<A HREF="#MIDIPatchNameTable_SetName">MIDIPatchNameTable_SetName</A>関数を用いて設定する必要がある。また、初期状態では、いずれのMIDIインストゥルメントオブジェクトにも属しておらず、ポインタは全てNULLである。</TD>
+ </TR>
+</TABLE>
+
+<H3><A NAME="MIDIPatchNameTable_DeleteFunction">2-3.MIDIパッチ名テーブルの削除</A></H3>
+
+<P>　MIDIパッチ名テーブルをメモリ上から削除するには、MIDIPatchNameTable_Delete関数を使う。</P>
+
+<P><SPAN CLASS="RED">　<A HREF="#MIDIPatchNameTable_CreateFunction">MIDIPatchNameTable_Create系関数</A>で生成したMIDIパッチ名テーブルは、使用し終わったらMIDIPatchNameTable_Delete関数でメモリ上から削除しなければならない。</SPAN>MIDIインストゥルメントライブラリではメモリの自動解放(ガベージコレクション)を行わないので、この手続きは常に必要である。もし忘れれば、メモリリークが発生するであろう。</P>
+
+<P><SPAN CLASS="RED">　MIDIパッチ名テーブルを削除した直後には、ポインタにNULLを代入しておくべきである。</SPAN>これをしなければ、このMIDIパッチ名テーブルが既に削除されていることが外部からわからなくなってしまい、バグの原因となりうる。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIPatchNameTable_DeleteFunctionList">▼List2-3.MIDIPatchNameTable_Delete関数の使い方</A></DIV>
+<PRE>
+	<SPAN CLASS="RED">MIDIPatchNameTable_Delete (pMIDIPatchNameTable)</SPAN>;
+	pMIDIPatchNameTable = NULL;
+</PRE>
+
+<P></P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIPatchNameTable_DeleteFunctionTable">▼Table2-3.MIDIPatchNameTable_Delete系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPatchNameTable_Delete"><SPAN CLASS="KEYWORD">void</SPAN> MIDIPatchNameTable_Delete <BR>(MIDIPatchNameTable* pMIDIPatchNameTable);</A> </TD>
+  <TD>pMIDIPatchNameTable:MIDIパッチ名テーブルへのポインタ</TD>
+  <TD>未定義</TD>
+  <TD>MIDIパッチ名テーブルを削除する。この関数は、MIDIパッチ名テーブル内に含まれるタイトル文字列や全ての音色名文字列も同時に削除する。また、他のオブジェクトがこのMIDIパッチ名テーブルを参照している場合、それらをNULLに書き換える。MIDIインストゥルメントオブジェクトに属している場合は、双方向リンクリストのポインタが自動的に正しく接続し直される。</TD>
+ </TR>
+</TABLE>
+
+<H3><A NAME="MIDIPatchNameTable_GetFunction">2-4.MIDIパッチ名テーブルの情報取得</A></H3>
+
+<P>　いったん構築したMIDIパッチ名テーブルのプロパティは、いつでもGet系関数を使って取得することができる。特に<A HREF="#MIDIPatchNameTable_GetName">MIDIPatchNameTable_GetName</A>関数は、音色名を取得するために、最も頻繁に使われるであろう。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIPatchNameTable_GetFunctionList">▼List2-4.MIDIPatchNameTable_Get系関数の使い方</A></DIV>
+<PRE>
+	...
+	<SPAN CLASS="COMMENT">/* MIDIパッチ名テーブルのタイトルと全音色名を取得表示 */</SPAN>
+	<SPAN CLASS="KEYWORD">char</SPAN>* szTitle[256];
+	<SPAN CLASS="KEYWORD">char</SPAN>* szName[256];
+	<SPAN CLASS="KEYWORD">long</SPAN> j;
+	<SPAN CLASS="KEYWORD">long</SPAN> ret;
+	<SPAN CLASS="RED">MIDIPatchNameTable_GetTitle (pMIDIPatchNameTable, szTitle, 255);</SPAN>
+	printf (<SPAN CLASS="STRING">"Title=%s\n"</SPAN>, szTitle);
+	<SPAN CLASS="KEYWORD">for</SPAN> (j = 0; j &lt; 128; j++) {
+		<SPAN CLASS="RED">ret = MIDIPatchNameTable_GetName (pMIDIPatchNameTable, szName, 255);</SPAN>
+		<SPAN CLASS="KEYWORD">if</SPAN> (ret &gt; 0) {
+			printf (<SPAN CLASS="STRING">"%d=%s\n"</SPAN>, j, szName);
+		}
+	}
+	...
+</PRE>
+
+<P></P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIPatchNameTable_GetFunctionTable">▼Table2-4.MIDIPatchNameTable_Get系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR CLASS="TITLE">
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPatchNameTable_GetTitle"><SPAN CLASS="KEYWORD">long</SPAN> MIDIPatchNameTable_GetTitle <BR>(MIDIPatchNameTable* pMIDIPatchNameTable, <SPAN CLASS="KEYWORD">TCHAR</SPAN>* pszTitle, <SPAN CLASS="KEYWORD">long</SPAN> lLen);</A> </TD>
+  <TD>pMIDIPatchNameTable:MIDIパッチ名テーブルへのポインタ<BR>pszTitle:タイトルを取得するバッファへのポインタ<BR>lLen:バッファの最大長さ[文字]</TD>
+  <TD>正常終了:実際に取得した文字列の長さ[文字]<BR>異常終了:0</TD>
+  <TD>MIDIパッチ名テーブルのタイトルをpszTitleで示されるバッファに取得する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPatchNameTable_GetName"><SPAN CLASS="KEYWORD">long</SPAN> MIDIPatchNameTable_GetName <BR>(MIDIPatchNameTable* pMIDIPatchNameTable, <SPAN CLASS="KEYWORD">long</SPAN> lNumber, TCHAR* pszName, <SPAN CLASS="KEYWORD">long</SPAN> lLen);</A> </TD>
+  <TD>pMIDIPatchNameTable:MIDIパッチ名テーブルへのポインタ<BR>lNumber:取得する音色番号(0～127)<BR>pszTitle:音色名を取得するバッファへのポインタ<BR>lLen:バッファの最大長さ[文字]</TD>
+  <TD>正常終了:実際に取得した文字列の長さ[文字]<BR>異常終了:0</TD>
+  <TD>指定番号の音色名をpszTitleで示されるバッファに取得する。指定番号の音色名がない場合は、NULL文字が取得され、0が返される。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPatchNameTable_GetNextPatchNameTable">MIDIPatchNameTable* MIDIPatchNameTable_GetNextPatchNameTable <BR>(MIDIPatchNameTable* pMIDIPatchNameTable);</A></TD>
+  <TD>pMIDIPatchNameTable:MIDIパッチ名テーブルへのポインタ</TD>
+  <TD>次のMIDIパッチ名テーブルへのポインタ(なければNULL)</TD>
+  <TD>次のMIDIパッチ名テーブルへのポインタ(なければNULL)を取得する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPatchNameTable_GetPrevPatchNameTable">MIDIPatchNameTable* MIDIPatchNameTable_GetPrevPatchNameTable <BR>(MIDIPatchNameTable* pMIDIPatchNameTable);</A></TD>
+  <TD>pMIDIPatchNameTable:MIDIパッチ名テーブルへのポインタ</TD>
+  <TD>前のMIDIパッチ名テーブルへのポインタ(なければNULL)</TD>
+  <TD>前のMIDIパッチ名テーブルへのポインタ(なければNULL)を取得する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPatchNameTable_GetParent">MIDIPatchNameTable* MIDIPatchNameTable_GetParent <BR>(MIDIPatchNameTable* pMIDIPatchNameTable);</A></TD>
+  <TD>pMIDIPatchNameTable:MIDIパッチ名テーブルへのポインタ</TD>
+  <TD>このMIDIパッチ名テーブルが属するMIDIインストゥルメントオブジェクトへのポインタ(なければNULL)</TD>
+  <TD>このMIDIパッチ名テーブルが属するMIDIインストゥルメントオブジェクトへのポインタ(なければNULL)を取得する。</TD>
+ </TR>
+</TABLE>
+
+<H3><A NAME="MIDIPatchNameTable_SetFunction">2-5.MIDIパッチ名テーブルの情報設定</A></H3>
+
+<P>　いったん構築したMIDIパッチ名テーブルのプロパティは、Set系関数を使って設定することができる。<A HREF="#MIDIPatchNameTable_SetName">MIDIPatchNameTable_SetName</A>関数は、音色名を変更するために、最も頻繁に使われるであろう。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIPatchNameTable_SetFunctionList">▼List2-5.MIDIPatchNameTable_Set系関数の使い方</A></DIV>
+<PRE>
+	...
+	<SPAN CLASS="COMMENT">/* MIDIパッチ名テーブルのタイトルと各音色名の情報設定 */</SPAN>
+	<SPAN CLASS="RED">MIDIPatchNameTable_SetTitle (pMIDIPatchNameTable, "Consert Streo Map");</SPAN>
+	<SPAN CLASS="RED">MIDIPatchNameTable_SetName (pMIDIPatchNameTable, 0, "Consert Streo Ground Piano 1");</SPAN>
+	<SPAN CLASS="RED">MIDIPatchNameTable_SetName (pMIDIPatchNameTable, 48, "Consert Streo Strings Ensamble 1");</SPAN>
+	...
+</PRE>
+
+<P></P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIPatchNameTable_SetFunctionTable">▼Table2-5.MIDIPatchNameTable_Set系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR CLASS="TITLE">
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPatchNameTable_SetTitle"><SPAN CLASS="KEYWORD">long</SPAN> MIDIPatchNameTable_SetTitle <BR>(MIDIPatchNameTable* pMIDIPatchNameTable, <SPAN CLASS="KEYWORD">const</SPAN> TCHAR* pszTitle);</A> </TD>
+  <TD>pMIDIPatchNameTable:MIDIパッチ名テーブルへのポインタ<BR>pszTitle:タイトル文字列へのポインタ</TD>
+  <TD>正常終了:1<BR>異常終了:0</TD>
+  <TD>MIDIパッチ名テーブルのタイトルを設定する。pszTitleにNULLを指定するとタイトルは無しとなる。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIPatchNameTable_SetName"><SPAN CLASS="KEYWORD">long</SPAN> MIDIPatchNameTable_SetName <BR>(MIDIPatchNameTable* pMIDIPatchNameTable, <SPAN CLASS="KEYWORD">long</SPAN> lNumber, <SPAN CLASS="KEYWORD">const</SPAN> TCHAR* pszName);</A> </TD>
+  <TD>pMIDIPatchNameTable:MIDIパッチ名テーブルへのポインタ<BR>lNumber:設定する音色番号(0～127)<BR>pszName:音色名文字列へのポインタ</TD>
+  <TD>正常終了:1<BR>異常終了:0</TD>
+  <TD>MIDIパッチ名テーブルの指定番号の音色名を設定する。pszNameにNULLを指定すると音色名は無しとなる。</TD>
+ </TR>
+</TABLE>
+
+
+
+
+
+
+
+
+
+
+<H2><A NAME="MIDINoteNameTableReference">第3章：MIDIノート名テーブルリファレンス</A></H2>
+
+<H3><A NAME="MIDINoteNameTable_Struct">3-1.MIDIノート名テーブルの構造</A></H3>
+
+<P>　MIDIノート名テーブルは、テーブルのタイトル、及び最大128個(0～127, 欠番があってもよい)の鍵盤別音色名を保持している。鍵盤別音色名を定義するのは主に楽器がドラムの場合である。これらの値は必要に応じて、参照・設定できるが、これらの値を直接操作するのは危険である。必ずGet/Set系関数を通して参照・設定されたい。</P>
+<P>　また、1つのMIDIインストゥルメントオブジェクトには、複数個のMIDIノート名テーブルを含む。これらは、双方向リンクリストとして列挙されており、次のノート名テーブルへのポインタ、前のノート名テーブルへのポインタ、及びMIDIインストゥルメントオブジェクトへのポインタを保持している。これらのポインタの接続処理は自動でなされるので、直接操作してはならない。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDINoteNameTable_Struct">▼Table3-1.MIDINoteNameTable構造体のフィールドと使い方</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH WIDTH="25%">フィールド</TH>
+  <TH WIDTH="75%">使い方</TH>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">void</SPAN>* m_pszTitle</TD>
+  <TD>このテーブルのタイトル文字列へのポインタ。NULLの場合、無タイトルを意味する。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">long</SPAN> m_lTitleLen</TD>
+  <TD>このテーブルのタイトル文字列の長さ+1[文字]。+1は最後のヌル文字に該当する。0の場合、無タイトルを意味する。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">void</SPAN>* m_pszName[128]</TD>
+  <TD>128個それぞれの鍵盤別音色名文字列へのポインタ(ポインタが128個ある)。NULLの場合、その鍵盤別音色番号には名前がないことを意味する。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">long</SPAN> m_lNameLen[128]</TD>
+  <TD>128個それぞれの鍵盤別音色名文字列の長さ+1[文字]。+1は最後のヌル文字に該当する。0の場合、その鍵盤別音色番号には名前がないことを意味する。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">struct</SPAN> tagMIDIPatchNameTable* m_pBasedOn</TD>
+  <TD>ベースになっているノート名テーブルへのポインタ。これがNULL以外の場合、鍵盤別音色名が欠番になっていてもベースのノート名テーブルを参照する。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">struct</SPAN> tagMIDIPatchNameTable* m_pNextPatchNameTable</TD>
+  <TD>次のノート名テーブルへのポインタ。なければNULL。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">struct</SPAN> tagMIDIPatchNameTable* m_pPrevPatchNameTable</TD>
+  <TD>前のノート名テーブルへのポインタ。なければNULL。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">void</SPAN>* m_pParent</TD>
+  <TD>このノート名テーブルが属している親の<A HREF="#MIDIInstrumentReference">MIDIインストゥルメント</A>オブジェクトへのポインタ。なければNULL。</TD>
+ </TR>
+</TABLE>
+
+<H3><A NAME="MIDINoteNameTable_CreateFunction">3-2.MIDIノート名テーブルの生成</A></H3>
+
+<P>　MIDIノート名テーブルをメモリ上に新規生成するには、MIDINoteNameTable_Create関数を使う。</P>
+
+<P>　MIDINoteNameTable_Create関数は、正常終了時には生成したMIDIノート名テーブルオブジェクトへのポインタを、異常終了時にはNULLを返す。異常終了は、メモリの割り当てに失敗した場合、及び引数の指定が不正だった場合におこりうる。戻り値は必ずチェックし、異常終了時の回避処理をしておかなければ、ヌルポインターエラーになるであろう。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDINoteNameTable_CreateFunctionList">▼List3-2.MIDINoteNameTable_Create関数の使い方</A></DIV>
+<PRE>
+	MIDINoteNameTable* pMIDINoteNameTable;
+	<SPAN CLASS="COMMENT">/* MIDIノート名テーブルの生成 */</SPAN>
+	<SPAN CLASS="RED">pMIDINoteNameTable = MIDINoteNameTable_Create ();</SPAN>
+	<SPAN CLASS="KEYWORD">if</SPAN> (pMIDINoteNameTable == NULL) {
+		<SPAN CLASS="COMMENT">/* 異常終了時の処理 */</SPAN>
+		printf (<SPAN CLASS="STRING">"MIDIノート名テーブルの生成に失敗しました。\n"</SPAN>);
+		<SPAN CLASS="KEYWORD">return</SPAN> 0;
+	}
+	<SPAN CLASS="COMMENT">/* 正常終了時の処理 */</SPAN>
+	...
+</PRE>
+
+<P></P>
+
+<DIV CLASS="TITLE"><A NAME="MIDINoteNameTable_CreateFunctionTable">▼Table3-2.MIDINoteNameTable_Create系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDINoteNameTable_Create">MIDINoteNameTable* MIDINoteNameTable_Create <BR>();</A> </TD>
+  <TD>なし<BR></TD>
+  <TD>正常終了:MIDIノート名テーブルへのポインタ<BR>異常終了:NULL</TD>
+  <TD>MIDIノート名テーブルを新規に生成する。初期状態では、タイトルと全ての鍵盤別音色名はNULLであるので、<A HREF="#MIDINoteNameTable_SetTitle">MIDIPatchNameTable_SetTitle</A>関数や<A HREF="#MIDINoteNameTable_SetName">MIDIPatchNameTable_SetName</A>関数を用いて設定する必要がある。また、初期状態では、いずれのMIDIインストゥルメントオブジェクトにも属しておらず、ポインタは全てNULLである。</TD>
+ </TR>
+</TABLE>
+
+<H3><A NAME="MIDINoteNameTable_DeleteFunction">3-3.MIDIノート名テーブルの削除</A></H3>
+
+<P>　MIDIノート名テーブルをメモリ上から削除するには、MIDINoteNameTable_Delete関数を使う。</P>
+
+<P><SPAN CLASS="RED">　<A HREF="#MIDINoteNameTable_CreateFunction">MIDINoteNameTable_Create系関数</A>で生成したMIDIノート名テーブルは、使用し終わったらMIDINoteNameTable_Delete関数でメモリ上から削除しなければならない。</SPAN>MIDIインストゥルメントライブラリではメモリの自動解放(ガベージコレクション)を行わないので、この手続きは常に必要である。もし忘れれば、メモリリークが発生するであろう。</P>
+
+<P><SPAN CLASS="RED">　MIDIノート名テーブルを削除した直後には、ポインタにNULLを代入しておくべきである。</SPAN>これをしなければ、このMIDIノート名テーブルが既に削除されていることが外部からわからなくなってしまい、バグの原因となりうる。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDINoteNameTable_DeleteFunctionList">▼List3-3.MIDINoteNameTable_Delete関数の使い方</A></DIV>
+<PRE>
+	<SPAN CLASS="RED">MIDINoteNameTable_Delete (pMIDINoteNameTable)</SPAN>;
+	pMIDINoteNameTable = NULL;
+</PRE>
+
+<P></P>
+
+<DIV CLASS="TITLE"><A NAME="MIDINoteNameTable_DeleteFunctionTable">▼Table3-3.MIDINoteNameTable_Delete系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDINoteNameTable_Delete"><SPAN CLASS="KEYWORD">void</SPAN> MIDINoteNameTable_Delete <BR>(MIDINoteNameTable* pMIDINoteNameTable);</A> </TD>
+  <TD>pMIDINoteNameTable:MIDIノート名テーブルへのポインタ</TD>
+  <TD>未定義</TD>
+  <TD>MIDIノート名テーブルを削除する。この関数は、MIDIノート名テーブル内に含まれるタイトル文字列や全ての鍵盤別音色名文字列も同時に削除する。また、他のオブジェクトがこのMIDIノート名テーブルを参照している場合、それらをNULLに書き換える。MIDIインストゥルメントオブジェクトに属している場合は、双方向リンクリストのポインタが自動的に正しく接続し直される。</TD>
+ </TR>
+</TABLE>
+
+<H3><A NAME="MIDINoteNameTable_GetFunction">3-4.MIDIノート名テーブルの情報取得</A></H3>
+
+<P>　いったん構築したMIDIノート名テーブルのプロパティは、いつでもGet系関数を使って取得することができる。特に<A HREF="#MIDINoteNameTable_GetName">MIDINoteNameTable_GetName</A>関数は、鍵盤別音色名を取得するために、最も頻繁に使われるであろう。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDINoteNameTable_GetFunctionList">▼List3-4.MIDINoteNameTable_Get系関数の使い方</A></DIV>
+<PRE>
+	...
+	<SPAN CLASS="COMMENT">/* MIDIノート名テーブルのタイトルと全鍵盤別音色名を取得表示 */</SPAN>
+	<SPAN CLASS="KEYWORD">char</SPAN>* szTitle[256];
+	<SPAN CLASS="KEYWORD">char</SPAN>* szName[256];
+	<SPAN CLASS="KEYWORD">long</SPAN> j;
+	<SPAN CLASS="KEYWORD">long</SPAN> ret;
+	<SPAN CLASS="RED">MIDINoteNameTable_GetTitle (pMIDINoteNameTable, szTitle, 255);</SPAN>
+	printf (<SPAN CLASS="STRING">"Title=%s\n"</SPAN>, szTitle);
+	<SPAN CLASS="KEYWORD">for</SPAN> (j = 0; j &lt; 128; j++) {
+		<SPAN CLASS="RED">ret = MIDINoteNameTable_GetName (pMIDINoteNameTable, szName, 255);</SPAN>
+		<SPAN CLASS="KEYWORD">if</SPAN> (ret &gt; 0) {
+			printf (<SPAN CLASS="STRING">"%d=%s\n"</SPAN>, j, szName);
+		}
+	}
+	...
+</PRE>
+
+<P></P>
+
+<DIV CLASS="TITLE"><A NAME="MIDINoteNameTable_GetFunctionTable">▼Table3-4.MIDINoteNameTable_Get系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR CLASS="TITLE">
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDINoteNameTable_GetTitle"><SPAN CLASS="KEYWORD">long</SPAN> MIDINoteNameTable_GetTitle <BR>(MIDINoteNameTable* pMIDINoteNameTable, TCHAR* pszTitle, <SPAN CLASS="KEYWORD">long</SPAN> lLen);</A> </TD>
+  <TD>pMIDINoteNameTable:MIDIノート名テーブルへのポインタ<BR>pszTitle:タイトルを取得するバッファへのポインタ<BR>lLen:バッファの最大長さ[文字]</TD>
+  <TD>正常終了:実際に取得した文字列の長さ[文字]<BR>異常終了:0</TD>
+  <TD>MIDIノート名テーブルのタイトルをpszTitleで示されるバッファに取得する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDINoteNameTable_GetName"><SPAN CLASS="KEYWORD">long</SPAN> MIDINoteNameTable_GetName <BR>(MIDINoteNameTable* pMIDINoteNameTable, <SPAN CLASS="KEYWORD">long</SPAN> lNumber, TCHAR* pszName, <SPAN CLASS="KEYWORD">long</SPAN> lLen);</A> </TD>
+  <TD>pMIDINoteNameTable:MIDIノート名テーブルへのポインタ<BR>lNumber:取得するノートキー番号(0～127)<BR>pszTitle:鍵盤別音色名を取得するバッファへのポインタ<BR>lLen:バッファの最大長さ[文字]</TD>
+  <TD>正常終了:実際に取得した文字列の長さ[文字]<BR>異常終了:0</TD>
+  <TD>指定番号の鍵盤別音色名をpszTitleで示されるバッファに取得する。指定番号の鍵盤別音色名がない場合は、NULL文字が取得され、0が返される。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDINoteNameTable_GetNextNoteNameTable">MIDINoteNameTable* MIDINoteNameTable_GetNextNoteNameTable <BR>(MIDINoteNameTable* pMIDINoteNameTable);</A></TD>
+  <TD>pMIDINoteNameTable:MIDIノート名テーブルへのポインタ</TD>
+  <TD>次のMIDIノート名テーブルへのポインタ(なければNULL)</TD>
+  <TD>次のMIDIノート名テーブルへのポインタ(なければNULL)を取得する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDINoteNameTable_GetPrevNoteNameTable">MIDINoteNameTable* MIDINoteNameTable_GetPrevNoteNameTable <BR>(MIDINoteNameTable* pMIDINoteNameTable);</A></TD>
+  <TD>pMIDINoteNameTable:MIDIノート名テーブルへのポインタ</TD>
+  <TD>前のMIDIノート名テーブルへのポインタ(なければNULL)</TD>
+  <TD>前のMIDIノート名テーブルへのポインタ(なければNULL)を取得する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDINoteNameTable_GetParent">MIDINoteNameTable* MIDINoteNameTable_GetParent <BR>(MIDINoteNameTable* pMIDINoteNameTable);</A></TD>
+  <TD>pMIDINoteNameTable:MIDIノート名テーブルへのポインタ</TD>
+  <TD>このMIDIノート名テーブルが属するMIDIインストゥルメントオブジェクトへのポインタ(なければNULL)</TD>
+  <TD>このMIDIノート名テーブルが属するMIDIインストゥルメントオブジェクトへのポインタ(なければNULL)を取得する。</TD>
+ </TR>
+</TABLE>
+
+<H3><A NAME="MIDINoteNameTable_SetFunction">3-5.MIDIノート名テーブルの情報設定</A></H3>
+
+<P>　いったん構築したMIDIノート名テーブルのプロパティは、Set系関数を使って設定することができる。<A HREF="#MIDINoteNameTable_SetName">MIDINoteNameTable_SetName</A>関数は、鍵盤別音色名を変更するために、最も頻繁に使われるであろう。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDINoteNameTable_SetFunctionList">▼List3-5.MIDINoteNameTable_Set系関数の使い方</A></DIV>
+<PRE>
+	...
+	<SPAN CLASS="COMMENT">/* MIDIノート名テーブルのタイトルと各鍵盤別音色名の情報設定 */</SPAN>
+	<SPAN CLASS="RED">MIDINoteNameTable_SetTitle (pMIDINoteNameTable, "Consert Streo Drum Set");</SPAN>
+	<SPAN CLASS="RED">MIDINoteNameTable_SetName (pMIDINoteNameTable, 36, "Consert Streo Kick 1");</SPAN>
+	<SPAN CLASS="RED">MIDINoteNameTable_SetName (pMIDINoteNameTable, 38, "Consert Streo Snare 1");</SPAN>
+	...
+</PRE>
+
+<P></P>
+
+<DIV CLASS="TITLE"><A NAME="MIDINoteNameTable_SetFunctionTable">▼Table3-5.MIDINoteNameTable_Set系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR CLASS="TITLE">
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDINoteNameTable_SetTitle"><SPAN CLASS="KEYWORD">long</SPAN> MIDINoteNameTable_SetTitle <BR>(MIDINoteNameTable* pMIDINoteNameTable, <SPAN CLASS="KEYWORD">const</SPAN> TCHAR* pszTitle);</A> </TD>
+  <TD>pMIDINoteNameTable:MIDIノート名テーブルへのポインタ<BR>pszTitle:タイトル文字列へのポインタ</TD>
+  <TD>正常終了:1<BR>異常終了:0</TD>
+  <TD>MIDIノート名テーブルのタイトルを設定する。pszTitleにNULLを指定するとタイトルは無しとなる。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDINoteNameTable_SetName"><SPAN CLASS="KEYWORD">long</SPAN> MIDINoteNameTable_SetName <BR>(MIDINoteNameTable* pMIDINoteNameTable, <SPAN CLASS="KEYWORD">long</SPAN> lNumber, <SPAN CLASS="KEYWORD">const</SPAN> TCHAR* pszName);</A> </TD>
+  <TD>pMIDINoteNameTable:MIDIノート名テーブルへのポインタ<BR>lNumber:設定するノートキー番号(0～127)<BR>pszName:鍵盤別音色名文字列へのポインタ</TD>
+  <TD>正常終了:1<BR>異常終了:0</TD>
+  <TD>MIDIノート名テーブルの指定番号の鍵盤別音色名を設定する。pszNameにNULLを指定すると鍵盤別音色名は無しとなる。</TD>
+ </TR>
+</TABLE>
+
+
+
+
+
+
+
+
+
+
+<H2><A NAME="MIDIControllerNameTableReference">第4章：MIDIコントローラ名テーブルリファレンス</A></H2>
+
+<H3><A NAME="MIDIControllerNameTable_Struct">4-1.MIDIコントローラ名テーブルの構造</A></H3>
+
+<P>　MIDIコントローラ名テーブルは、テーブルのタイトル、及び最大128個(0～127, 欠番があってもよい)のコントローラ名を保持している。これらの値は必要に応じて、参照・設定できるが、これらの値を直接操作するのは危険である。必ずGet/Set系関数を通して参照・設定されたい。</P>
+<P>　また、1つのMIDIインストゥルメントオブジェクトには、複数個のMIDIコントローラ名テーブルを含む。これらは、双方向リンクリストとして列挙されており、次のコントローラ名テーブルへのポインタ、前のコントローラ名テーブルへのポインタ、及びMIDIインストゥルメントオブジェクトへのポインタを保持している。これらのポインタの接続処理は自動でなされるので、直接操作してはならない。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIControllerNameTable_Struct">▼Table4-1.MIDIControllerNameTable構造体のフィールドと使い方</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH WIDTH="25%">フィールド</TH>
+  <TH WIDTH="75%">使い方</TH>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">void</SPAN>* m_pszTitle</TD>
+  <TD>このテーブルのタイトル文字列へのポインタ。NULLの場合、無タイトルを意味する。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">long</SPAN> m_lTitleLen</TD>
+  <TD>このテーブルのタイトル文字列の長さ+1[文字]。+1は最後のヌル文字に該当する。0の場合、無タイトルを意味する。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">void</SPAN>* m_pszName[128]</TD>
+  <TD>128個それぞれのコントローラ名文字列へのポインタ(ポインタが128個ある)。NULLの場合、そのコントローラ番号には名前がないことを意味する。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">long</SPAN> m_lNameLen[128]</TD>
+  <TD>128個それぞれのコントローラ名文字列の長さ+1[文字]。+1は最後のヌル文字に該当する。0の場合、そのコントローラ番号には名前がないことを意味する。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">struct</SPAN> tagMIDIControllerNameTable* m_pBasedOn</TD>
+  <TD>ベースになっているコントローラ名テーブルへのポインタ。これがNULL以外の場合、コントローラ名が欠番になっていてもベースのコントローラ名テーブルを参照する。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">struct</SPAN> tagMIDIControllerNameTable* m_pNextControllerNameTable</TD>
+  <TD>次のコントローラ名テーブルへのポインタ。なければNULL。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">struct</SPAN> tagMIDIControllerNameTable* m_pPrevControllerNameTable</TD>
+  <TD>前のコントローラ名テーブルへのポインタ。なければNULL。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">void</SPAN>* m_pParent</TD>
+  <TD>このコントローラ名テーブルが属している親の<A HREF="#MIDIInstrumentReference">MIDIインストゥルメント</A>オブジェクトへのポインタ。なければNULL。</TD>
+ </TR>
+</TABLE>
+
+<H3><A NAME="MIDIControllerNameTable_CreateFunction">4-2.MIDIコントローラ名テーブルの生成</A></H3>
+
+<P>　MIDIコントローラ名テーブルをメモリ上に新規生成するには、MIDIControllerNameTable_Create関数を使う。</P>
+
+<P>　MIDIControllerNameTable_Create関数は、正常終了時には生成したMIDIコントローラ名テーブルオブジェクトへのポインタを、異常終了時にはNULLを返す。異常終了は、メモリの割り当てに失敗した場合、及び引数の指定が不正だった場合におこりうる。戻り値は必ずチェックし、異常終了時の回避処理をしておかなければ、ヌルポインターエラーになるであろう。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIControllerNameTable_CreateFunctionList">▼List4-2.MIDIControllerNameTable_Create関数の使い方</A></DIV>
+<PRE>
+	MIDIControllerNameTable* pMIDIControllerNameTable;
+	<SPAN CLASS="COMMENT">/* MIDIコントローラ名テーブルの生成 */</SPAN>
+	<SPAN CLASS="RED">pMIDIControllerNameTable = MIDIControllerNameTable_Create ();</SPAN>
+	<SPAN CLASS="KEYWORD">if</SPAN> (pMIDIControllerNameTable == NULL) {
+		<SPAN CLASS="COMMENT">/* 異常終了時の処理 */</SPAN>
+		printf (<SPAN CLASS="STRING">"MIDIコントローラ名テーブルの生成に失敗しました。\n"</SPAN>);
+		<SPAN CLASS="KEYWORD">return</SPAN> 0;
+	}
+	<SPAN CLASS="COMMENT">/* 正常終了時の処理 */</SPAN>
+	...
+</PRE>
+
+<P></P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIControllerNameTable_CreateFunctionTable">▼Table4-2.MIDIControllerNameTable_Create系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIControllerNameTable_Create">MIDIControllerNameTable* MIDIControllerNameTable_Create <BR>();</A> </TD>
+  <TD>なし<BR></TD>
+  <TD>正常終了:MIDIコントローラ名テーブルへのポインタ<BR>異常終了:NULL</TD>
+  <TD>MIDIコントローラ名テーブルを新規に生成する。初期状態では、タイトルと全てのコントローラ名はNULLであるので、<A HREF="#MIDIControllerNameTable_SetTitle">MIDIControllerNameTable_SetTitle</A>関数や<A HREF="#MIDIControllerNameTable_SetName">MIDIControllerNameTable_SetName</A>関数を用いて設定する必要がある。また、初期状態では、いずれのMIDIインストゥルメントオブジェクトにも属しておらず、ポインタは全てNULLである。</TD>
+ </TR>
+</TABLE>
+
+<H3><A NAME="MIDIControllerNameTable_DeleteFunction">2-3.MIDIコントローラ名テーブルの削除</A></H3>
+
+<P>　MIDIコントローラ名テーブルをメモリ上から削除するには、MIDIControllerNameTable_Delete関数を使う。</P>
+
+<P><SPAN CLASS="RED">　<A HREF="#MIDIControllerNameTable_CreateFunction">MIDIControllerNameTable_Create系関数</A>で生成したMIDIコントローラ名テーブルは、使用し終わったらMIDIControllerNameTable_Delete関数でメモリ上から削除しなければならない。</SPAN>MIDIインストゥルメントライブラリではメモリの自動解放(ガベージコレクション)を行わないので、この手続きは常に必要である。もし忘れれば、メモリリークが発生するであろう。</P>
+
+<P><SPAN CLASS="RED">　MIDIコントローラ名テーブルを削除した直後には、ポインタにNULLを代入しておくべきである。</SPAN>これをしなければ、このMIDIコントローラ名テーブルが既に削除されていることが外部からわからなくなってしまい、バグの原因となりうる。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIControllerNameTable_DeleteFunctionList">▼List4-3.MIDIControllerNameTable_Delete関数の使い方</A></DIV>
+<PRE>
+	<SPAN CLASS="RED">MIDIControllerNameTable_Delete (pMIDIControllerNameTable)</SPAN>;
+	pMIDIControllerNameTable = NULL;
+</PRE>
+
+<P></P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIControllerNameTable_DeleteFunctionTable">▼Table4-3.MIDIControllerNameTable_Delete系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIControllerNameTable_Delete"><SPAN CLASS="KEYWORD">void</SPAN> MIDIControllerNameTable_Delete <BR>(MIDIControllerNameTable* pMIDIControllerNameTable);</A> </TD>
+  <TD>pMIDIControllerNameTable:MIDIコントローラ名テーブルへのポインタ</TD>
+  <TD>未定義</TD>
+  <TD>MIDIコントローラ名テーブルを削除する。この関数は、MIDIコントローラ名テーブル内に含まれるタイトル文字列や全てのコントローラ名文字列も同時に削除する。また、他のオブジェクトがこのMIDIコントローラ名テーブルを参照している場合、それらをNULLに書き換える。MIDIインストゥルメントオブジェクトに属している場合は、双方向リンクリストのポインタが自動的に正しく接続し直される。</TD>
+ </TR>
+</TABLE>
+
+<H3><A NAME="MIDIControllerNameTable_GetFunction">4-4.MIDIコントローラ名テーブルの情報取得</A></H3>
+
+<P>　いったん構築したMIDIコントローラ名テーブルのプロパティは、いつでもGet系関数を使って取得することができる。特に<A HREF="#MIDIControllerNameTable_GetName">MIDIControllerNameTable_GetName</A>関数は、コントローラ名を取得するために、最も頻繁に使われるであろう。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIControllerNameTable_GetFunctionList">▼List4-4.MIDIControllerNameTable_Get系関数の使い方</A></DIV>
+<PRE>
+	...
+	<SPAN CLASS="COMMENT">/* MIDIコントローラ名テーブルのタイトルと全コントローラ名を取得表示 */</SPAN>
+	<SPAN CLASS="KEYWORD">char</SPAN>* szTitle[256];
+	<SPAN CLASS="KEYWORD">char</SPAN>* szName[256];
+	<SPAN CLASS="KEYWORD">long</SPAN> j;
+	<SPAN CLASS="KEYWORD">long</SPAN> ret;
+	<SPAN CLASS="RED">MIDIControllerNameTable_GetTitle (pMIDIControllerNameTable, szTitle, 255);</SPAN>
+	printf (<SPAN CLASS="STRING">"Title=%s\n"</SPAN>, szTitle);
+	<SPAN CLASS="KEYWORD">for</SPAN> (j = 0; j &lt; 128; j++) {
+		<SPAN CLASS="RED">ret = MIDIControllerNameTable_GetName (pMIDIControllerNameTable, szName, 255);</SPAN>
+		<SPAN CLASS="KEYWORD">if</SPAN> (ret &gt; 0) {
+			printf (<SPAN CLASS="STRING">"%d=%s\n"</SPAN>, j, szName);
+		}
+	}
+	...
+</PRE>
+
+<P></P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIControllerNameTable_GetFunctionTable">▼Table4-4.MIDIControllerNameTable_Get系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR CLASS="TITLE">
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIControllerNameTable_GetTitle"><SPAN CLASS="KEYWORD">long</SPAN> MIDIControllerNameTable_GetTitle <BR>(MIDIControllerNameTable* pMIDIControllerNameTable, TCHAR* pszTitle, <SPAN CLASS="KEYWORD">long</SPAN> lLen);</A> </TD>
+  <TD>pMIDIControllerNameTable:MIDIコントローラ名テーブルへのポインタ<BR>pszTitle:タイトルを取得するバッファへのポインタ<BR>lLen:バッファの最大長さ[文字]</TD>
+  <TD>正常終了:実際に取得した文字列の長さ[文字]<BR>異常終了:0</TD>
+  <TD>MIDIコントローラ名テーブルのタイトルをpszTitleで示されるバッファに取得する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIControllerNameTable_GetName"><SPAN CLASS="KEYWORD">long</SPAN> MIDIControllerNameTable_GetName <BR>(MIDIControllerNameTable* pMIDIControllerNameTable, <SPAN CLASS="KEYWORD">long</SPAN> lNumber, TCHAR* pszName, <SPAN CLASS="KEYWORD">long</SPAN> lLen);</A> </TD>
+  <TD>pMIDIControllerNameTable:MIDIコントローラ名テーブルへのポインタ<BR>lNumber:取得するコントローラ番号(0～127)<BR>pszTitle:コントローラ名を取得するバッファへのポインタ<BR>lLen:バッファの最大長さ[文字]</TD>
+  <TD>正常終了:実際に取得した文字列の長さ[文字]<BR>異常終了:0</TD>
+  <TD>指定番号のコントローラ名をpszTitleで示されるバッファに取得する。指定番号のコントローラ名がない場合は、NULL文字が取得され、0が返される。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIControllerNameTable_GetNextControllerNameTable">MIDIControllerNameTable* MIDIControllerNameTable_GetNextControllerNameTable <BR>(MIDIControllerNameTable* pMIDIControllerNameTable);</A></TD>
+  <TD>pMIDIControllerNameTable:MIDIコントローラ名テーブルへのポインタ</TD>
+  <TD>次のMIDIコントローラ名テーブルへのポインタ(なければNULL)</TD>
+  <TD>次のMIDIコントローラ名テーブルへのポインタ(なければNULL)を取得する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIControllerNameTable_GetPrevControllerNameTable">MIDIControllerNameTable* MIDIControllerNameTable_GetPrevControllerNameTable <BR>(MIDIControllerNameTable* pMIDIControllerNameTable);</A></TD>
+  <TD>pMIDIControllerNameTable:MIDIコントローラ名テーブルへのポインタ</TD>
+  <TD>前のMIDIコントローラ名テーブルへのポインタ(なければNULL)</TD>
+  <TD>前のMIDIコントローラ名テーブルへのポインタ(なければNULL)を取得する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIControllerNameTable_GetParent">MIDIControllerNameTable* MIDIControllerNameTable_GetParent <BR>(MIDIControllerNameTable* pMIDIControllerNameTable);</A></TD>
+  <TD>pMIDIControllerNameTable:MIDIコントローラ名テーブルへのポインタ</TD>
+  <TD>このMIDIコントローラ名テーブルが属するMIDIインストゥルメントオブジェクトへのポインタ(なければNULL)</TD>
+  <TD>このMIDIコントローラ名テーブルが属するMIDIインストゥルメントオブジェクトへのポインタ(なければNULL)を取得する。</TD>
+ </TR>
+</TABLE>
+
+<H3><A NAME="MIDIControllerNameTable_SetFunction">4-5.MIDIコントローラ名テーブルの情報設定</A></H3>
+
+<P>　いったん構築したMIDIコントローラ名テーブルのプロパティは、Set系関数を使って設定することができる。<A HREF="#MIDIControllerNameTable_SetName">MIDIControllerNameTable_SetName</A>関数は、コントローラ名を変更するために、最も頻繁に使われるであろう。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIControllerNameTable_SetFunctionList">▼List4-5.MIDIControllerNameTable_Set系関数の使い方</A></DIV>
+<PRE>
+	...
+	<SPAN CLASS="COMMENT">/* MIDIコントローラ名テーブルのタイトルと各コントローラ名の情報設定 */</SPAN>
+	<SPAN CLASS="RED">MIDIControllerNameTable_SetTitle (pMIDIControllerNameTable, "Noland SC-88Ero Controller");</SPAN>
+	<SPAN CLASS="RED">MIDIControllerNameTable_SetName (pMIDIControllerNameTable, 0, "Bank Select MSB");</SPAN>
+	<SPAN CLASS="RED">MIDIControllerNameTable_SetName (pMIDIControllerNameTable, 1, "Modulation");</SPAN>
+	<SPAN CLASS="RED">MIDIControllerNameTable_SetName (pMIDIControllerNameTable, 6, "Data Entry");</SPAN>
+	<SPAN CLASS="RED">MIDIControllerNameTable_SetName (pMIDIControllerNameTable, 7, "Volume");</SPAN>
+	<SPAN CLASS="RED">MIDIControllerNameTable_SetName (pMIDIControllerNameTable, 10, "Pan");</SPAN>
+	<SPAN CLASS="RED">MIDIControllerNameTable_SetName (pMIDIControllerNameTable, 11, "Expression");</SPAN>
+	<SPAN CLASS="RED">MIDIControllerNameTable_SetName (pMIDIControllerNameTable, 32, "Bank Select LSB");</SPAN>
+	<SPAN CLASS="RED">MIDIControllerNameTable_SetName (pMIDIControllerNameTable, 64, "Hold1");</SPAN>
+	<SPAN CLASS="RED">MIDIControllerNameTable_SetName (pMIDIControllerNameTable, 91, "Reverb");</SPAN>
+	<SPAN CLASS="RED">MIDIControllerNameTable_SetName (pMIDIControllerNameTable, 93, "Chorus");</SPAN>
+	<SPAN CLASS="RED">MIDIControllerNameTable_SetName (pMIDIControllerNameTable, 94, "Delay");</SPAN>
+	...
+</PRE>
+
+<P></P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIControllerNameTable_SetFunctionTable">▼Table4-5.MIDIControllerNameTable_Set系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR CLASS="TITLE">
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIControllerNameTable_SetTitle"><SPAN CLASS="KEYWORD">long</SPAN> MIDIControllerNameTable_SetTitle <BR>(MIDIControllerNameTable* pMIDIControllerNameTable, <SPAN CLASS="KEYWORD">const</SPAN> TCHAR* pszTitle);</A> </TD>
+  <TD>pMIDIControllerNameTable:MIDIコントローラ名テーブルへのポインタ<BR>pszTitle:タイトル文字列へのポインタ</TD>
+  <TD>正常終了:1<BR>異常終了:0</TD>
+  <TD>MIDIコントローラ名テーブルのタイトルを設定する。pszTitleにNULLを指定するとタイトルは無しとなる。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIControllerNameTable_SetName"><SPAN CLASS="KEYWORD">long</SPAN> MIDIControllerNameTable_SetName <BR>(MIDIControllerNameTable* pMIDIControllerNameTable, <SPAN CLASS="KEYWORD">long</SPAN> lNumber, <SPAN CLASS="KEYWORD">const</SPAN> TCHAR* pszName);</A> </TD>
+  <TD>pMIDIControllerNameTable:MIDIコントローラ名テーブルへのポインタ<BR>lNumber:設定するコントローラ番号(0～127)<BR>pszName:コントローラ名文字列へのポインタ</TD>
+  <TD>正常終了:1<BR>異常終了:0</TD>
+  <TD>MIDIコントローラ名テーブルの指定番号のコントローラ名を設定する。pszNameにNULLを指定するとコントローラ名は無しとなる。</TD>
+ </TR>
+</TABLE>
+
+
+
+
+
+
+
+
+
+
+
+
+<H2><A NAME="MIDIRPNNameTableReference">第5章：MIDIRPN名テーブルリファレンス</A></H2>
+
+<H3><A NAME="MIDIRPNNameTable_Struct">5-1.MIDIRPN名テーブルの構造</A></H3>
+
+<P>　MIDIRPN名テーブルは、テーブルのタイトル、及び最大16384個(0～16383, 欠番があってもよい)のRPN名を保持している。これらの値は必要に応じて、参照・設定できるが、これらの値を直接操作するのは危険である。必ずGet/Set系関数を通して参照・設定されたい。</P>
+<P>　また、1つのMIDIインストゥルメントオブジェクトには、複数個のMIDIRPN名テーブルを含む。これらは、双方向リンクリストとして列挙されており、次のRPN名テーブルへのポインタ、前のRPN名テーブルへのポインタ、及びMIDIインストゥルメントオブジェクトへのポインタを保持している。これらのポインタの接続処理は自動でなされるので、直接操作してはならない。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIRPNNameTable_Struct">▼Table5-1.MIDIRPNNameTable構造体のフィールドと使い方</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH WIDTH="25%">フィールド</TH>
+  <TH WIDTH="75%">使い方</TH>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">void</SPAN>* m_pszTitle</TD>
+  <TD>このテーブルのタイトル文字列へのポインタ。NULLの場合、無タイトルを意味する。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">long</SPAN> m_lTitleLen</TD>
+  <TD>このテーブルのタイトル文字列の長さ+1[文字]。+1は最後のヌル文字に該当する。0の場合、無タイトルを意味する。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">void</SPAN>* m_pszName[16384]</TD>
+  <TD>16384個それぞれのRPN名文字列へのポインタ(ポインタが16384個ある)。NULLの場合、そのRPN番号には名前がないことを意味する。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">long</SPAN> m_lNameLen[16384]</TD>
+  <TD>16384個それぞれのRPN名文字列の長さ+1[文字]。+1は最後のヌル文字に該当する。0の場合、そのRPN番号には名前がないことを意味する。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">struct</SPAN> tagMIDIRPNNameTable* m_pBasedOn</TD>
+  <TD>ベースになっているRPN名テーブルへのポインタ。これがNULL以外の場合、RPN名が欠番になっていてもベースのRPN名テーブルを参照する。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">struct</SPAN> tagMIDIRPNNameTable* m_pNextRPNNameTable</TD>
+  <TD>次のRPN名テーブルへのポインタ。なければNULL。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">struct</SPAN> tagMIDIRPNNameTable* m_pPrevRPNNameTable</TD>
+  <TD>前のRPN名テーブルへのポインタ。なければNULL。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">void</SPAN>* m_pParent</TD>
+  <TD>このRPN名テーブルが属している親の<A HREF="#MIDIInstrumentReference">MIDIインストゥルメント</A>オブジェクトへのポインタ。なければNULL。</TD>
+ </TR>
+</TABLE>
+
+<H3><A NAME="MIDIRPNNameTable_CreateFunction">5-2.MIDIRPN名テーブルの生成</A></H3>
+
+<P>　MIDIRPN名テーブルをメモリ上に新規生成するには、MIDIRPNNameTable_Create関数を使う。</P>
+
+<P>　MIDIRPNNameTable_Create関数は、正常終了時には生成したMIDIRPN名テーブルオブジェクトへのポインタを、異常終了時にはNULLを返す。異常終了は、メモリの割り当てに失敗した場合、及び引数の指定が不正だった場合におこりうる。戻り値は必ずチェックし、異常終了時の回避処理をしておかなければ、ヌルポインターエラーになるであろう。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIRPNNameTable_CreateFunctionList">▼List5-2.MIDIRPNNameTable_Create関数の使い方</A></DIV>
+<PRE>
+	MIDIRPNNameTable* pMIDIRPNNameTable;
+	<SPAN CLASS="COMMENT">/* MIDIRPN名テーブルの生成 */</SPAN>
+	<SPAN CLASS="RED">pMIDIRPNNameTable = MIDIRPNNameTable_Create ();</SPAN>
+	<SPAN CLASS="KEYWORD">if</SPAN> (pMIDIRPNNameTable == NULL) {
+		<SPAN CLASS="COMMENT">/* 異常終了時の処理 */</SPAN>
+		printf (<SPAN CLASS="STRING">"MIDIRPN名テーブルの生成に失敗しました。\n"</SPAN>);
+		<SPAN CLASS="KEYWORD">return</SPAN> 0;
+	}
+	<SPAN CLASS="COMMENT">/* 正常終了時の処理 */</SPAN>
+	...
+</PRE>
+
+<P></P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIRPNNameTable_CreateFunctionTable">▼Table5-2.MIDIRPNNameTable_Create系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIRPNNameTable_Create">MIDIRPNNameTable* MIDIRPNNameTable_Create <BR>();</A> </TD>
+  <TD>なし<BR></TD>
+  <TD>正常終了:MIDIRPN名テーブルへのポインタ<BR>異常終了:NULL</TD>
+  <TD>MIDIRPN名テーブルを新規に生成する。初期状態では、タイトルと全てのRPN名はNULLであるので、<A HREF="#MIDIRPNNameTable_SetTitle">MIDIRPNNameTable_SetTitle</A>関数や<A HREF="#MIDIRPNNameTable_SetName">MIDIRPNNameTable_SetName</A>関数を用いて設定する必要がある。また、初期状態では、いずれのMIDIインストゥルメントオブジェクトにも属しておらず、ポインタは全てNULLである。</TD>
+ </TR>
+</TABLE>
+
+<H3><A NAME="MIDIRPNNameTable_DeleteFunction">5-3.MIDIRPN名テーブルの削除</A></H3>
+
+<P>　MIDIRPN名テーブルをメモリ上から削除するには、MIDIRPNNameTable_Delete関数を使う。</P>
+
+<P><SPAN CLASS="RED">　<A HREF="#MIDIRPNNameTable_CreateFunction">MIDIRPNNameTable_Create系関数</A>で生成したMIDIRPN名テーブルは、使用し終わったらMIDIRPNNameTable_Delete関数でメモリ上から削除しなければならない。</SPAN>MIDIインストゥルメントライブラリではメモリの自動解放(ガベージコレクション)を行わないので、この手続きは常に必要である。もし忘れれば、メモリリークが発生するであろう。</P>
+
+<P><SPAN CLASS="RED">　MIDIRPN名テーブルを削除した直後には、ポインタにNULLを代入しておくべきである。</SPAN>これをしなければ、このMIDIRPN名テーブルが既に削除されていることが外部からわからなくなってしまい、バグの原因となりうる。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIRPNNameTable_DeleteFunctionList">▼List5-3.MIDIRPNNameTable_Delete関数の使い方</A></DIV>
+<PRE>
+	<SPAN CLASS="RED">MIDIRPNNameTable_Delete (pMIDIRPNNameTable)</SPAN>;
+	pMIDIRPNNameTable = NULL;
+</PRE>
+
+<P></P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIRPNNameTable_DeleteFunctionTable">▼Table5-3.MIDIRPNNameTable_Delete系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIRPNNameTable_Delete"><SPAN CLASS="KEYWORD">void</SPAN> MIDIRPNNameTable_Delete <BR>(MIDIRPNNameTable* pMIDIRPNNameTable);</A> </TD>
+  <TD>pMIDIRPNNameTable:MIDIRPN名テーブルへのポインタ</TD>
+  <TD>未定義</TD>
+  <TD>MIDIRPN名テーブルを削除する。この関数は、MIDIRPN名テーブル内に含まれるタイトル文字列や全てのRPN名文字列も同時に削除する。また、他のオブジェクトがこのMIDIRPN名テーブルを参照している場合、それらをNULLに書き換える。MIDIインストゥルメントオブジェクトに属している場合は、双方向リンクリストのポインタが自動的に正しく接続し直される。</TD>
+ </TR>
+</TABLE>
+
+<H3><A NAME="MIDIRPNNameTable_GetFunction">5-4.MIDIRPN名テーブルの情報取得</A></H3>
+
+<P>　いったん構築したMIDIRPN名テーブルのプロパティは、いつでもGet系関数を使って取得することができる。特に<A HREF="#MIDIRPNNameTable_GetName">MIDIRPNNameTable_GetName</A>関数は、RPN名を取得するために、最も頻繁に使われるであろう。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIRPNNameTable_GetFunctionList">▼List5-4.MIDIRPNNameTable_Get系関数の使い方</A></DIV>
+<PRE>
+	...
+	<SPAN CLASS="COMMENT">/* MIDIRPN名テーブルのタイトルと全RPN名を取得表示 */</SPAN>
+	<SPAN CLASS="KEYWORD">char</SPAN>* szTitle[256];
+	<SPAN CLASS="KEYWORD">char</SPAN>* szName[256];
+	<SPAN CLASS="KEYWORD">long</SPAN> j;
+	<SPAN CLASS="KEYWORD">long</SPAN> ret;
+	<SPAN CLASS="RED">MIDIRPNNameTable_GetTitle (pMIDIRPNNameTable, szTitle, 255);</SPAN>
+	printf (<SPAN CLASS="STRING">"Title=%s\n"</SPAN>, szTitle);
+	<SPAN CLASS="KEYWORD">for</SPAN> (j = 0; j &lt; 16384; j++) {
+		<SPAN CLASS="RED">ret = MIDIRPNNameTable_GetName (pMIDIRPNNameTable, szName, 255);</SPAN>
+		<SPAN CLASS="KEYWORD">if</SPAN> (ret &gt; 0) {
+			printf (<SPAN CLASS="STRING">"%d=%s\n"</SPAN>, j, szName);
+		}
+	}
+	...
+</PRE>
+
+<P></P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIRPNNameTable_GetFunctionTable">▼Table5-4.MIDIRPNNameTable_Get系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR CLASS="TITLE">
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIRPNNameTable_GetTitle"><SPAN CLASS="KEYWORD">long</SPAN> MIDIRPNNameTable_GetTitle <BR>(MIDIRPNNameTable* pMIDIRPNNameTable, TCHAR* pszTitle, <SPAN CLASS="KEYWORD">long</SPAN> lLen);</A> </TD>
+  <TD>pMIDIRPNNameTable:MIDIRPN名テーブルへのポインタ<BR>pszTitle:タイトルを取得するバッファへのポインタ<BR>lLen:バッファの最大長さ[文字]</TD>
+  <TD>正常終了:実際に取得した文字列の長さ[文字]<BR>異常終了:0</TD>
+  <TD>MIDIRPN名テーブルのタイトルをpszTitleで示されるバッファに取得する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIRPNNameTable_GetName"><SPAN CLASS="KEYWORD">long</SPAN> MIDIRPNNameTable_GetName <BR>(MIDIRPNNameTable* pMIDIRPNNameTable, <SPAN CLASS="KEYWORD">long</SPAN> lNumber, TCHAR* pszName, <SPAN CLASS="KEYWORD">long</SPAN> lLen);</A> </TD>
+  <TD>pMIDIRPNNameTable:MIDIRPN名テーブルへのポインタ<BR>lNumber:取得するRPN番号(0～16383)<BR>pszTitle:RPN名を取得するバッファへのポインタ<BR>lLen:バッファの最大長さ[文字]</TD>
+  <TD>正常終了:実際に取得した文字列の長さ[文字]<BR>異常終了:0</TD>
+  <TD>指定番号のRPN名をpszTitleで示されるバッファに取得する。指定番号のRPN名がない場合は、NULL文字が取得され、0が返される。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIRPNNameTable_GetNextRPNNameTable">MIDIRPNNameTable* MIDIRPNNameTable_GetNextRPNNameTable <BR>(MIDIRPNNameTable* pMIDIRPNNameTable);</A></TD>
+  <TD>pMIDIRPNNameTable:MIDIRPN名テーブルへのポインタ</TD>
+  <TD>次のMIDIRPN名テーブルへのポインタ(なければNULL)</TD>
+  <TD>次のMIDIRPN名テーブルへのポインタ(なければNULL)を取得する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIRPNNameTable_GetPrevRPNNameTable">MIDIRPNNameTable* MIDIRPNNameTable_GetPrevRPNNameTable <BR>(MIDIRPNNameTable* pMIDIRPNNameTable);</A></TD>
+  <TD>pMIDIRPNNameTable:MIDIRPN名テーブルへのポインタ</TD>
+  <TD>前のMIDIRPN名テーブルへのポインタ(なければNULL)</TD>
+  <TD>前のMIDIRPN名テーブルへのポインタ(なければNULL)を取得する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIRPNNameTable_GetParent">MIDIRPNNameTable* MIDIRPNNameTable_GetParent <BR>(MIDIRPNNameTable* pMIDIRPNNameTable);</A></TD>
+  <TD>pMIDIRPNNameTable:MIDIRPN名テーブルへのポインタ</TD>
+  <TD>このMIDIRPN名テーブルが属するMIDIインストゥルメントオブジェクトへのポインタ(なければNULL)</TD>
+  <TD>このMIDIRPN名テーブルが属するMIDIインストゥルメントオブジェクトへのポインタ(なければNULL)を取得する。</TD>
+ </TR>
+</TABLE>
+
+<H3><A NAME="MIDIRPNNameTable_SetFunction">5-5.MIDIRPN名テーブルの情報設定</A></H3>
+
+<P>　いったん構築したMIDIRPN名テーブルのプロパティは、Set系関数を使って設定することができる。<A HREF="#MIDIRPNNameTable_SetName">MIDIRPNNameTable_SetName</A>関数は、RPN名を変更するために、最も頻繁に使われるであろう。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIRPNNameTable_SetFunctionList">▼List5-5.MIDIRPNNameTable_Set系関数の使い方</A></DIV>
+<PRE>
+	...
+	<SPAN CLASS="COMMENT">/* MIDIRPN名テーブルのタイトルと各RPN名の情報設定 */</SPAN>
+	<SPAN CLASS="RED">MIDIRPNNameTable_SetTitle (pMIDIRPNNameTable, "Noland SC-88Ero RPN");</SPAN>
+	<SPAN CLASS="RED">MIDIRPNNameTable_SetName (pMIDIRPNNameTable, 0, "Pitch Bend Sensitivity");</SPAN>
+	<SPAN CLASS="RED">MIDIRPNNameTable_SetName (pMIDIRPNNameTable, 1, "Master Fine Tuning");</SPAN>
+	<SPAN CLASS="RED">MIDIRPNNameTable_SetName (pMIDIRPNNameTable, 2, "Master Coarse Tuning");</SPAN>
+	<SPAN CLASS="RED">MIDIRPNNameTable_SetName (pMIDIRPNNameTable, 5, "Modulation Sensitivity");</SPAN>
+	...
+</PRE>
+
+<P></P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIRPNNameTable_SetFunctionTable">▼Table5-5.MIDIRPNNameTable_Set系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR CLASS="TITLE">
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIRPNNameTable_SetTitle"><SPAN CLASS="KEYWORD">long</SPAN> MIDIRPNNameTable_SetTitle <BR>(MIDIRPNNameTable* pMIDIRPNNameTable, <SPAN CLASS="KEYWORD">const</SPAN> TCHAR* pszTitle);</A> </TD>
+  <TD>pMIDIRPNNameTable:MIDIRPN名テーブルへのポインタ<BR>pszTitle:タイトル文字列へのポインタ</TD>
+  <TD>正常終了:1<BR>異常終了:0</TD>
+  <TD>MIDIRPN名テーブルのタイトルを設定する。pszTitleにNULLを指定するとタイトルは無しとなる。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIRPNNameTable_SetName"><SPAN CLASS="KEYWORD">long</SPAN> MIDIRPNNameTable_SetName <BR>(MIDIRPNNameTable* pMIDIRPNNameTable, <SPAN CLASS="KEYWORD">long</SPAN> lNumber, <SPAN CLASS="KEYWORD">const</SPAN> TCHAR* pszName);</A> </TD>
+  <TD>pMIDIRPNNameTable:MIDIRPN名テーブルへのポインタ<BR>lNumber:設定するRPN番号(0～16383)<BR>pszName:RPN名文字列へのポインタ</TD>
+  <TD>正常終了:1<BR>異常終了:0</TD>
+  <TD>MIDIRPN名テーブルの指定番号のRPN名を設定する。pszNameにNULLを指定するとRPN名は無しとなる。</TD>
+ </TR>
+</TABLE>
+
+
+
+
+
+
+
+
+
+<H2><A NAME="MIDINRPNNameTableReference">第6章：MIDINRPN名テーブルリファレンス</A></H2>
+
+<H3><A NAME="MIDINRPNNameTable_Struct">6-1.MIDINRPN名テーブルの構造</A></H3>
+
+<P>　MIDINRPN名テーブルは、テーブルのタイトル、及び最大16384個(0～16383, 欠番があってもよい)のNRPN名を保持している。これらの値は必要に応じて、参照・設定できるが、これらの値を直接操作するのは危険である。必ずGet/Set系関数を通して参照・設定されたい。</P>
+<P>　また、1つのMIDIインストゥルメントオブジェクトには、複数個のMIDINRPN名テーブルを含む。これらは、双方向リンクリストとして列挙されており、次のNRPN名テーブルへのポインタ、前のNRPN名テーブルへのポインタ、及びMIDIインストゥルメントオブジェクトへのポインタを保持している。これらのポインタの接続処理は自動でなされるので、直接操作してはならない。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDINRPNNameTable_Struct">▼Table6-1.MIDINRPNNameTable構造体のフィールドと使い方</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH WIDTH="25%">フィールド</TH>
+  <TH WIDTH="75%">使い方</TH>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">void</SPAN>* m_pszTitle</TD>
+  <TD>このテーブルのタイトル文字列へのポインタ。NULLの場合、無タイトルを意味する。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">long</SPAN> m_lTitleLen</TD>
+  <TD>このテーブルのタイトル文字列の長さ+1[文字]。+1は最後のヌル文字に該当する。0の場合、無タイトルを意味する。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">void</SPAN>* m_pszName[16384]</TD>
+  <TD>16384個それぞれのNRPN名文字列へのポインタ(ポインタが16384個ある)。NULLの場合、そのNRPN番号には名前がないことを意味する。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">long</SPAN> m_lNameLen[16384]</TD>
+  <TD>16384個それぞれのNRPN名文字列の長さ+1[文字]。+1は最後のヌル文字に該当する。0の場合、そのNRPN番号には名前がないことを意味する。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">struct</SPAN> tagMIDINRPNNameTable* m_pBasedOn</TD>
+  <TD>ベースになっているNRPN名テーブルへのポインタ。これがNULL以外の場合、NRPN名が欠番になっていてもベースのNRPN名テーブルを参照する。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">struct</SPAN> tagMIDINRPNNameTable* m_pNextNRPNNameTable</TD>
+  <TD>次のNRPN名テーブルへのポインタ。なければNULL。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">struct</SPAN> tagMIDINRPNNameTable* m_pPrevNRPNNameTable</TD>
+  <TD>前のNRPN名テーブルへのポインタ。なければNULL。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">void</SPAN>* m_pParent</TD>
+  <TD>このNRPN名テーブルが属している親の<A HREF="#MIDIInstrumentReference">MIDIインストゥルメント</A>オブジェクトへのポインタ。なければNULL。</TD>
+ </TR>
+</TABLE>
+
+<H3><A NAME="MIDINRPNNameTable_CreateFunction">6-2.MIDINRPN名テーブルの生成</A></H3>
+
+<P>　MIDINRPN名テーブルをメモリ上に新規生成するには、MIDINRPNNameTable_Create関数を使う。</P>
+
+<P>　MIDINRPNNameTable_Create関数は、正常終了時には生成したMIDINRPN名テーブルオブジェクトへのポインタを、異常終了時にはNULLを返す。異常終了は、メモリの割り当てに失敗した場合、及び引数の指定が不正だった場合におこりうる。戻り値は必ずチェックし、異常終了時の回避処理をしておかなければ、ヌルポインターエラーになるであろう。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDINRPNNameTable_CreateFunctionList">▼List6-2.MIDINRPNNameTable_Create関数の使い方</A></DIV>
+<PRE>
+	MIDINRPNNameTable* pMIDINRPNNameTable;
+	<SPAN CLASS="COMMENT">/* MIDINRPN名テーブルの生成 */</SPAN>
+	<SPAN CLASS="RED">pMIDINRPNNameTable = MIDINRPNNameTable_Create ();</SPAN>
+	<SPAN CLASS="KEYWORD">if</SPAN> (pMIDINRPNNameTable == NULL) {
+		<SPAN CLASS="COMMENT">/* 異常終了時の処理 */</SPAN>
+		printf (<SPAN CLASS="STRING">"MIDINRPN名テーブルの生成に失敗しました。\n"</SPAN>);
+		<SPAN CLASS="KEYWORD">return</SPAN> 0;
+	}
+	<SPAN CLASS="COMMENT">/* 正常終了時の処理 */</SPAN>
+	...
+</PRE>
+
+<P></P>
+
+<DIV CLASS="TITLE"><A NAME="MIDINRPNNameTable_CreateFunctionTable">▼Table6-2.MIDINRPNNameTable_Create系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDINRPNNameTable_Create">MIDINRPNNameTable* MIDINRPNNameTable_Create <BR>();</A> </TD>
+  <TD>なし<BR></TD>
+  <TD>正常終了:MIDINRPN名テーブルへのポインタ<BR>異常終了:NULL</TD>
+  <TD>MIDINRPN名テーブルを新規に生成する。初期状態では、タイトルと全てのNRPN名はNULLであるので、<A HREF="#MIDINRPNNameTable_SetTitle">MIDINRPNNameTable_SetTitle</A>関数や<A HREF="#MIDINRPNNameTable_SetName">MIDINRPNNameTable_SetName</A>関数を用いて設定する必要がある。また、初期状態では、いずれのMIDIインストゥルメントオブジェクトにも属しておらず、ポインタは全てNULLである。</TD>
+ </TR>
+</TABLE>
+
+<H3><A NAME="MIDINRPNNameTable_DeleteFunction">6-3.MIDINRPN名テーブルの削除</A></H3>
+
+<P>　MIDINRPN名テーブルをメモリ上から削除するには、MIDINRPNNameTable_Delete関数を使う。</P>
+
+<P><SPAN CLASS="RED">　<A HREF="#MIDINRPNNameTable_CreateFunction">MIDINRPNNameTable_Create系関数</A>で生成したMIDINRPN名テーブルは、使用し終わったらMIDINRPNNameTable_Delete関数でメモリ上から削除しなければならない。</SPAN>MIDIインストゥルメントライブラリではメモリの自動解放(ガベージコレクション)を行わないので、この手続きは常に必要である。もし忘れれば、メモリリークが発生するであろう。</P>
+
+<P><SPAN CLASS="RED">　MIDINRPN名テーブルを削除した直後には、ポインタにNULLを代入しておくべきである。</SPAN>これをしなければ、このMIDINRPN名テーブルが既に削除されていることが外部からわからなくなってしまい、バグの原因となりうる。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDINRPNNameTable_DeleteFunctionList">▼List6-3.MIDINRPNNameTable_Delete関数の使い方</A></DIV>
+<PRE>
+	<SPAN CLASS="RED">MIDINRPNNameTable_Delete (pMIDINRPNNameTable)</SPAN>;
+	pMIDINRPNNameTable = NULL;
+</PRE>
+
+<P></P>
+
+<DIV CLASS="TITLE"><A NAME="MIDINRPNNameTable_DeleteFunctionTable">▼Table6-3.MIDINRPNNameTable_Delete系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDINRPNNameTable_Delete"><SPAN CLASS="KEYWORD">void</SPAN> MIDINRPNNameTable_Delete <BR>(MIDINRPNNameTable* pMIDINRPNNameTable);</A> </TD>
+  <TD>pMIDINRPNNameTable:MIDINRPN名テーブルへのポインタ</TD>
+  <TD>未定義</TD>
+  <TD>MIDINRPN名テーブルを削除する。この関数は、MIDINRPN名テーブル内に含まれるタイトル文字列や全てのNRPN名文字列も同時に削除する。また、他のオブジェクトがこのMIDINRPN名テーブルを参照している場合、それらをNULLに書き換える。MIDIインストゥルメントオブジェクトに属している場合は、双方向リンクリストのポインタが自動的に正しく接続し直される。</TD>
+ </TR>
+</TABLE>
+
+<H3><A NAME="MIDINRPNNameTable_GetFunction">6-4.MIDINRPN名テーブルの情報取得</A></H3>
+
+<P>　いったん構築したMIDINRPN名テーブルのプロパティは、いつでもGet系関数を使って取得することができる。特に<A HREF="#MIDINRPNNameTable_GetName">MIDINRPNNameTable_GetName</A>関数は、NRPN名を取得するために、最も頻繁に使われるであろう。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDINRPNNameTable_GetFunctionList">▼List6-4.MIDINRPNNameTable_Get系関数の使い方</A></DIV>
+<PRE>
+	...
+	<SPAN CLASS="COMMENT">/* MIDINRPN名テーブルのタイトルと全NRPN名を取得表示 */</SPAN>
+	<SPAN CLASS="KEYWORD">char</SPAN>* szTitle[256];
+	<SPAN CLASS="KEYWORD">char</SPAN>* szName[256];
+	<SPAN CLASS="KEYWORD">long</SPAN> j;
+	<SPAN CLASS="KEYWORD">long</SPAN> ret;
+	<SPAN CLASS="RED">MIDINRPNNameTable_GetTitle (pMIDINRPNNameTable, szTitle, 255);</SPAN>
+	printf (<SPAN CLASS="STRING">"Title=%s\n"</SPAN>, szTitle);
+	<SPAN CLASS="KEYWORD">for</SPAN> (j = 0; j &lt; 16384; j++) {
+		<SPAN CLASS="RED">ret = MIDINRPNNameTable_GetName (pMIDINRPNNameTable, szName, 255);</SPAN>
+		<SPAN CLASS="KEYWORD">if</SPAN> (ret &gt; 0) {
+			printf (<SPAN CLASS="STRING">"%d=%s\n"</SPAN>, j, szName);
+		}
+	}
+	...
+</PRE>
+
+<P></P>
+
+<DIV CLASS="TITLE"><A NAME="MIDINRPNNameTable_GetFunctionTable">▼Table6-4.MIDINRPNNameTable_Get系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR CLASS="TITLE">
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDINRPNNameTable_GetTitle"><SPAN CLASS="KEYWORD">long</SPAN> MIDINRPNNameTable_GetTitle <BR>(MIDINRPNNameTable* pMIDINRPNNameTable, TCHAR* pszTitle, <SPAN CLASS="KEYWORD">long</SPAN> lLen);</A> </TD>
+  <TD>pMIDINRPNNameTable:MIDINRPN名テーブルへのポインタ<BR>pszTitle:タイトルを取得するバッファへのポインタ<BR>lLen:バッファの最大長さ[文字]</TD>
+  <TD>正常終了:実際に取得した文字列の長さ[文字]<BR>異常終了:0</TD>
+  <TD>MIDINRPN名テーブルのタイトルをpszTitleで示されるバッファに取得する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDINRPNNameTable_GetName"><SPAN CLASS="KEYWORD">long</SPAN> MIDINRPNNameTable_GetName <BR>(MIDINRPNNameTable* pMIDINRPNNameTable, <SPAN CLASS="KEYWORD">long</SPAN> lNumber, TCHAR* pszName, <SPAN CLASS="KEYWORD">long</SPAN> lLen);</A> </TD>
+  <TD>pMIDINRPNNameTable:MIDINRPN名テーブルへのポインタ<BR>lNumber:取得するNRPN番号(0～16383)<BR>pszTitle:NRPN名を取得するバッファへのポインタ<BR>lLen:バッファの最大長さ[文字]</TD>
+  <TD>正常終了:実際に取得した文字列の長さ[文字]<BR>異常終了:0</TD>
+  <TD>指定番号のNRPN名をpszTitleで示されるバッファに取得する。指定番号のNRPN名がない場合は、NULL文字が取得され、0が返される。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDINRPNNameTable_GetNextNRPNNameTable">MIDINRPNNameTable* MIDINRPNNameTable_GetNextNRPNNameTable <BR>(MIDINRPNNameTable* pMIDINRPNNameTable);</A></TD>
+  <TD>pMIDINRPNNameTable:MIDINRPN名テーブルへのポインタ</TD>
+  <TD>次のMIDINRPN名テーブルへのポインタ(なければNULL)</TD>
+  <TD>次のMIDINRPN名テーブルへのポインタ(なければNULL)を取得する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDINRPNNameTable_GetPrevNRPNNameTable">MIDINRPNNameTable* MIDINRPNNameTable_GetPrevNRPNNameTable <BR>(MIDINRPNNameTable* pMIDINRPNNameTable);</A></TD>
+  <TD>pMIDINRPNNameTable:MIDINRPN名テーブルへのポインタ</TD>
+  <TD>前のMIDINRPN名テーブルへのポインタ(なければNULL)</TD>
+  <TD>前のMIDINRPN名テーブルへのポインタ(なければNULL)を取得する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDINRPNNameTable_GetParent">MIDINRPNNameTable* MIDINRPNNameTable_GetParent <BR>(MIDINRPNNameTable* pMIDINRPNNameTable);</A></TD>
+  <TD>pMIDINRPNNameTable:MIDINRPN名テーブルへのポインタ</TD>
+  <TD>このMIDINRPN名テーブルが属するMIDIインストゥルメントオブジェクトへのポインタ(なければNULL)</TD>
+  <TD>このMIDINRPN名テーブルが属するMIDIインストゥルメントオブジェクトへのポインタ(なければNULL)を取得する。</TD>
+ </TR>
+</TABLE>
+
+<H3><A NAME="MIDINRPNNameTable_SetFunction">6-5.MIDINRPN名テーブルの情報設定</A></H3>
+
+<P>　いったん構築したMIDINRPN名テーブルのプロパティは、Set系関数を使って設定することができる。<A HREF="#MIDINRPNNameTable_SetName">MIDINRPNNameTable_SetName</A>関数は、NRPN名を変更するために、最も頻繁に使われるであろう。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDINRPNNameTable_SetFunctionList">▼List6-5.MIDINRPNNameTable_Set系関数の使い方</A></DIV>
+<PRE>
+	...
+	<SPAN CLASS="COMMENT">/* MIDINRPN名テーブルのタイトルと各NRPN名の情報設定 */</SPAN>
+	<SPAN CLASS="RED">MIDINRPNNameTable_SetTitle (pMIDINRPNNameTable, "Noland SC-88Ero NRPN");</SPAN>
+	<SPAN CLASS="RED">MIDINRPNNameTable_SetName (pMIDINRPNNameTable, 136, "Vibrato Rate");</SPAN>
+	<SPAN CLASS="RED">MIDINRPNNameTable_SetName (pMIDINRPNNameTable, 137, "Vibrato Depth");</SPAN>
+	<SPAN CLASS="RED">MIDINRPNNameTable_SetName (pMIDINRPNNameTable, 138, "Vibrato Delay");</SPAN>
+	<SPAN CLASS="RED">MIDINRPNNameTable_SetName (pMIDINRPNNameTable, 160, "Cutoff Frequency");</SPAN>
+	<SPAN CLASS="RED">MIDINRPNNameTable_SetName (pMIDINRPNNameTable, 161, "Resonance");</SPAN>
+	<SPAN CLASS="RED">MIDINRPNNameTable_SetName (pMIDINRPNNameTable, 227, "Attack Time");</SPAN>
+	<SPAN CLASS="RED">MIDINRPNNameTable_SetName (pMIDINRPNNameTable, 228, "Decay Time");</SPAN>
+	<SPAN CLASS="RED">MIDINRPNNameTable_SetName (pMIDINRPNNameTable, 239, "Release Time");</SPAN>
+	...
+</PRE>
+
+<P></P>
+
+<DIV CLASS="TITLE"><A NAME="MIDINRPNNameTable_SetFunctionTable">▼Table6-5.MIDINRPNNameTable_Set系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR CLASS="TITLE">
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDINRPNNameTable_SetTitle"><SPAN CLASS="KEYWORD">long</SPAN> MIDINRPNNameTable_SetTitle <BR>(MIDINRPNNameTable* pMIDINRPNNameTable, <SPAN CLASS="KEYWORD">const</SPAN> TCHAR* pszTitle);</A> </TD>
+  <TD>pMIDINRPNNameTable:MIDINRPN名テーブルへのポインタ<BR>pszTitle:タイトル文字列へのポインタ</TD>
+  <TD>正常終了:1<BR>異常終了:0</TD>
+  <TD>MIDINRPN名テーブルのタイトルを設定する。pszTitleにNULLを指定するとタイトルは無しとなる。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDINRPNNameTable_SetName"><SPAN CLASS="KEYWORD">long</SPAN> MIDINRPNNameTable_SetName <BR>(MIDINRPNNameTable* pMIDINRPNNameTable, <SPAN CLASS="KEYWORD">long</SPAN> lNumber, <SPAN CLASS="KEYWORD">const</SPAN> TCHAR* pszName);</A> </TD>
+  <TD>pMIDINRPNNameTable:MIDINRPN名テーブルへのポインタ<BR>lNumber:設定するNRPN番号(0～16383)<BR>pszName:NRPN名文字列へのポインタ</TD>
+  <TD>正常終了:1<BR>異常終了:0</TD>
+  <TD>MIDINRPN名テーブルの指定番号のNRPN名を設定する。pszNameにNULLを指定するとNRPN名は無しとなる。</TD>
+ </TR>
+</TABLE>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<H2><A NAME="MIDIInstrumentDefinitionReference">第7章：MIDIインストゥルメント定義リファレンス</A></H2>
+
+<H3><A NAME="MIDIInstrumentDefinition_Struct">7-1.MIDIインストゥルメント定義の構造</A></H3>
+
+<P>　MIDIインストゥルメント定義は、1台の音源のうち通常モード又はドラムモードのいずれかについて定義するものであり、最も重要で目立つオブジェクトである。MIDIインストゥルメント定義は、インストゥルメント定義のタイトル(例："Noland SC-88Ero", "Noland SC-88Ero Drumsets")、<A HREF="#MIDIControllerNameTableReference">コントローラー名テーブル</A>へのポインタ、<A HREF="#MIDIRPNNameTableReference">RPN名テーブル</A>へのポインタ、<A HREF="#MIDINRPNNameTableReference">NRPN名テーブル</A>へのポインタ、<A HREF="#MIDIPatchNameTableReference">パッチ名テーブル</A>のポインタ(最大256個)、<A HREF="#MIDINoteNameTableReference">ノート名テーブル</A>へのポインタ(最大256個)を保持している。これらのポインタは必要に応じて、参照・設定できるが、これらの値を直接操作するのは危険である。必ずGet/Set系関数を通して参照・設定されたい。</P>
+
+<P>　また、1つの<A HREF="#MIDIInstrumentReference">MIDIインストゥルメント</A>オブジェクトには、複数個のMIDIインストゥルメント定義を含むことができる。これらは、双方向リンクリストとして列挙されており、次のインストゥルメント定義へのポインタ、前のインストゥルメント定義へのポインタ、及び親のMIDIインストゥルメントオブジェクトへのポインタを保持している。これらのポインタの接続処理は自動でなされるので、直接操作してはならない。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIInstrumentDefinition_Struct">▼Table7-1.MIDIInstrumentDefinition構造体のフィールドと使い方</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH WIDTH="25%">フィールド</TH>
+  <TH WIDTH="75%">使い方</TH>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">void</SPAN>* m_pszTitle</TD>
+  <TD>このインストゥルメント定義のタイトル文字列へのポインタ。例えば、"Noland SC-88Ero"や"Noland SC-88Ero Drumsets"となる。NULLの場合、無タイトルを意味する。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">long</SPAN> m_lTitleLen</TD>
+  <TD>このインストゥルメント定義のタイトル文字列の長さ+1[文字]。+1は最後のヌル文字に該当する。0の場合、無タイトルを意味する。</TD>
+ </TR>
+ <TR>
+  <TD>MIDIControllerNameTable* m_pMIDIControllerNameTable</TD>
+  <TD><A HREF="#MIDIControllerNameTableReference">コントローラー名テーブル</A>へのポインタ。</TD>
+ </TR>
+ <TR>
+  <TD>MIDIRPNNameTable* m_pMIDIRPNNameTable</TD>
+  <TD><A HREF="#MIDIRPNNameTableReference">RPN名テーブル</A>へのポインタ。</TD>
+ </TR>
+ <TR>
+  <TD>MIDINRPNNameTable* m_pMIDINRPNNameTable</TD>
+  <TD><A HREF="#MIDINRPNNameTableReference">NRPN名テーブル</A>へのポインタ。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">long</SPAN> m_lMIDIPatchNameNum</TD>
+  <TD>保持している<A HREF="#MIDIPatchNameTableReference">パッチ名テーブル</A>の数(0～255)</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">long</SPAN> m_lMIDIPatchNameBank[256]</TD>
+  <TD><A HREF="#MIDIPatchNameTableReference">パッチ名テーブル</A>のバンク番号(256個)。理論上、パッチ名テーブルは、バンクセレクトMSB(CC#0)で128種類、バンクセレクトLSB(CC#32)で128種類、計16384種類が定義し得るが、現実的にひとつのインストゥルメント定義内においてはすべては使われていないので、256個まで保持することができる。使われていない領域は0とする。</TD>
+ </TR>
+  <TR>
+  <TD>MIDIPatchNameTable* m_pMIDIPatchNameTable[256]</TD>
+  <TD><A HREF="#MIDIPatchNameTableReference">パッチ名テーブル</A>へのポインタ(256個)。理論上、パッチ名テーブルは、バンクセレクトMSB(CC#0)で128種類、バンクセレクトLSB(CC#32)で128種類、計16384種類が定義可能であるが、現実的にひとつのインストゥルメント定義内においてすべては使われていないので、256個まで保持することができる。使われていない領域はNULLとする。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">long</SPAN> m_lMIDINoteNameNum</TD>
+  <TD>保持している<A HREF="#MIDINoteNameTableReference">ノート名テーブル</A>の数(0～255)</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">long</SPAN> m_lMIDINoteNameBank[256]</TD>
+  <TD><A HREF="#MIDINoteNameTableReference">ノート名テーブル</A>のバンク番号(256個)。理論上、ノート名テーブルは、バンクセレクトMSB(CC#0)で128種類、バンクセレクトLSB(CC#32)で128種類、プログラムナンバーで128種類、計2097152種類が定義可能であるが、現実的にひとつのインストゥルメント定義内においてすべては使われていないので、256個まで保持することができる。使われていない領域は0とする。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">long</SPAN> m_lMIDINoteNameProgram[256]</TD>
+  <TD><A HREF="#MIDINoteNameTableReference">ノート名テーブル</A>のプログラムナンバー(256個)。理論上、ノート名テーブルは、バンクセレクトMSB(CC#0)で128種類、バンクセレクトLSB(CC#32)で128種類、プログラムナンバーで128種類、計2097152種類が定義可能であるが、現実的にひとつのインストゥルメント定義内においてすべては使われていないので、256個まで保持することができる。使われていない領域は0とする。</TD>
+ </TR>
+ <TR>
+  <TD>MIDINoteNameTable* m_pMIDINoteNameTable[256]</TD>
+  <TD><A HREF="#MIDINoteNameTableReference">ノート名テーブル</A>へのポインタ(256個)。理論上、ノート名テーブルは、バンクセレクトMSB(CC#0)で128種類、バンクセレクトLSB(CC#32)で128種類、プログラムナンバーで128種類、計2097152種類が定義可能であるが、現実的にひとつのインストゥルメント定義内においてすべては使われていないので、256個まで保持することができる。使われていない領域はNULLとする。</TD>
+ </TR>
+<!-- <TR>
+  <TD><SPAN CLASS="KEYWORD">struct</SPAN> tagMIDIInstrumentDefinition* m_pBasedOn</TD>
+  <TD>ベースになっているインストゥルメント定義へのポインタ。これがNULL以外の場合、インストゥルメント定義が欠番になっていてもベースのインストゥルメント定義を参照する。</TD>
+ </TR>-->
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">struct</SPAN> tagMIDIInstrumentDefinition* m_pNextInstrumentDefinition</TD>
+  <TD>次のインストゥルメント定義へのポインタ。なければNULL。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">struct</SPAN> tagMIDIInstrumentDefinition* m_pPrevInstrumentDefinition</TD>
+  <TD>前のインストゥルメント定義へのポインタ。なければNULL。</TD>
+ </TR>
+ <TR>
+  <TD><SPAN CLASS="KEYWORD">void</SPAN>* m_pParent</TD>
+  <TD>このMIDIインストゥルメント定義が属している親の<A HREF="#MIDIInstrumentReference">MIDIインストゥルメント</A>オブジェクトへのポインタ。なければNULL。</TD>
+ </TR>
+</TABLE>
+
+<H3><A NAME="MIDIInstrumentDefinition_CreateFunction">7-2.MIDIインストゥルメント定義の生成</A></H3>
+
+<P>　MIDIインストゥルメント定義をメモリ上に新規生成するには、MIDIInstrumentDefinition_Create関数を使う。</P>
+
+<P>　MIDIInstrumentDefinition_Create関数は、正常終了時には生成したMIDIインストゥルメント定義オブジェクトへのポインタを、異常終了時にはNULLを返す。異常終了は、メモリの割り当てに失敗した場合、及び引数の指定が不正だった場合におこりうる。戻り値は必ずチェックし、異常終了時の回避処理をしておかなければ、ヌルポインターエラーになるであろう。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIInstrumentDefinition_CreateFunctionList">▼List7-2.MIDIInstrumentDefinition_Create関数の使い方</A></DIV>
+<PRE>
+	MIDIInstrumentDefinition* pMIDIInstrumentDefinition;
+	<SPAN CLASS="COMMENT">/* MIDIインストゥルメント定義の生成 */</SPAN>
+	<SPAN CLASS="RED">pMIDIInstrumentDefinition = MIDIInstrumentDefinition_Create ();</SPAN>
+	<SPAN CLASS="KEYWORD">if</SPAN> (pMIDIInstrumentDefinition == NULL) {
+		<SPAN CLASS="COMMENT">/* 異常終了時の処理 */</SPAN>
+		printf (<SPAN CLASS="STRING">"MIDIインストゥルメント定義の生成に失敗しました。\n"</SPAN>);
+		<SPAN CLASS="KEYWORD">return</SPAN> 0;
+	}
+	<SPAN CLASS="COMMENT">/* 正常終了時の処理 */</SPAN>
+	...
+</PRE>
+
+<P></P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIInstrumentDefinition_CreateFunctionTable">▼Table7-2.MIDIInstrumentDefinition_Create系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIInstrumentDefinition_Create">MIDIInstrumentDefinition* MIDIInstrumentDefinition_Create <BR>();</A> </TD>
+  <TD>なし<BR></TD>
+  <TD>正常終了:MIDIインストゥルメント定義へのポインタ<BR>異常終了:NULL</TD>
+  <TD>MIDIインストゥルメント定義を新規に生成する。初期状態ではタイトルはNULLなので、<A HREF="#MIDIInstrumentDefinition_SetTitle">MIDIInstrumentDefinition_SetTitle</A>関数で設定する必要がある。また、すべてのパッチ名テーブル・ノート名テーブル・コントローラ名テーブル・RPNテーブル・NPRN名テーブルへのポインタはNULLであるので、<A HREF="#MIDIInstrumentDefinition_SetPatchNameTable">MIDIInstrumentDefinition_SetPatchNameTable</A>関数などをを用いて適切なテーブル設定する必要がある。また、初期状態では、いずれのMIDIインストゥルメントオブジェクトにも属していない。</TD>
+ </TR>
+</TABLE>
+
+<H3><A NAME="MIDIInstrumentDefinition_DeleteFunction">7-3.MIDIインストゥルメント定義の削除</A></H3>
+
+<P>　MIDIインストゥルメント定義をメモリ上から削除するには、MIDIInstrumentDefinition_Delete関数を使う。</P>
+
+<P><SPAN CLASS="RED">　<A HREF="#MIDIInstrumentDefinition_CreateFunction">MIDIInstrumentDefinition_Create系関数</A>で生成したMIDIインストゥルメント定義は、使用し終わったらMIDIInstrumentDefinition_Delete関数でメモリ上から削除しなければならない。</SPAN>MIDIインストゥルメントライブラリではメモリの自動解放(ガベージコレクション)を行わないので、この手続きは常に必要である。もし忘れれば、メモリリークが発生するであろう。</P>
+
+<P><SPAN CLASS="RED">　MIDIインストゥルメント定義を削除した直後には、ポインタにNULLを代入しておくべきである。</SPAN>これをしなければ、このMIDIインストゥルメント定義が既に削除されていることが外部からわからなくなってしまい、バグの原因となりうる。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIInstrumentDefinition_DeleteFunctionList">▼List7-3.MIDIInstrumentDefinition_Delete関数の使い方</A></DIV>
+<PRE>
+	<SPAN CLASS="RED">MIDIInstrumentDefinition_Delete (pMIDIInstrumentDefinition)</SPAN>;
+	pMIDIInstrumentDefinition = NULL;
+</PRE>
+
+<P></P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIInstrumentDefinition_DeleteFunctionTable">▼Table7-3.MIDIInstrumentDefinition_Delete系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIInstrumentDefinition_Delete"><SPAN CLASS="KEYWORD">void</SPAN> MIDIInstrumentDefinition_Delete <BR>(MIDIInstrumentDefinition* pMIDIInstrumentDefinition);</A> </TD>
+  <TD>pMIDIInstrumentDefinition:MIDIインストゥルメント定義へのポインタ</TD>
+  <TD>未定義</TD>
+  <TD>MIDIインストゥルメント定義を削除する。この関数は、MIDIインストゥルメント定義内に含まれるタイトル文字列や全てのインストゥルメント定義文字列も同時に削除する。また、他のオブジェクトがこのMIDIインストゥルメント定義を参照している場合、それらをNULLに書き換える。MIDIインストゥルメントオブジェクトに属している場合は、双方向リンクリストのポインタが自動的に正しく接続し直される。</TD>
+ </TR>
+</TABLE>
+
+<H3><A NAME="MIDIInstrumentDefinition_GetFunction">7-4.MIDIインストゥルメント定義の情報取得</A></H3>
+
+<P>　いったん構築したMIDIインストゥルメント定義のプロパティは、いつでもGet系関数を使って取得することができる。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIInstrumentDefinition_GetFunctionList">▼List7-4.MIDIInstrumentDefinition_Get系関数の使い方</A></DIV>
+<PRE>
+	...
+	<SPAN CLASS="COMMENT">/* MIDIインストゥルメント定義のタイトルと各名前テーブルへのポインタ取得 */</SPAN>
+	<SPAN CLASS="KEYWORD">char</SPAN>* szTitle[256];
+	<SPAN CLASS="RED">MIDIInstrumentDefinition_GetTitle (pMIDIInstrumentDefinition, szTitle, 255);</SPAN>
+	printf (<SPAN CLASS="STRING">"Title=%s\n"</SPAN>, szTitle);
+	<SPAN CLASS="RED">MIDIControllerNameTable* pControllerNameTable = MIDIInstrumentDefinition_GetControllerNameTable (pMIDIInstrumentDefinition);</SPAN>
+	<SPAN CLASS="RED">MIDIRPNNameTable* pControllerNameTable = MIDIInstrumentDefinition_GetRPNNameTable (pMIDIInstrumentDefinition);</SPAN>
+	<SPAN CLASS="RED">MIDINRPNNameTable* pControllerNameTable = MIDIInstrumentDefinition_GetNRPNNameTable (pMIDIInstrumentDefinition);</SPAN>
+	<SPAN CLASS="RED">MIDIPatchNameTable* pControllerNameTable_0 = MIDIInstrumentDefinition_GetPatchNameTable (pMIDIInstrumentDefinition, 0);</SPAN>
+	<SPAN CLASS="RED">MIDINoteNameTable* pControllerNameTable_0_0 = MIDIInstrumentDefinition_GetNoteNameTable (pMIDIInstrumentDefinition, 0, 0);</SPAN>
+	...
+</PRE>
+
+<P></P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIInstrumentDefinition_GetFunctionTable">▼Table7-4.MIDIInstrumentDefinition_Get系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR CLASS="TITLE">
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIInstrumentDefinition_GetTitle"><SPAN CLASS="KEYWORD">long</SPAN> MIDIInstrumentDefinition_GetTitle <BR>(MIDIInstrumentDefinition* pMIDIInstrumentDefinition, TCHAR* pszTitle, <SPAN CLASS="KEYWORD">long</SPAN> lLen);</A> </TD>
+  <TD>pMIDIInstrumentDefinition:MIDIインストゥルメント定義へのポインタ<BR>pszTitle:タイトルを取得するバッファへのポインタ<BR>lLen:バッファの最大長さ[文字]</TD>
+  <TD>正常終了:実際に取得した文字列の長さ[文字]<BR>異常終了:0</TD>
+  <TD>指定したMIDIインストゥルメント定義の、タイトルをpszTitleで示されるバッファに取得する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIInstrumentDefinition_GetControllerNameTable">MIDIControllerNameTable* MIDIInstrumentDefinition_GetControllerNameTable <BR>(MIDIInstrumentDefinition* pMIDIInstrumentDefinition); </A></TD>
+  <TD>pMIDIInstrumentDefinition:MIDIインストゥルメント定義へのポインタ</TD>
+  <TD>MIDIコントローラー名テーブルへのポインタ</TD>
+  <TD>MIDIインストゥルメント定義の、<A HREF="#MIDIControllerNameTableReference">コントローラー名テーブル</A>へのポインタを返す。なければNULLを返す。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIInstrumentDefinition_GetRPNNameTable">MIDIRPNNameTable* MIDIInstrumentDefinition_GetRPNNameTable <BR>(MIDIInstrumentDefinition* pMIDIInstrumentDefinition); </A></TD>
+  <TD>pMIDIInstrumentDefinition:MIDIインストゥルメント定義へのポインタ</TD>
+  <TD>MIDIRPN名テーブルへのポインタ</TD>
+  <TD>MIDIインストゥルメント定義の、<A HREF="#MIDIRPNNameTableReference">RPN名テーブル</A>へのポインタを返す。なければNULLを返す。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIInstrumentDefinition_GetNRPNNameTable">MIDINRPNNameTable* MIDIInstrumentDefinition_GetNRPNNameTable <BR>(MIDIInstrumentDefinition* pMIDIInstrumentDefinition); </A></TD>
+  <TD>pMIDIInstrumentDefinition:MIDIインストゥルメント定義へのポインタ</TD>
+  <TD>MIDINRPN名テーブルへのポインタ</TD>
+  <TD>MIDIインストゥルメント定義の、<A HREF="#MIDINRPNNameTableReference">NRPN名テーブル</A>へのポインタを返す。なければNULLを返す。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIInstrumentDefinition_GetPatchNameTable">MIDIPatchNameTable* MIDIInstrumentDefinition_GetPatchNameTable <BR>(MIDIInstrumentDefinition* pMIDIInstrumentDefinition, <SPAN CLASS="Keyword">long</SPAN> lBank); </A></TD>
+  <TD>pMIDIInstrumentDefinition:MIDIインストゥルメント定義へのポインタ<BR>lBank:バンク番号(0～16383)</TD>
+  <TD>MIDIパッチ名テーブルへのポインタ</TD>
+  <TD>MIDIインストゥルメント定義の、指定されたバンク番号の、<A HREF="#MIDIPatchNameTableReference">パッチ名テーブル</A>へのポインタを返す。バンク番号は、CC#0(Bank Select MSB)の値×128 + CC#32(Bank Select LSB)で示される値である。指定したバンク番号のMIDIパッチ名テーブルがなければNULLを返す。なお、MIDIパッチ名テーブルは、ひとつのMIDIインストゥルメント定義につき、256個まで保持できる。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIInstrumentDefinition_GetNoteNameTable">MIDINoteNameTable* MIDIInstrumentDefinition_GetNoteNameTable <BR>(MIDIInstrumentDefinition* pMIDIInstrumentDefinition, <SPAN CLASS="Keyword">long</SPAN> lBank, <SPAN CLASS="Keyword">long</SPAN> lProgram); </A></TD>
+  <TD>pMIDIInstrumentDefinition:MIDIインストゥルメント定義へのポインタ<BR>lBank:バンク番号(0～16383)<BR>lProgram:プログラムナンバー(0～127)</TD>
+  <TD>MIDIノート名テーブルへのポインタ</TD>
+  <TD>MIDIインストゥルメント定義の、指定されたバンク番号・プログラムナンバーの、<A HREF="#MIDINoteNameTableReference">ノート名テーブル</A>へのポインタを返す。バンク番号は、CC#0(Bank Select MSB)の値×128 + CC#32(Bank Select LSB)で示される値であり、プログラムナンバーはプログラムチェンジで示される値である。指定したバンク番号・プログラムナンバーのMIDIノート名テーブルがなければNULLを返す。なお、MIDIノート名テーブルは、ひとつのMIDIインストゥルメント定義につき、256個まで保持できる。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIInstrumentDefinition_GetNextInstrumentDefinition">MIDIInstrumentDefinition* MIDIInstrumentDefinition_GetNextInstrumentDefinition <BR>(MIDIInstrumentDefinition* pMIDIInstrumentDefinition);</A></TD>
+  <TD>pMIDIInstrumentDefinition:MIDIインストゥルメント定義へのポインタ</TD>
+  <TD>次のMIDIインストゥルメント定義へのポインタ(なければNULL)</TD>
+  <TD>次のMIDIインストゥルメント定義へのポインタ(なければNULL)を取得する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIInstrumentDefinition_GetPrevInstrumentDefinition">MIDIInstrumentDefinition* MIDIInstrumentDefinition_GetPrevInstrumentDefinition <BR>(MIDIInstrumentDefinition* pMIDIInstrumentDefinition);</A></TD>
+  <TD>pMIDIInstrumentDefinition:MIDIインストゥルメント定義へのポインタ</TD>
+  <TD>前のMIDIインストゥルメント定義へのポインタ(なければNULL)</TD>
+  <TD>前のMIDIインストゥルメント定義へのポインタ(なければNULL)を取得する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIInstrumentDefinition_GetParent">MIDIInstrumentDefinition* MIDIInstrumentDefinition_GetParent <BR>(MIDIInstrumentDefinition* pMIDIInstrumentDefinition);</A></TD>
+  <TD>pMIDIInstrumentDefinition:MIDIインストゥルメント定義へのポインタ</TD>
+  <TD>このMIDIインストゥルメント定義が属するMIDIインストゥルメントオブジェクトへのポインタ(なければNULL)</TD>
+  <TD>このMIDIインストゥルメント定義が属する<A HREF="#MIDIInstrumentReference">MIDIインストゥルメント</A>オブジェクトへのポインタ(なければNULL)を取得する。</TD>
+ </TR>
+</TABLE>
+
+<H3><A NAME="MIDIInstrumentDefinition_SetFunction">7-5.MIDIインストゥルメント定義の情報設定</A></H3>
+
+<P>　いったん構築したMIDIインストゥルメント定義のプロパティは、Set系関数を使って設定することができる。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIInstrumentDefinition_SetFunctionList">▼List7-5.MIDIInstrumentDefinition_Set系関数の使い方</A></DIV><PRE>
+	...
+	<SPAN CLASS="COMMENT">/* MIDIインストゥルメント定義のタイトルと各名前テーブルへのポインタ設定 */</SPAN>
+	<SPAN CLASS="RED">MIDIInstrumentDefinition_SetTitle (pMIDIInstrumentDefinition, "Noland SC-88Ero");</SPAN>
+	<SPAN CLASS="RED">MIDIInstrumentDefinition_SetControllerNameTable (pMIDIInstrumentDefinition, pControllerNameTable);</SPAN>
+	<SPAN CLASS="RED">MIDIInstrumentDefinition_SetRPNNameTable (pMIDIInstrumentDefinition, pRPNNameTable);</SPAN>
+	<SPAN CLASS="RED">MIDIInstrumentDefinition_SetNRPNNameTable (pMIDIInstrumentDefinition, pNRPNNameTable);</SPAN>
+	<SPAN CLASS="RED">MIDIInstrumentDefinition_SetPatchNameTable (pMIDIInstrumentDefinition, 0, pPatchNameTable_0);</SPAN>
+	<SPAN CLASS="RED">MIDIInstrumentDefinition_SetNoteNameTable (pMIDIInstrumentDefinition, 0, 0, pNoteNameTable_0_0);</SPAN>
+	...
+</PRE>
+
+<P></P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIInstrumentDefinition_SetFunctionTable">▼Table7-5.MIDIInstrumentDefinition_Set系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR CLASS="TITLE">
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIInstrumentDefinition_SetTitle"><SPAN CLASS="KEYWORD">long</SPAN> MIDIInstrumentDefinition_SetTitle <BR>(MIDIInstrumentDefinition* pMIDIInstrumentDefinition, <SPAN CLASS="KEYWORD">const</SPAN> TCHAR* pszTitle);</A> </TD>
+  <TD>pMIDIInstrumentDefinition:MIDIインストゥルメント定義へのポインタ<BR>pszTitle:タイトル文字列へのポインタ</TD>
+  <TD>正常終了:1<BR>異常終了:0</TD>
+  <TD>MIDIインストゥルメント定義のタイトルを設定する。pszTitleにNULLを指定するとタイトルは無しとなる。</TD>
+ </TR>
+
+ <TR>
+  <TD><A NAME="MIDIInstrumentDefinition_SetControllerNameTable"><SPAN CLASS="KEYWORD">long</SPAN> MIDIInstrumentDefinition_SetControllerNameTable <BR>(MIDIInstrumentDefinition* pMIDIInstrumentDefinition, MIDIControllerNameTable* pMIDIControllerNameTable); </A></TD>
+  <TD>pMIDIInstrumentDefinition:MIDIインストゥルメント定義へのポインタ<BR>pMIDIControllerNameTable:コントローラー名テーブルへのポインタ</TD>
+  <TD>MIDINRPN名テーブルへのポインタ</TD>
+  <TD>MIDIインストゥルメント定義の、<A HREF="#MIDIControllerNameTableReference">コントローラー名テーブル</A>へのポインタを設定する。pMIDIControllerNameTableにNULLを指定した場合、コントローラ名テーブルは無しになる。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIInstrumentDefinition_SetRPNNameTable"><SPAN CLASS="KEYWORD">long</SPAN> MIDIInstrumentDefinition_SetRPNNameTable <BR>(MIDIInstrumentDefinition* pMIDIInstrumentDefinition, MIDIRPNNameTable* pMIDIRPNNameTable); </A></TD>
+  <TD>pMIDIInstrumentDefinition:MIDIインストゥルメント定義へのポインタ<BR>pMIDIRPNNameTable:RPN名テーブルへのポインタ</TD>
+  <TD>正常終了:1<BR>異常終了:0</TD>
+  <TD>MIDIインストゥルメント定義の、<A HREF="#MIDIRPNNameTableReference">RPN名テーブル</A>へのポインタを設定する。pMIDIRPNNameTableにNULLを指定した場合、RPN名テーブルは無しになる。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIInstrumentDefinition_SetNRPNNameTable"><SPAN CLASS="KEYWORD">long</SPAN> MIDIInstrumentDefinition_SetNRPNNameTable <BR>(MIDIInstrumentDefinition* pMIDIInstrumentDefinition, MIDINRPNNameTable* pMIDINRPNNameTable); </A></TD>
+  <TD>pMIDIInstrumentDefinition:MIDIインストゥルメント定義へのポインタ<BR>pMIDINRPNNameTable:NRPN名テーブルへのポインタ</TD>
+  <TD>正常終了:1<BR>異常終了:0</TD>
+  <TD>MIDIインストゥルメント定義の、<A HREF="#MIDINRPNNameTableReference">NRPN名テーブル</A>へのポインタを設定する。pMIDINRPNNameTableにNULLを指定した場合、NRPN名テーブルは無しになる。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIInstrumentDefinition_SetPatchNameTable"><SPAN CLASS="KEYWORD">long</SPAN> MIDIInstrumentDefinition_SetPatchNameTable <BR>(MIDIInstrumentDefinition* pMIDIInstrumentDefinition, <SPAN CLASS="Keyword">long</SPAN> lBank, MIDIPatchNameTable* pMIDIPatchNameTable); </A></TD>
+  <TD>pMIDIInstrumentDefinition:MIDIインストゥルメント定義へのポインタ<BR>lBank:バンク番号(0～16383)<BR>pMIDIPatchNameTable:パッチ名テーブルへのポインタ</TD>
+  <TD>正常終了:1<BR>異常終了:0</TD>
+  <TD>MIDIインストゥルメント定義の、指定されたバンク番号の、<A HREF="#MIDIPatchNameTableReference">パッチ名テーブル</A>へのポインタを設定する。バンク番号は、CC#0(Bank Select MSB)の値×128 + CC#32(Bank Select LSB)で示される値である。pMIDIPatchNameTableにNULLを指定した場合、指定したバンク番号のパッチ名テーブルは無しになる。パッチ名テーブルは、ひとつのMIDIインストゥルメント定義につき256個まで保持できる。これを超えて設定しようとした場合、関数は失敗し0を返す。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIInstrumentDefinition_SetNoteNameTable"><SPAN CLASS="KEYWORD">long</SPAN> MIDIInstrumentDefinition_SetNoteNameTable <BR>(MIDIInstrumentDefinition* pMIDIInstrumentDefinition, <SPAN CLASS="Keyword">long</SPAN> lBank, <SPAN CLASS="Keyword">long</SPAN> lProgram, MIDINoteNameTable* pMIDINoteNameTable); </A></TD>
+  <TD>pMIDIInstrumentDefinition:MIDIインストゥルメント定義へのポインタ<BR>lBank:バンク番号(0～16383)<BR>lProgram:プログラムナンバー(0～127)<BR>pMIDINoteNameTable:ノート名テーブルへのポインタ</TD>
+  <TD>正常終了:1<BR>異常終了:0</TD>
+  <TD>MIDIインストゥルメント定義の、指定されたバンク番号・プログラムナンバーの、<A HREF="#MIDINoteNameTableReference">ノート名テーブル</A>へのポインタを設定する。バンク番号は、CC#0(Bank Select MSB)の値×128 + CC#32(Bank Select LSB)で示される値であり、プログラムナンバーはプログラムチェンジで示される値である。pMIDINoteNameTableにNULLを指定した場合、指定したバンク番号・プログラムナンバーのノート名テーブルは無しになる。ノート名テーブルは、ひとつのMIDIインストゥルメント定義につき256個まで保持できる。これを超えて設定しようとした場合、関数は失敗し0を返す。</TD>
+ </TR>
+</TABLE>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<H2><A NAME="MIDIInstrumentReference">第8章：MIDIインストゥルメントリファレンス</A></H2>
+
+<H3><A NAME="MIDIInstrument_Struct">8-1.MIDIインストゥルメントの構造</A></H3>
+
+<P>　MIDIインストゥルメントは、複数の<A HREF="#MIDIPatchNameTableReference">パッチ名テーブル</A>へのポインタ、複数の<A HREF="#MIDINoteNameTableReference">ノート名テーブル</A>へのポインタ、複数の<A HREF="#MIDIControllerNameTableReference">コントローラ名テーブル</A>へのポインタ、複数の<A HREF="#MIDIRPNNameTableReference">RPN名テーブル</A>へのポインタ、複数の<A HREF="#MIDINRPNNameTableReference">NRPN名テーブル</A>へのポインタ、そして複数の<A HREF="#MIDIInstrumentDefinitionReference">インストゥルメント定義</A>へのポインタを子に持っている。MIDIInstrumentオブジェクトは、これらのテーブルを種類別に双方向リンクリストで管理しおり、それぞれの最初のテーブルへのポインタと最後のテーブルへのポインタをメンバ変数に保持している。</P>
+
+<P>　それぞれのテーブル又はインストゥルメント定義は必要に応じて、追加・除去できるが、ポインタを直接操作するのは危険である。必ずInsert/Remove系関数を通して追加・除去されたい。</P>
+
+<P>　MIDIインストゥルメントから各要素にアクセスする方法は、パターン化している。まず、<A HREF="#MIDIInstrument_forEachInstrumentDefinition">forEachInstrumentDefinition</A>を用いてすべてのMIDIインストゥルメント定義オブジェクトを探索し、そのオブジェクトのタイトルが、自分の求める音源名か調べる。ここでは"Noland SC-88Ero"と"Noland SC-88Ero Drumsets"という2つのMIDIインストゥルメント定義オブジェクトが探索されたとする。今回はドラムではなく通常の音源の方のパッチ名を調べたいとすると、"Noland SC-88Ero"の方のMIDIインストゥルメント定義のポインタを引数として、<A HREF="#MIDIInstrumentDefinition_GetPatchNameTable">MIDIInstrumentDefinition_GetPatchNameTable</A>関数を使うことにより、この音源のパッチ名リストへのテーブルが得られる。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIInstrument_Struct">▼Table8-1.MIDIInstrument構造体のフィールドと使い方</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH WIDTH="25%">フィールド</TH>
+  <TH WIDTH="75%">使い方</TH>
+ </TR>
+ <TR>
+  <TD>MIDIPatchNameTable* m_pFirstPatchNameTable;</TD>
+  <TD>最初の<A HREF="#MIDIPatchNameTableReference">パッチ名(音色名)テーブル</A>へのポインタ。なければNULL。</TD>
+ </TR>
+ <TR>
+  <TD>MIDIPatchNameTable* m_pLastPatchNameTable;</TD>
+  <TD>最後の<A HREF="#MIDIPatchNameTableReference">パッチ名(音色名)テーブル</A>へのポインタ。なければNULL。</TD>
+ </TR>
+ <TR>
+  <TD>MIDINoteNameTable* m_pFirstNoteNameTable</TD>
+  <TD>最初の<A HREF="#MIDINoteNameTableReference">ノート名(鍵盤別音色名)テーブル</A>へのポインタ。なければNULL。</TD>
+ </TR>
+ <TR>
+  <TD>MIDINoteNameTable* m_pLastNoteNameTable</TD>
+  <TD>最後の<A HREF="#MIDINoteNameTableReference">ノート名(鍵盤別音色名)テーブル</A>へのポインタ。なければNULL。</TD>
+ </TR>
+ <TR>
+  <TD>MIDIControllerNameTable* m_pFirstControllerNameTable</TD>
+  <TD>最初の<A HREF="#MIDIControllerNameTableReference">コントローラー名テーブル</A>へのポインタ。なければNULL。</TD>
+ </TR>
+ <TR>
+  <TD>MIDIControllerNameTable* m_pLastControllerNameTable</TD>
+  <TD>最後の<A HREF="#MIDIControllerNameTableReference">コントローラー名テーブル</A>へのポインタ。なければNULL。</TD>
+ </TR>
+ <TR>
+  <TD>MIDIRPNNameTable* m_pFirstRPNNameTable</TD>
+  <TD>最初の<A HREF="#MIDIRPNNameTableReference">RPN名テーブル</A>へのポインタ。なければNULL。</TD>
+ </TR>
+ <TR>
+  <TD>MIDIRPNNameTable* m_pLastRPNNameTable</TD>
+  <TD>最後の<A HREF="#MIDIRPNNameTableReference">RPN名テーブル</A>へのポインタ。なければNULL。</TD>
+ </TR>
+ <TR>
+  <TD>MIDINRPNNameTable* m_pFirstNRPNNameTable</TD>
+  <TD>最初の<A HREF="#MIDINRPNNameTableReference">NRPN名テーブル</A>へのポインタ。なければNULL。</TD>
+ </TR>
+ <TR>
+  <TD>MIDINRPNNameTable* m_pLastNRPNNameTable</TD>
+  <TD>最後の<A HREF="#MIDINRPNNameTableReference">NRPN名テーブル</A>へのポインタ。なければNULL。</TD>
+ </TR>
+ <TR>
+  <TD>MIDIInstrumentDefinition* m_pFirstInstrumentDefinition</TD>
+  <TD>最初の<A HREF="#MIDIInstrumentDefinitionReference">インストゥルメント定義</A>へのポインタ。なければNULL。</TD>
+ </TR>
+ <TR>
+  <TD>MIDIInstrumentDefinition* m_pLastInstrumentDefinition</TD>
+  <TD>最後の<A HREF="#MIDIInstrumentDefinitionReference">インストゥルメント定義</A>へのポインタ。なければNULL。</TD>
+ </TR>
+</TABLE>
+
+<H3><A NAME="MIDIInstrument_CreateFunction">8-2.MIDIインストゥルメントの生成</A></H3>
+
+<P>　MIDIインストゥルメントをメモリ上に新規生成するには、MIDIInstrument_Create関数を使う。</P>
+
+<P>　MIDIInstrument_Create関数は、正常終了時には生成したMIDIインストゥルメントテーブルオブジェクトへのポインタを、異常終了時にはNULLを返す。異常終了は、メモリの割り当てに失敗した場合、及び引数の指定が不正だった場合におこりうる。戻り値は必ずチェックし、異常終了時の回避処理をしておかなければ、ヌルポインターエラーになるであろう。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIInstrument_CreateFunctionList">▼List8-2.MIDIInstrument_Create関数の使い方</A></DIV>
+<PRE>
+	MIDIInstrument* pMIDIInstrument;
+	<SPAN CLASS="COMMENT">/* MIDIインストゥルメントの生成 */</SPAN>
+	<SPAN CLASS="RED">pMIDIInstrument = MIDIInstrument_Create ();</SPAN>
+	<SPAN CLASS="KEYWORD">if</SPAN> (pMIDIInstrument == NULL) {
+		<SPAN CLASS="COMMENT">/* 異常終了時の処理 */</SPAN>
+		printf (<SPAN CLASS="STRING">"MIDIインストゥルメントの生成に失敗しました。\n"</SPAN>);
+		<SPAN CLASS="KEYWORD">return</SPAN> 0;
+	}
+	<SPAN CLASS="COMMENT">/* 正常終了時の処理 */</SPAN>
+	...
+</PRE>
+
+<P></P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIInstrument_CreateFunctionTable">▼Table8-2.MIDIInstrument_Create系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIInstrument_Create">MIDIInstrument* MIDIInstrument_Create <BR>();</A> </TD>
+  <TD>なし<BR></TD>
+  <TD>正常終了:MIDIインストゥルメントへのポインタ<BR>異常終了:NULL</TD>
+  <TD>MIDIインストゥルメントを新規に生成する。初期状態では、<A HREF="#MIDIPatchNameTableReference">パッチ名テーブル</A>・<A HREF="#MIDINoteNameTableReference">ノート名テーブル</A>・<A HREF="#MIDIControllerNameTableReference">コントローラ名テーブル</A>・<A HREF="#MIDIRPNNameTableReference">RPN名テーブル</A>・<A HREF="#MIDINRPNNameTableReference">NRPN名テーブル</A>・<A HREF="#MIDIInstrumentDefinitionReference">インストゥルメント定義</A>のリストはすべて空であるので、<A HREF="#MIDIInstrument_AddPatchNameTable">MIDIInstrument_AddPatchNameTable</A>関数や<A HREF="#MIDIInstrument_AddNoteNameTable">MIDIInstrument_AddNoteNameTable</A>関数を用いて各種テーブルを追加する必要がある。</TD>
+ </TR>
+</TABLE>
+
+<H3><A NAME="MIDIInstrument_DeleteFunction">8-3.MIDIインストゥルメントの削除</A></H3>
+
+<P>　MIDIインストゥルメントをメモリ上から削除するには、MIDIInstrument_Delete関数を使う。</P>
+
+<P><SPAN CLASS="RED">　<A HREF="#MIDIInstrument_CreateFunction">MIDIInstrument_Create系関数</A>で生成したMIDIインストゥルメントテーブルは、使用し終わったらMIDIInstrument_Delete関数でメモリ上から削除しなければならない。</SPAN>MIDIインストゥルメントライブラリではメモリの自動解放(ガベージコレクション)を行わないので、この手続きは常に必要である。もし忘れれば、メモリリークが発生するであろう。</P>
+
+<P><SPAN CLASS="RED">　MIDIインストゥルメントを削除した直後には、ポインタにNULLを代入しておくべきである。</SPAN>これをしなければ、このMIDIインストゥルメントが既に削除されていることが外部からわからなくなってしまい、バグの原因となりうる。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIInstrument_DeleteFunctionList">▼List8-3.MIDIInstrument_Delete関数の使い方</A></DIV>
+<PRE>
+	<SPAN CLASS="RED">MIDIInstrument_Delete (pMIDIInstrument)</SPAN>;
+	pMIDIInstrument = NULL;
+</PRE>
+
+<P></P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIInstrument_DeleteFunctionTable">▼Table8-3.MIDIInstrument_Delete系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIInstrument_Delete"><SPAN CLASS="KEYWORD">void</SPAN> MIDIInstrument_Delete <BR>(MIDIInstrument* pMIDIInstrument);</A> </TD>
+  <TD>pMIDIInstrument:MIDIインストゥルメントへのポインタ</TD>
+  <TD>未定義</TD>
+  <TD>MIDIインストゥルメントを削除する。この関数は、このMIDIインストゥルメントにリストされている(含まれている)すべての<A HREF="#MIDIPatchNameTableReference">パッチ名テーブル</A>・<A HREF="#MIDINoteNameTableReference">ノート名テーブル</A>・<A HREF="#MIDIControllerNameTableReference">コントローラ名テーブル</A>・<A HREF="#MIDIRPNNameTableReference">RPN名テーブル</A>・<A HREF="#MIDINRPNNameTableReference">NRPN名テーブル</A>・<A HREF="#MIDIInstrumentDefinitionReference">インストゥルメント定義</A>も同時に削除する。</TD>
+ </TR>
+</TABLE>
+
+<H3><A NAME="MIDIInstrument_AddFunction">8-4.MIDIインストゥルメントへの各種テーブル追加</A></H3>
+
+<P>　MIDIインストゥルメントに、各種テーブル又はインストゥルメント定義を追加するには、MIDIInstrument_Insert系関数又はMIDIInstrument_Add系関数を使う。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIInstrument_InsertFunctionTable">▼Table8-4-1.MIDIInstrument_Insert系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR CLASS="TITLE">
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIInstrument_InsertPatchNameTableAfter">MIDIPatchNameTable* MIDIInstrument_InsertPatchNameTableAfter 
+ <BR>(MIDIInstrument* pMIDIInstrument, MIDIPatchNameTable* pMIDIPatchNameTable, MIDIPatchNameTable pTargetPatchNameTable);</A> </TD>
+  <TD>pMIDIInstrument:MIDIインストゥルメントへのポインタ<BR>pMIDIPatchNameTable:挿入するパッチ名テーブルへのポインタ<BR>pTargetNameTable:挿入位置を示すパッチ名テーブルへのポインタ</TD>  <TD>正常終了:0以外<BR>異常終了:0</TD>
+  <TD>指定した<A HREF="#MIDIPatchNameTableReference">パッチ名テーブル</A>をpTargetPatchNameTableの直後に挿入する。pTargetNameTableがNULLの時はリストの先頭に挿入する。双方向リンクリストのポインタは自動的に更新される。指定したパッチ名テーブルが既に何らかのMIDIインストゥルメントに属している場合、関数は失敗する。pTargetPatchNameTableは既にこのMIDIインストゥルメントに属していなければならない。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIInstrument_InsertNoteNameTableAfter">MIDINoteNameTable* MIDIInstrument_InsertNoteNameTableAfter 
+ <BR>(MIDIInstrument* pMIDIInstrument, MIDINoteNameTable* pMIDINoteNameTable, MIDINoteNameTable* pNoteNameTable);</A> </TD>
+  <TD>pMIDIInstrument:MIDIインストゥルメントへのポインタ<BR>pMIDINoteNameTable:挿入するノート名テーブルへのポインタ<BR>pTargetNoteNameTable:挿入位置を示すノート名テーブルへのポインタ</TD>
+  <TD>正常終了:0以外<BR>異常終了:0</TD>
+  <TD>指定した<A HREF="#MIDINoteNameTableReference">ノート名テーブル</A>をpTargetNoteNameTableの直後に挿入する。pTargetNoteNameTableがNULLの時はリストの先頭に挿入する。双方向リンクリストのポインタは自動的に更新される。指定したノート名テーブルが既に何らかのMIDIインストゥルメントに属している場合、関数は失敗する。pTargetNoteNameTableは既にこのMIDIインストゥルメントに属していなければならない。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIInstrument_InsertControllerNameTableAfter">MIDIControllerNameTable* MIDIInstrument_InsertControllerNameTableAfter 
+ <BR>(MIDIInstrument* pMIDIInstrument, MIDIControllerNameTable* pMIDIControllerNameTable, MIDIControllerNameTable* pTargetControllerNameTable);</A> </TD>
+  <TD>pMIDIInstrument:MIDIインストゥルメントへのポインタ<BR>pMIDIControllerNameTable:挿入するコントローラ名テーブルへのポインタ<BR>pTargetControllerNameTable:挿入位置を示すコントローラ名テーブルへのポインタ</TD>  <TD>正常終了:0以外<BR>異常終了:0</TD>
+  <TD>指定した<A HREF="#MIDIControllerNameTableReference">コントローラー名テーブル</A>をpTargetControllerNameTableの直後に挿入する。pTargetControllerNameTableがNULLの時はリストの先頭に挿入する。双方向リンクリストのポインタは自動的に更新される。指定したコントローラー名テーブルが既に何らかのMIDIインストゥルメントに属している場合、関数は失敗する。pTargetControllerNameTableは既にこのMIDIインストゥルメントに属していなければならない。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIInstrument_InsertRPNNameTableAfter">MIDIRPNNameTable* MIDIInstrument_InsertRPNNameTableAfter 
+ <BR>(MIDIInstrument* pMIDIInstrument, MIDIRPNNameTable* pMIDIRPNNameTable, MIDIRPNNameTable* pTargetRPNNameTable);</A> </TD>
+  <TD>pMIDIInstrument:MIDIインストゥルメントへのポインタ<BR>pMIDIRPNNameTable:挿入するRPN名テーブルへのポインタ<BR>pTargetRPNNameTable:挿入位置を示すRPN名テーブルへのポインタ</TD>  <TD>正常終了:0以外<BR>異常終了:0</TD>
+  <TD>指定した<A HREF="#MIDIRPNNameTableReference">RPN名テーブル</A>をpTargetRPNNameTableの直後に挿入する。双方向リンクリストのポインタは自動的に更新される。指定したRPN名テーブルが既に何らかのMIDIインストゥルメントに属している場合、関数は失敗する。pTargetRPNNameTableは既にこのMIDIインストゥルメントに属していなければならない。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIInstrument_InsertNRPNNameTableAfter">MIDINRPNNameTable* MIDIInstrument_InsertNRPNNameTableAfter 
+ <BR>(MIDIInstrument* pMIDIInstrument, MIDINRPNNameTable* pMIDINRPNNameTable, MIDINRPNNameTable* pTargetNRPNNameTable);</A> </TD>
+  <TD>pMIDIInstrument:MIDIインストゥルメントへのポインタ<BR>pMIDINRPNNameTable:挿入するNRPN名テーブルへのポインタ<BR>pTargetNRPNNameTable:挿入位置を示すNRPN名テーブルへのポインタ</TD>  <TD>正常終了:0以外<BR>異常終了:0</TD>
+  <TD>指定した<A HREF="#MIDINRPNNameTableReference">NRPN名テーブル</A>をpTargetNPRNNameTableの直後に挿入する。双方向リンクリストのポインタは自動的に更新される。指定したNRPN名テーブルが既に何らかのMIDIインストゥルメントに属している場合、関数は失敗する。pTargetNRPNNameTableは既にこのMIDIインストゥルメントに属していなければならない。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIInstrument_InsertInstrumentDefinition">MIDIInstrumentDefinition* MIDIInstrument_InsertInstrumentDefinition 
+ <BR>(MIDIInstrument* pMIDIInstrument, MIDIInstrumentDefinition* pMIDIInstrumentDefinition, MIDIInstrumentDefinition* pTargetInstrumentDefinition);</A> </TD>
+  <TD>pMIDIInstrument:MIDIインストゥルメントへのポインタ<BR>pMIDIInstrumentDefinition:挿入するインストゥルメント定義へのポインタ<BR>pTargetInstrumentDefintion:挿入位置を示すインストゥルメント定義へのポインタ</TD>  <TD>正常終了:0以外<BR>異常終了:0</TD>
+  <TD>指定した<A HREF="#MIDIInstrumentDefinitionReference">インストゥルメント定義</A>をpTargetInstrumentDefinitionの直後に挿入する。双方向リンクリストのポインタは自動的に更新される。指定したインストゥルメント定義が既に何らかのMIDIインストゥルメントに属している場合、関数は失敗する。pTargetInstrumentDefinitionsは既にこのMIDIインストゥルメントに属していなければならない。</TD>
+ </TR>
+</TABLE>
+
+<P></P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIInstrument_AddFunctionTable">▼Table8-4-2.MIDIInstrument_Add系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR CLASS="TITLE">
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIInstrument_AddPatchNameTable">MIDIPatchNameTable* MIDIInstrument_AddPatchNameTable 
+ <BR>(MIDIInstrument* pMIDIInstrument, MIDIPatchNameTable* pMIDIPatchNameTable);</A> </TD>
+  <TD>pMIDIInstrument:MIDIインストゥルメントへのポインタ<BR>pMIDIPatchNameTable:追加するパッチ名テーブルへのポインタ</TD>  <TD>正常終了:0以外<BR>異常終了:0</TD>
+  <TD>指定した<A HREF="#MIDIPatchNameTableReference">パッチ名テーブル</A>をリストの最後に追加する。双方向リンクリストのポインタは自動的に更新される。指定したパッチ名テーブルが既に何らかのMIDIインストゥルメントに属している場合、関数は失敗する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIInstrument_AddNoteNameTable">MIDINoteNameTable* MIDIInstrument_AddNoteNameTable 
+ <BR>(MIDIInstrument* pMIDIInstrument, MIDINoteNameTable* pMIDINoteNameTable);</A> </TD>
+  <TD>pMIDIInstrument:MIDIインストゥルメントへのポインタ<BR>pMIDINoteNameTable:追加するノート名テーブルへのポインタ</TD>  <TD>正常終了:0以外<BR>異常終了:0</TD>
+  <TD>指定した<A HREF="#MIDINoteNameTableReference">ノート名テーブル</A>をリストの最後に追加する。双方向リンクリストのポインタは自動的に更新される。指定したノート名テーブルが既に何らかのMIDIインストゥルメントに属している場合、関数は失敗する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIInstrument_AddControllerNameTable">MIDIControllerNameTable* MIDIInstrument_AddControllerNameTable 
+ <BR>(MIDIInstrument* pMIDIInstrument, MIDIControllerNameTable* pMIDIControllerNameTable);</A> </TD>
+  <TD>pMIDIInstrument:MIDIインストゥルメントへのポインタ<BR>pMIDIControllerNameTable:追加するコントローラ名テーブルへのポインタ</TD>  <TD>正常終了:0以外<BR>異常終了:0</TD>
+  <TD>指定した<A HREF="#MIDIControllerNameTableReference">コントローラー名テーブル</A>をリストの最後に追加する。双方向リンクリストのポインタは自動的に更新される。指定したコントローラー名テーブルが既に何らかのMIDIインストゥルメントに属している場合、関数は失敗する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIInstrument_AddRPNNameTable">MIDIRPNNameTable* MIDIInstrument_AddRPNNameTable 
+ <BR>(MIDIInstrument* pMIDIInstrument, MIDIRPNNameTable* pMIDIRPNNameTable);</A> </TD>
+  <TD>pMIDIInstrument:MIDIインストゥルメントへのポインタ<BR>pMIDIRPNNameTable:追加するRPN名テーブルへのポインタ</TD>  <TD>正常終了:0以外<BR>異常終了:0</TD>
+  <TD>指定した<A HREF="#MIDIRPNNameTableReference">RPN名テーブル</A>をリストの最後に追加する。双方向リンクリストのポインタは自動的に更新される。指定したRPN名テーブルが既に何らかのMIDIインストゥルメントに属している場合、関数は失敗する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIInstrument_AddNRPNNameTable">MIDINRPNNameTable* MIDIInstrument_AddNRPNNameTable 
+ <BR>(MIDIInstrument* pMIDIInstrument, MIDINRPNNameTable* pMIDINRPNNameTable);</A> </TD>
+  <TD>pMIDIInstrument:MIDIインストゥルメントへのポインタ<BR>pMIDINRPNNameTable:追加するNRPN名テーブルへのポインタ</TD>  <TD>正常終了:0以外<BR>異常終了:0</TD>
+  <TD>指定した<A HREF="#MIDINRPNNameTableReference">NRPN名テーブル</A>をリストの最後に追加する。双方向リンクリストのポインタは自動的に更新される。指定したNRPN名テーブルが既に何らかのMIDIインストゥルメントに属している場合、関数は失敗する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIInstrument_AddInstrumentDefinition">MIDIInstrumentDefinition* MIDIInstrument_AddInstrumentDefinition 
+ <BR>(MIDIInstrument* pMIDIInstrument, MIDIInstrumentDefinition* pMIDIInstrumentDefinition);</A> </TD>
+  <TD>pMIDIInstrument:MIDIインストゥルメントへのポインタ<BR>pMIDIInstrumentDefinition:追加するインストゥルメント定義へのポインタ</TD>  <TD>正常終了:0以外<BR>異常終了:0</TD>
+  <TD>指定した<A HREF="#MIDIInstrumentDefinitionReference">インストゥルメント定義</A>をリストの最後に追加する。双方向リンクリストのポインタは自動的に更新される。指定したインストゥルメント定義が既に何らかのMIDIインストゥルメントに属している場合、関数は失敗する。</TD>
+ </TR>
+</TABLE>
+
+<H3><A NAME="MIDIInstrument_RemoveFunction">8-5.MIDIインストゥルメントから各種テーブル除去</A></H3>
+
+<P>　MIDIインストゥルメントから、各種テーブル又はインストゥルメント定義をリストから除去するには、MIDIInstrument_Remove系関数を使う。除去されたテーブルは、該当MIDIインストゥルメントから離脱するだけであり、削除はされない。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIInstrument_RemoveFunctionTable">▼Table8-5.MIDIInstrument_Remove系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR CLASS="TITLE">
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIInstrument_RemovePatchNameTable">MIDIPatchNameTable* MIDIInstrument_RemovePatchNameTable 
+ <BR>(MIDIInstrument* pMIDIInstrument, MIDIPatchNameTable* pMIDIPatchNameTable);</A> </TD>
+  <TD>pMIDIInstrument:MIDIインストゥルメントへのポインタ<BR>pMIDIPatchNameTable:除去するパッチ名テーブルへのポインタ</TD>  <TD>正常終了:0以外<BR>異常終了:0</TD>
+  <TD>指定した<A HREF="#MIDIPatchNameTableReference">パッチ名テーブル</A>をリストから除去する。パッチ名テーブル自体の削除は行わない。双方向リンクリストのポインタは自動的に更新される。指定したパッチ名テーブルがこのMIDIインストゥルメントに属していない場合、関数は失敗する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIInstrument_RemoveNoteNameTable">MIDINoteNameTable* MIDIInstrument_RemoveNoteNameTable 
+ <BR>(MIDIInstrument* pMIDIInstrument, MIDINoteNameTable* pMIDINoteNameTable);</A> </TD>
+  <TD>pMIDIInstrument:MIDIインストゥルメントへのポインタ<BR>pMIDINoteNameTable:除去するノート名テーブルへのポインタ</TD>  <TD>正常終了:0以外<BR>異常終了:0</TD>
+  <TD>指定した<A HREF="#MIDINoteNameTableReference">ノート名テーブル</A>をリストから除去する。ノート名テーブル自体の削除は行わない。双方向リンクリストのポインタは自動的に更新される。指定したノート名テーブルがこのMIDIインストゥルメントに属していない場合、関数は失敗する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIInstrument_RemoveControllerNameTable">MIDIControllerNameTable* MIDIInstrument_RemoveControllerNameTable 
+ <BR>(MIDIInstrument* pMIDIInstrument, MIDIControllerNameTable* pMIDIControllerNameTable);</A> </TD>
+  <TD>pMIDIInstrument:MIDIインストゥルメントへのポインタ<BR>pMIDIControllerNameTable:除去するコントローラ名テーブルへのポインタ</TD>  <TD>正常終了:0以外<BR>異常終了:0</TD>
+  <TD>指定した<A HREF="#MIDIControllerNameTableReference">コントローラー名テーブル</A>をリストから除去する。コントローラー名テーブル自体の削除は行わない。双方向リンクリストのポインタは自動的に更新される。指定したコントローラー名テーブルがこのMIDIインストゥルメントに属していない場合、関数は失敗する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIInstrument_RemoveRPNNameTable">MIDIRPNNameTable* MIDIInstrument_RemoveRPNNameTable 
+ <BR>(MIDIInstrument* pMIDIInstrument, MIDIRPNNameTable* pMIDIRPNNameTable);</A> </TD>
+  <TD>pMIDIInstrument:MIDIインストゥルメントへのポインタ<BR>pMIDIRPNNameTable:除去するRPN名テーブルへのポインタ</TD>  <TD>正常終了:0以外<BR>異常終了:0</TD>
+  <TD>指定した<A HREF="#MIDIRPNNameTableReference">RPN名テーブル</A>をリストから除去する。RPN名テーブル自体の削除は行わない。双方向リンクリストのポインタは自動的に更新される。指定したRPN名テーブルがこのMIDIインストゥルメントに属していない場合、関数は失敗する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIInstrument_RemoveNRPNNameTable">MIDINRPNNameTable* MIDIInstrument_RemoveNRPNNameTable 
+ <BR>(MIDIInstrument* pMIDIInstrument, MIDINRPNNameTable* pMIDINRPNNameTable);</A> </TD>
+  <TD>pMIDIInstrument:MIDIインストゥルメントへのポインタ<BR>pMIDINRPNNameTable:除去するNRPN名テーブルへのポインタ</TD>  <TD>正常終了:0以外<BR>異常終了:0</TD>
+  <TD>指定した<A HREF="#MIDINRPNNameTableReference">NRPN名テーブル</A>をリストから除去する。NRPN名テーブル自体の削除は行わない。双方向リンクリストのポインタは自動的に更新される。指定したNRPN名テーブルがこのMIDIインストゥルメントに属していない場合、関数は失敗する。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIInstrument_RemoveInstrumentDefinition">MIDIInstrumentDefinition* MIDIInstrument_RemoveInstrumentDefinition 
+ <BR>(MIDIInstrument* pMIDIInstrument, MIDIInstrumentDefinition* pMIDIInstrumentDefinition);</A> </TD>
+  <TD>pMIDIInstrument:MIDIインストゥルメントへのポインタ<BR>pMIDIInstrumentDefinition:除去するインストゥルメント定義へのポインタ</TD>  <TD>正常終了:0以外<BR>異常終了:0</TD>
+  <TD>指定した<A HREF="#MIDIInstrumentDefinitionReference">インストゥルメント定義</A>をリストから除去する。インストゥルメント定義自体の削除は行わない。双方向リンクリストのポインタは自動的に更新される。指定したインストゥルメント定義がこのMIDIインストゥルメントに属していない場合、関数は失敗する。</TD>
+ </TR>
+</TABLE>
+
+
+<H3><A NAME="MIDIInstrument_GetFunction">8-6.MIDIインストゥルメント内の各種テーブル・インストゥルメント定義の取得</A></H3>
+
+<P>　MIDIインストゥルメントでは、各種テーブル又はインストゥルメント定義の、最初又は最後の要素へのポインタを取得する関数を用意している。この関数は、内部的には単純にm_pFirstXXXXとm_pLastXXXXのメンバ変数を返しているだけではあるものの、将来的に内部仕様が変わることもあり得るので、以下の表に示す関数を介した方が安全である。最初又は最後の要素がない場合、つまり要素がひとつもない場合はNULLを返す。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIInstrument_GetFunctionList">▼List8-6-1.MIDIInstrument_Get系関数の使い方</A></DIV>
+<PRE>
+	...
+	<SPAN CLASS="COMMENT">/* タイトルから各テーブルへのポインタ取得 */</SPAN>
+	<SPAN CLASS="RED">MIDIPatchNameTable* pFirstPatchNameTable = 
+		MIDIInstrument_GetFirstPatchNameTable (pMIDIInstrument);</SPAN>
+	<SPAN CLASS="RED">MIDINoteNameTable* pFirstNoteNameTable = 
+		MIDIInstrument_GetFirstNoteNameTable (pMIDIInstrument);</SPAN>
+	<SPAN CLASS="RED">MIDIControllerNameTable* pFirstControllerNameTable = 
+		MIDIInstrument_GetFirstControllerNameTable (pMIDIInstrument);</SPAN>
+	<SPAN CLASS="RED">MIDIRPNNameTable* pRPNNameTable = 
+		MIDIInstrument_GetFirstRPNNameTable (pMIDIInstrument);</SPAN>
+	<SPAN CLASS="RED">MIDINRPNNameTable* pNRPNNameTable = 
+		MIDIInstrument_GetFirstNRPNNameTable (pMIDIInstrument);</SPAN>
+	<SPAN CLASS="RED">MIDIInstrumentDefinition* pInstrumentDefinition = 
+		MIDIInstrument_GetFirstInstrumentDefinition (pMIDIInstrument);</SPAN>
+	...
+</PRE>
+
+<P></P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIInstrument_GetFunctionTable">▼Table8-6-1.MIDIInstrument_Get系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR CLASS="TITLE">
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIInstrument_GetFirstPatchNameTable">MIDIPatchNameTable* MIDIInstrument_GetFirstPatchNameTable<BR>(MIDIInstrument* pMIDIInstrument);</A></TD>
+  <TD>pMIDIInstrument:MIDIインストゥルメントへのポインタ</TD>
+  <TD>見つかった:最初のパッチ名テーブルへのポインタ<BR>見つからなかった:NULL</TD>
+  <TD>指定したMIDIインストゥルメントに含まれる最初の<A HREF="#MIDIPatchNameTableReference">パッチ名テーブル</A>へのポインタを返す(なければNULL)。すべてのパッチ名テーブルに順番にアクセスする場合は、<A HREF="#MIDIInstrument_forEachPatchNameTable">forEachPatchNameTable</A>を使う方が便利である。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIInstrument_GetLastPatchNameTable">MIDIPatchNameTable* MIDIInstrument_GetLastPatchNameTable<BR>(MIDIInstrument* pMIDIInstrument);</A></TD>
+  <TD>pMIDIInstrument:MIDIインストゥルメントへのポインタ</TD>
+  <TD>見つかった:最後のパッチ名テーブルへのポインタ<BR>見つからなかった:NULL</TD>
+  <TD>指定したMIDIインストゥルメントに含まれる最後の<A HREF="#MIDIPatchNameTableReference">パッチ名テーブル</A>へのポインタを返す(なければNULL)。すべてのパッチ名テーブルに順番にアクセスする場合は、<A HREF="#MIDIInstrument_forEachPatchNameTable">forEachPatchNameTable</A>を使う方が便利である。</TD>
+ </TR>
+
+ <TR>
+  <TD><A NAME="MIDIInstrument_GetFirstNoteNameTable">MIDINoteNameTable* MIDIInstrument_GetFirstNoteNameTable<BR>(MIDIInstrument* pMIDIInstrument);</A></TD>
+  <TD>pMIDIInstrument:MIDIインストゥルメントへのポインタ</TD>
+  <TD>見つかった:最初のノート名テーブルへのポインタ<BR>見つからなかった:NULL</TD>
+  <TD>指定したMIDIインストゥルメントに含まれる最初の<A HREF="#MIDINoteNameTableReference">ノート名テーブル</A>へのポインタを返す(なければNULL)。すべてのノート名テーブルに順番にアクセスする場合は、<A HREF="#MIDIInstrument_forEachNoteNameTable">forEachNoteNameTable</A>を使う方が便利である。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIInstrument_GetLastNoteNameTable">MIDINoteNameTable* MIDIInstrument_GetLastNoteNameTable<BR>(MIDIInstrument* pMIDIInstrument);</A></TD>
+  <TD>pMIDIInstrument:MIDIインストゥルメントへのポインタ</TD>
+  <TD>見つかった:最後のノート名テーブルへのポインタ<BR>見つからなかった:NULL</TD>
+  <TD>指定したMIDIインストゥルメントに含まれる最後の<A HREF="#MIDINoteNameTableReference">ノート名テーブル</A>へのポインタを返す(なければNULL)。すべてのノート名テーブルに順番にアクセスする場合は、<A HREF="#MIDIInstrument_forEachNoteNameTable">forEachNoteNameTable</A>を使う方が便利である。</TD>
+ </TR>
+
+ <TR>
+  <TD><A NAME="MIDIInstrument_GetFirstControllerNameTable">MIDIControllerNameTable* MIDIInstrument_GetFirstControllerNameTable<BR>(MIDIInstrument* pMIDIInstrument);</A></TD>
+  <TD>pMIDIInstrument:MIDIインストゥルメントへのポインタ</TD>
+  <TD>見つかった:最初のコントローラ名テーブルへのポインタ<BR>見つからなかった:NULL</TD>
+  <TD>指定したMIDIインストゥルメントに含まれる最初の<A HREF="#MIDIControllerNameTableReference">コントローラ名テーブル</A>へのポインタを返す(なければNULL)。すべてのコントローラ名テーブルに順番にアクセスする場合は、<A HREF="#MIDIInstrument_forEachControllerNameTable">forEachControllerNameTable</A>を使う方が便利である。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIInstrument_GetLastControllerNameTable">MIDIControllerNameTable* MIDIInstrument_GetLastControllerNameTable<BR>(MIDIInstrument* pMIDIInstrument);</A></TD>
+  <TD>pMIDIInstrument:MIDIインストゥルメントへのポインタ</TD>
+  <TD>見つかった:最後のコントローラ名テーブルへのポインタ<BR>見つからなかった:NULL</TD>
+  <TD>指定したMIDIインストゥルメントに含まれる最後の<A HREF="#MIDIControllerNameTableReference">コントローラ名テーブル</A>へのポインタを返す(なければNULL)。すべてのコントローラ名テーブルに順番にアクセスする場合は、<A HREF="#MIDIInstrument_forEachControllerNameTable">forEachControllerNameTable</A>を使う方が便利である。</TD>
+ </TR>
+
+ <TR>
+  <TD><A NAME="MIDIInstrument_GetFirstRPNNameTable">MIDIRPNNameTable* MIDIInstrument_GetFirstRPNNameTable<BR>(MIDIInstrument* pMIDIInstrument);</A></TD>
+  <TD>pMIDIInstrument:MIDIインストゥルメントへのポインタ</TD>
+  <TD>見つかった:最初のRPN名テーブルへのポインタ<BR>見つからなかった:NULL</TD>
+  <TD>指定したMIDIインストゥルメントに含まれる最初の<A HREF="#MIDIRPNNameTableReference">RPN名テーブル</A>へのポインタを返す(なければNULL)。すべてのRPN名テーブルに順番にアクセスする場合は、<A HREF="#MIDIInstrument_forEachRPNNameTable">forEachRPNNameTable</A>を使う方が便利である。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIInstrument_GetLastRPNNameTable">MIDIRPNNameTable* MIDIInstrument_GetLastRPNNameTable<BR>(MIDIInstrument* pMIDIInstrument);</A></TD>
+  <TD>pMIDIInstrument:MIDIインストゥルメントへのポインタ</TD>
+  <TD>見つかった:最後のRPN名テーブルへのポインタ<BR>見つからなかった:NULL</TD>
+  <TD>指定したMIDIインストゥルメントに含まれる最後の<A HREF="#MIDIRPNNameTableReference">RPN名テーブル</A>へのポインタを返す(なければNULL)。すべてのRPN名テーブルに順番にアクセスする場合は、<A HREF="#MIDIInstrument_forEachRPNNameTable">forEachRPNNameTable</A>を使う方が便利である。</TD>
+ </TR>
+
+ <TR>
+  <TD><A NAME="MIDIInstrument_GetFirstNRPNNameTable">MIDINRPNNameTable* MIDIInstrument_GetFirstNRPNNameTable<BR>(MIDIInstrument* pMIDIInstrument);</A></TD>
+  <TD>pMIDIInstrument:MIDIインストゥルメントへのポインタ</TD>
+  <TD>見つかった:最初のNRPN名テーブルへのポインタ<BR>見つからなかった:NULL</TD>
+  <TD>指定したMIDIインストゥルメントに含まれる最初の<A HREF="#MIDINRPNNameTableReference">NRPN名テーブル</A>へのポインタを返す(なければNULL)。すべてのNRPN名テーブルに順番にアクセスする場合は、<A HREF="#MIDIInstrument_forEachNRPNNameTable">forEachNRPNNameTable</A>を使う方が便利である。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIInstrument_GetLastNRPNNameTable">MIDINRPNNameTable* MIDIInstrument_GetLastNRPNNameTable<BR>(MIDIInstrument* pMIDIInstrument);</A></TD>
+  <TD>pMIDIInstrument:MIDIインストゥルメントへのポインタ</TD>
+  <TD>見つかった:最後のNRPNテーブルへのポインタ<BR>見つからなかった:NULL</TD>
+  <TD>指定したMIDIインストゥルメントに含まれる最後の<A HREF="#MIDINRPNNameTableReference">NRPN名テーブル</A>へのポインタを返す(なければNULL)。すべてのNRPN名テーブルに順番にアクセスする場合は、<A HREF="#MIDIInstrument_forEachNRPNNameTable">forEachNRPNNameTable</A>を使う方が便利である。</TD>
+ </TR>
+
+ <TR>
+  <TD><A NAME="MIDIInstrument_GetFirstInstrumentDefinition">MIDIInstrumentDefinition* MIDIInstrument_GetFirstInstrumentDefinition<BR>(MIDIInstrument* pMIDIInstrument);</A></TD>
+  <TD>pMIDIInstrument:MIDIインストゥルメントへのポインタ</TD>
+  <TD>見つかった:最初のインストゥルメント定義へのポインタ<BR>見つからなかった:NULL</TD>
+  <TD>指定したMIDIインストゥルメントに含まれる最初の<A HREF="#MIDIInstrumentDefinitionReference">インストゥルメント定義</A>へのポインタを返す(なければNULL)。すべてのインストゥルメント定義に順番にアクセスする場合は、<A HREF="#MIDIInstrument_forEachInstrumentDefinition">forEachInstrumentDefinition</A>を使う方が便利である。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIInstrument_GetLastInstrumentDefinition">MIDIInstrumentDefinition* MIDIInstrument_GetLastInstrumentDefinition<BR>(MIDIInstrument* pMIDIInstrument);</A></TD>
+  <TD>pMIDIInstrument:MIDIインストゥルメントへのポインタ</TD>
+  <TD>見つかった:最後のインストゥルメント定義へのポインタ<BR>見つからなかった:NULL</TD>
+  <TD>指定したMIDIインストゥルメントに含まれる最後の<A HREF="#MIDIInstrumentDefinitionReference">インストゥルメント定義</A>へのポインタを返す(なければNULL)。すべてのインストゥルメント定義に順番にアクセスする場合は、<A HREF="#MIDIInstrument_forEachInstrumentDefinition">forEachInstrumentDefinition</A>を使う方が便利である。</TD>
+ </TR>
+
+</TABLE>
+
+
+
+<P>　MIDIインストゥルメントでは、各種テーブル又はインストゥルメント定義の『タイトル』からそのテーブルへのポインタを直接取得する関数も用意している。これは各種テーブル又はインストゥルメント定義のタイトルが予めわかっている場合に便利である。該当するタイトルのものがなければNULLを返す。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIInstrument_GetFunctionList">▼List8-6-2.MIDIInstrument_Get系関数の使い方</A></DIV>
+<PRE>
+	...
+	<SPAN CLASS="COMMENT">/* タイトルから各テーブルへのポインタ取得 */</SPAN>
+	<SPAN CLASS="RED">MIDIPatchNameTable* pPatchNameTable = 
+		MIDIInstrument_GetPatchNameTable (pMIDIInstrument, "Noland SC-88Ero Capital Tones");</SPAN>
+	<SPAN CLASS="RED">MIDINoteNameTable* pNoteNameTable = 
+		MIDIInstrument_GetNoteNameTable (pMIDIInstrument, "Noland SC-88Ero Standard Set");</SPAN>
+	<SPAN CLASS="RED">MIDIControllerNameTable* pControllerNameTable = 
+		MIDIInstrument_GetControllerNameTable (pMIDIInstrument, "Noland SC-88Ero Controllers");</SPAN>
+	<SPAN CLASS="RED">MIDIRPNNameTable* pRPNNameTable = 
+		MIDIInstrument_GetRPNNameTable (pMIDIInstrument, "Noland SC-88Ero RPN");</SPAN>
+	<SPAN CLASS="RED">MIDINRPNNameTable* pNRPNNameTable = 
+		MIDIInstrument_GetNRPNNameTable (pMIDIInstrument, "Noland SC-88Ero NRPN");</SPAN>
+	<SPAN CLASS="RED">MIDIInstrumentDefinition* pInstrumentDefinition = 
+		MIDIInstrument_GetInstrumentDefinition (pMIDIInstrument, "Noland SC-88Ero");</SPAN>
+	...
+</PRE>
+
+<P></P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIInstrument_GetFunctionTable">▼Table8-6-2.MIDIInstrument_Get系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR CLASS="TITLE">
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIInstrument_GetPatchNameTableFromTitle">MIDIPatchNameTable* MIDIInstrument_GetPatchNameTableFromTitle 
+ <BR>(MIDIInstrument* pMIDIInstrument, <SPAN CLASS="KEYWORD">const</SPAN> TCHAR* pszTitle);</A> </TD>
+  <TD>pMIDIInstrument:MIDIインストゥルメントへのポインタ<BR>pszTitle:タイトルへのポインタ</TD>
+  <TD>見つかった:パッチ名テーブルへのポインタ<BR>見つからなかった:NULL</TD>
+  <TD>指定したタイトルの<A HREF="#MIDIPatchNameTableReference">パッチ名テーブル</A>へのポインタを返す(なければNULL)。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIInstrument_GetNoteNameTableFromTitle">MIDINoteNameTable* MIDIInstrument_GetNoteNameTableFromTitle 
+ <BR>(MIDIInstrument* pMIDIInstrument, <SPAN CLASS="KEYWORD">const</SPAN> TCHAR* pszTitle);</A> </TD>
+  <TD>pMIDIInstrument:MIDIインストゥルメントへのポインタ<BR>pszTitle:タイトルへのポインタ</TD>
+  <TD>見つかった:ノート名テーブルへのポインタ<BR>見つからなかった:NULL</TD>
+  <TD>指定したタイトルの<A HREF="#MIDINoteNameTableReference">ノート名テーブル</A>へのポインタを返す(なければNULL)。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIInstrument_GetControllerNameTableFromTitle">MIDIControllerNameTable* MIDIInstrument_GetControllerNameTableFromTitle 
+ <BR>(MIDIInstrument* pMIDIInstrument, <SPAN CLASS="KEYWORD">const</SPAN> TCHAR* pszTitle);</A> </TD>
+  <TD>pMIDIInstrument:MIDIインストゥルメントへのポインタ<BR>pszTitle:タイトルへのポインタ</TD>
+  <TD>見つかった:コントローラ名テーブルへのポインタ<BR>見つからなかった:NULL</TD>
+  <TD>指定したタイトルの<A HREF="#MIDIControllerNameTableReference">コントローラ名テーブル</A>へのポインタを返す(なければNULL)。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIInstrument_GetRPNNameTableFromTitle">MIDIRPNNameTable* MIDIInstrument_GetRPNNameTableFromTitle 
+ <BR>(MIDIInstrument* pMIDIInstrument, <SPAN CLASS="KEYWORD">const</SPAN> TCHAR* pszTitle);</A> </TD>
+  <TD>pMIDIInstrument:MIDIインストゥルメントへのポインタ<BR>pszTitle:タイトルへのポインタ</TD>
+  <TD>見つかった:RPN名テーブルへのポインタ<BR>見つからなかった:NULL</TD>
+  <TD>指定したタイトルの<A HREF="#MIDIRPNNameTableReference">RPN名テーブル</A>へのポインタを返す(なければNULL)。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIInstrument_GetNRPNNameTableFromTitle">MIDINRPNNameTable* MIDIInstrument_GetNRPNNameTableFromTitle 
+ <BR>(MIDIInstrument* pMIDIInstrument, <SPAN CLASS="KEYWORD">const</SPAN> TCHAR* pszTitle);</A> </TD>
+  <TD>pMIDIInstrument:MIDIインストゥルメントへのポインタ<BR>pszTitle:タイトルへのポインタ</TD>
+  <TD>見つかった:NRPN名テーブルへのポインタ<BR>見つからなかった:NULL</TD>
+  <TD>指定したタイトルの<A HREF="#MIDINRPNNameTableReference">NRPN名テーブル</A>へのポインタを返す(なければNULL)。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIInstrument_GetInstrumentDefinitionFromTitle">MIDIInstrumentDefinition* MIDIInstrument_GetInstrumentDefinitionFromTitle 
+ <BR>(MIDIInstrument* pMIDIInstrument, <SPAN CLASS="KEYWORD">const</SPAN> TCHAR* pszTitle);</A> </TD>
+  <TD>pMIDIInstrument:MIDIインストゥルメントへのポインタ<BR>pszTitle:タイトルへのポインタ</TD>
+  <TD>見つかった:インストゥルメント定義へのポインタ<BR>見つからなかった:NULL</TD>
+  <TD>指定したタイトルの<A HREF="#MIDIInstrumentDefinitionReference">インストゥルメント定義</A>へのポインタを返す(なければNULL)。</TD>
+ </TR>
+</TABLE>
+
+
+<H3><A NAME="MIDIInstrument_forEachMacro">8-7.MIDIインストゥルメント内の各種テーブル・インストゥルメント定義へのアクセス</A></H3>
+
+<P>　MIDIインストゥルメントでは、各種テーブル又はインストゥルメント定義へのポインタを順番に取得するための、forEach系マクロを6種類用意している。次の例では、<A HREF="#MIDIInstrument_forEachPatchNameTable">forEachPatchNameTable</A>マクロを使って、<A HREF="#MIDIInstrumentReference">MIDIインストゥルメント</A>内の全ての<A HREF="#MIDIPatchNameTableReference">パッチ名テーブル</A>のタイトルを表示している。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIInstrument_forEach1">▼List8-7-1.foaEachマクロの使い方</A></DIV>
+<PRE>
+	<SPAN CLASS="COMMENT">/* MIDIインストゥルメント内の全パッチ名テーブルのタイトルを表示 */</SPAN>
+	<SPAN CLASS="KEYWORD">char</SPAN> szTitle[256];
+	MIDIPatchNameTable* pPatchNameTable = NULL;
+	MIDIInstrument* pMIDIInstrument = MIDIInstrument_Load (<SPAN CLASS="STRING">"Noland SC-88Ero.ins"</SPAN>);
+	...(中略)...
+	<SPAN CLASS="RED">forEachPatchNameTable (pMIDIInstrument, pPatchNameTable) {</SPAN>
+		memset (szTitle, 0, <SPAN CLASS="KEYWORD">sizeof</SPAN> (szTitle));
+		MIDIPatchNameTable_GetTitle (pPatchNameTable, szTitle, <SPAN CLASS="KEYWORD">sizeof</SPAN> (szTitle));
+		printf (<SPAN CLASS="STRING">"[%s]\n"</SPAN>, szTitle);
+	<SPAN CLASS="RED">}</SPAN>
+</PRE>
+
+<P>上のコードは次のwhileループを使ったコードと等価である。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIInstrument_forEach2">▼List8-7-2.foaEachマクロを使わない方法</A></DIV>
+<PRE>
+	<SPAN CLASS="COMMENT">/* MIDIインストゥルメント内の全パッチ名テーブルのタイトルを表示 */</SPAN>
+	<SPAN CLASS="KEYWORD">char</SPAN> szTitle[256];
+	MIDIPatchNameTable* pPatchNameTable = NULL;
+	MIDIInstrument* pMIDIInstrument = MIDIInstrument_Load (<SPAN CLASS="STRING">"Noland SC-88Ero.ins"</SPAN>);
+	...(中略)...
+	<SPAN CLASS="RED">pPatchNameTable = pMIDIInstrument-&gt;m_pFirstPatchNameTable;</SPAN>
+	<SPAN CLASS="RED">while (pPatchNameTable) {</SPAN>
+		memset (szTitle, 0, <SPAN CLASS="KEYWORD">sizeof</SPAN> (szTitle));
+		MIDIPatchNameTable_GetTitle (pPatchNameTable, szTitle, <SPAN CLASS="KEYWORD">sizeof</SPAN> (szTitle));
+		printf (<SPAN CLASS="STRING">"[%s]\n"</SPAN>, szTitle);
+		<SPAN CLASS="RED">pPatchNameTable = pPatchNameTble-&gt;m_pNextPatchNameTable;</SPAN>
+	<SPAN CLASS="RED">}</SPAN>
+</PRE>
+
+<P>　注意すべきことは、このマクロは<A HREF="#MIDIInstrumentReference">MIDIインストゥルメント</A>に適用されるものであって、MIDIインストゥルメント内の一種類の<A HREF="#MIDIInstrumentDefinitionReference">MIDIインストゥルメント定義</A>に適用されるものではないということである。従って、通常用のパッチテーブル名とドラム用のパッチテーブル名、又は複数種類の音源のパッチテーブル名などがすべて混在して出力される(たいていの場合は整列されているが)。各パッチ名テーブルがどのインストゥルメント定義に属しているか(複数のインストゥルメント定義から、例えば通常用とドラム用の両方から参照されていることもある)判断するのはプログラマの責任である。</P>
+
+<P>　むしろ、MIDIインストゥルメント定義ファイル(*.ins)の読み込み直後に最初に用いるべきものは、<A HREF="#MIDIInstrument_forEachInstrumentDefinition">forEachInstrumentDefinition</A>マクロである。これを使って<A HREF="#MIDIInstrumentReference">MIDIインストゥルメント</A>内に含まれている全ての<A HREF="#MIDIInstrumentDefinitionReference">インストゥルメント定義</A>を列挙することができ、各インストゥルメント定義は、<A HREF="#MIDIPatchNameTableReference">パッチ名テーブル</A>、<A HREF="#MIDINoteNameTableReference">ノート名テーブル</A>、<A HREF="#MIDIControllerNameTableReference">コントローラ名テーブル</A>、<A HREF="#MIDIRPNNameTableReference">RPN名テーブル</A>、<A HREF="#MIDINRPNNameTableReference">NRPN名テーブル</A>へのポインタをメンバ変数に保持している。</P>
+
+<P>　<SPAN CLASS="RED">forEachマクロ内で各種テーブルやインストゥルメント定義を追加・削除してはならない。</SPAN>なぜなら、forEachマクロ内で各種テーブルやインストゥルメント定義が増えたりなくなったりすると、次のオブジェクトへのポインタを正しく取得できなくなるからである。このような場合は、いったん自分の配列に各種テーブルやインストゥルメント定義のポインタを全てコピーし、その配列に対してオブジェクトを追加・削除するようにすればよい。</P>
+
+<P>　なお、これは関数ではなくマクロなので、Visual Basicからは使用できない。Visual Basicの場合は、地道にwhileループを回すしかない。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIInstrument_forEachTable">▼Table8-7.MIDIInstrument_forEach系マクロ</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR CLASS="TITLE">
+  <TH WIDTH="50%">マクロ定義</TH>
+  <TH WIDTH="50%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIInstrument_forEachPatchNameTable">forEachPatchNameTable<BR>(pMIDIInstrument, pMIDIPatchNameTable) {<BR>...<BR>}</A> </TD>
+  <TD>pMIDIInstrument内にある全ての<A HREF="#MIDIPatchNameTableReference">パッチ名テーブル</A>へのポインタを前方から順に評価する。pMIDIPatchNameTableには、最初のパッチ名テーブルへのポインタ、2番目のパッチ名テーブルへのポインタ...といった具合に代入される。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIInstrument_forEachNoteNameTable">forEachNoteNameTable<BR>(pMIDIInstrument, pMIDINoteNameTable) {<BR>...<BR>}</A> </TD>
+  <TD>pMIDIInstrument内にある全ての<A HREF="#MIDINoteNameTableReference">ノート名テーブル</A>へのポインタを前方から順に評価する。pMIDINoteNameTableには、最初のノート名テーブルへのポインタ、2番目のノート名テーブルへのポインタ...といった具合に代入される。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIInstrument_forEachControllerNameTable">forEachControllerNameTable<BR>(pMIDIInstrument, pMIDIControllerNameTable) {<BR>...<BR>}</A> </TD>
+  <TD>pMIDIInstrument内にある全ての<A HREF="#MIDIControllerNameTableReference">コントローラ名テーブル</A>へのポインタを前方から順に評価する。pMIDIControllerNameTableには、最初のコントローラ名テーブルへのポインタ、2番目のコントローラ名テーブルへのポインタ...といった具合に代入される。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIInstrument_forEachRPNNameTable">forEachRPNNameTable<BR>(pMIDIInstrument, pMIDIRPNNameTable) {<BR>...<BR>}</A> </TD>
+  <TD>pMIDIInstrument内にある全ての<A HREF="#MIDIRPNNameTableReference">RPN名テーブル</A>へのポインタを前方から順に評価する。pMIDIRPNNameTableには、最初のRPN名テーブルへのポインタ、2番目のRPN名テーブルへのポインタ...といった具合に代入される。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIInstrument_forEachNRPNNameTable">forEachNRPNNameTable<BR>(pMIDIInstrument, pMIDINRPNNameTable) {<BR>...<BR>}</A> </TD>
+  <TD>pMIDIInstrument内にある全ての<A HREF="#MIDINRPNNameTableReference">NRPN名テーブル</A>へのポインタを前方から順に評価する。pMIDINRPNNameTableには、最初のNRPN名テーブルへのポインタ、2番目のNRPN名テーブルへのポインタ...といった具合に代入される。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIInstrument_forEachInstrumentDefinition">forEachInstrumentDefinition<BR>(pMIDIInstrument, pMIDIInstrumentDefinition) {<BR>...<BR>}</A> </TD>
+  <TD>pMIDIInstrument内にある全ての<A HREF="#MIDIInstrumentDefinitionReference">インストゥルメント定義</A>へのポインタを前方から順に評価する。pMIDIInstrumentDefinitionには、最初のインストゥルメント定義へのポインタ、2番目のインストゥルメント定義へのポインタ...といった具合に代入される。</TD>
+ </TR>
+</TABLE>
+
+
+<H3><A NAME="MIDIInstrument_LoadFunction">8-8.MIDIインストゥルメントのファイル読み込み</A></H3>
+
+<P>　MIDIインストゥルメントは、Cakewalk用インストゥルメント定義ファイル(*.ins)から情報を読み込むことができる。読み込むことによって得られたMIDIInstrumentポインタは、不要になったら<A HREF="#MIDIInstrument_Delete">MIDIInstrument_Delete</A>で削除しなければならない。</P>
+
+<DIV CLASS="TITLE"><A NAME="MIDIInstrument_forEach1">▼List8-8.MIDIInstrument_Load系関数の使い方</A></DIV>
+<PRE>
+	MIDIInstrument* pMIDIInstrument = MIDIInstrument_Load (<SPAN CLASS="STRING">"Noland SC-88Ero.ins"</SPAN>);
+	<SPAN CLASS="KEYWORD">if</SPAN> (pMIDIInstrument == NULL) {
+		<SPAN CLASS="KEYWORD">return</SPAN> 0;
+	}
+	...(中略)...
+</PRE>
+
+<DIV CLASS="TITLE"><A NAME="MIDIInstrument_LoadFunctionTable">▼Table8-8.MIDIInstrument_Load系関数一覧</A></DIV>
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR CLASS="TITLE">
+  <TH WIDTH="25%">関数定義</TH>
+  <TH WIDTH="25%">引数</TH>
+  <TH WIDTH="10%">戻り値</TH>
+  <TH WIDTH="40%">解説</TH>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIInstrument_Load">MIDIInstrument* MIDIInstrument_Load<BR>(<SPAN CLASS="KEYWORD">const</SPAN> TCHAR* pszFileName);</A> </TD>
+  <TD>pszFileName:ファイル名文字列へのポインタ</TD>
+  <TD>正常終了:MIDIインストゥルメントへのポインタ<BR>異常終了:NULL</TD>
+  <TD>指定したファイルからMIDIInstrumentを読み込む。</TD>
+ </TR>
+ <TR>
+  <TD><A NAME="MIDIInstrument_LoadAdditional"><SPAN CLASS="KEYWORD">long</SPAN> MIDIInstrument_LoadAdditional<BR>(MIDIInstrument* pMIDIInstrument, <SPAN CLASS="KEYWORD">const</SPAN> TCHAR* pszFileName);</A> </TD>
+  <TD>pMIDIInstrument:MIDIインストゥルメントへのポインタ<BR>pszFileName:ファイル名文字列へのポインタ</TD>
+  <TD>正常終了:1<BR>異常終了:0</TD>
+  <TD>既存のMIDIInstrumentに、指定したファイルからMIDIInstrumentを追加で読み込む。既存のテーブル名と同名のテーブル名が含まれる場合があるので、この関数は注意深く使用しなければならない。読み込みに失敗した場合、既存のMIDIインストゥルメントはそのままの状態で保持される。</TD>
+ </TR>
+</TABLE>
+
+<H3><A NAME="MIDIInstrument_SaveFunction">8-9.MIDIインストゥルメントのファイル書き出し</A></H3>
+
+<P>　MIDIインストゥルメントは、Cakewalk用インストゥルメント定義ファイル(*.ins)に書き出すことは今のところできない。その理由は、現段階では需要がないことと、MIDIインストゥルメント定義ファイル(*.ins)はテキストエディッタ上で手書き又はコピペで直接書いた方が速いからである。今後、暇があれば実装する予定である。</P>
+
+
+<H2><A NAME="APPENDIX_A">付録A　よくある質問(F.A.Q)</A></H2>
+
+<H4>Q.Microsoft Visual C++から使うにはどうしたらよいですか。</H4>
+<P>　C/C++では直接MIDIInstrument.cをコンパイルして使うことができます。しかしここでは、コンパイル済みのMIDIInstrument.dllにリンクして使う方法を説明します。DLLの関数を使う方法は、普通のWindows API関数を使う方法に似ていますが、MIDIInstrumentライブラリは追加されたAPI関数となるため、いくつかの追加作業が必要になります。</P>
+
+<DIV>(1)　<A HREF="../MIDIInstrument.h">MIDIInstrument.h</A>をVisualC++をインストールしたフォルダのincludeフォルダ内に、<A HREF="../Release/MIDIInstrument.lib">MIDIInstrument.lib</A>をVisualC++をインストールしたフォルダのlibフォルダ内に、<A HREF="../Release/MIDIInstrument.dll">MIDIInstrument.dll</A>をc:\windows\System32\内(32bitOSの場合)、c:\windows\SysWOW64\内(64bitOSの場合)にそれぞれ保存します。</DIV>
+<DIV>(2)　VisualC++でプロジェクトワークスペースを構築します。</DIV>
+<DIV>(3)　「ビルド(B)」-「(プロジェクト名)のプロパティ」から「(プロジェクト名)のプロパティページ」というダイアログを表示させ、その中の「構成とプロパティ」の「リンカ」の「入力」の中に、「追加の依存ファイル」という項目があるので、<STRONG>"MIDIInstrument.lib"</STRONG>を追加します。これを忘れるとリンク時にエラーになります。デバッグ版とリリース版がある場合は両方とも追加するのを忘れないようにしてください。</DIV>
+<DIV>(4)　ソースを記述します。なお、MIDIInstrumentライブラリを使うソース(Cファイル)の冒頭に、<STRONG>#include &lt;MIDIInstrument.h&gt;</STRONG>を記述する必要があります。以下に簡単な例を示します。</DIV>
+<PRE>
+<SPAN CLASS="COMMENT">/* インストゥルメント定義ファイルから楽器別に音色名リストを抽出 */</SPAN>
+<SPAN CLASS="KEYWORD">#include</SPAN> &lt;stdio.h&gt;
+<SPAN CLASS="KEYWORD">#include</SPAN> &lt;MIDIInstrument.h&gt;
+
+<SPAN CLASS="KEYWORD">int</SPAN> main () {
+	MIDIInstrument* pMIDIInstrument = NULL;
+	MIDIInstrumentDefinition* pMIDIInstrumentDef = NULL;
+	MIDIPatchNameTable* pMIDIPatchNameTable = NULL;
+	<SPAN CLASS="KEYWORD">char</SPAN> szTitle[256];
+	<SPAN CLASS="KEYWORD">char</SPAN> szName[256];
+	<SPAN CLASS="KEYWORD">long</SPAN> j = 0;
+	<SPAN CLASS="KEYWORD">long</SPAN> ret = 0;
+
+	<SPAN CLASS="COMMENT">/* MIDIインストゥルメント定義ファイルの読み込み */</SPAN>
+	<SPAN CLASS="RED">pMIDIInstrument = MIDIInstrument_Load ("SC-8850.ins");</SPAN>
+	<SPAN CLASS="KEYWORD">if</SPAN> (pMIDIInstrument == NULL) {
+		printf (<SPAN CLASS="STRING">"MIDIインストゥルメントファイルが読み込めません。\n"</SPAN>);
+		<SPAN CLASS="KEYWORD">return</SPAN> 0;
+	}
+
+	<SPAN CLASS="COMMENT">/* このファイルに含まれるすべてのMIDIインストゥルメント定義ごとに */</SPAN>
+	<SPAN CLASS="RED">forEachInstrumentDefinition (pMIDIInstrument, pMIDIInstrumentDef)</SPAN> {
+		<SPAN CLASS="COMMENT">/* インストゥルメント定義名の表示 */</SPAN>
+		<SPAN CLASS="RED">MIDIInstrumentDefinition_GetTitle (pMIDIInstrumentDef, szTitle, 255);</SPAN>
+		printf (<SPAN CLASS="STRING">"[%s]\n"</SPAN>, szTitle);
+		<SPAN CLASS="COMMENT">/* バンク番号0番(CC#0=0,CC#32=0)のパッチ名テーブルを取得する。 */</SPAN>
+		<SPAN CLASS="RED">pMIDIPatchNameTable = MIDIInstrumentDefinition_GetPatchNameTable 
+			(pMIDIInstrumentDef, 0);</SPAN>
+		<SPAN CLASS="KEYWORD">if</SPAN> (pMIDIPatchNameTable) {
+			<SPAN CLASS="COMMENT">/* このパッチ名テーブルのタイトルを表示する */</SPAN>
+			<SPAN CLASS="RED">MIDIPatchNameTable_GetTitle (pMIDIPatchNameTable, szTitle, 255);</SPAN>
+			printf (<SPAN CLASS="STRING">"    PatchNameTable(0)=%s\n"</SPAN>, szTitle);
+			<SPAN CLASS="COMMENT">/* このパッチ名テーブルの内容をすべて表示する(欠番は除く) */</SPAN>
+			<SPAN CLASS="KEYWORD">for</SPAN> (j = 0; j &lt; 128; j++) {
+				<SPAN CLASS="RED">ret = MIDIPatchNameTable_GetName (pMIDIPatchNameTable, j, szName, 255);</SPAN>
+				<SPAN CLASS="KEYWORD">if</SPAN> (ret &gt; 0) {
+					printf (<SPAN CLASS="STRING">"        %d=%s\n"</SPAN>, j, szName);
+				}
+			}
+		}
+	}
+	<SPAN CLASS="RED">MIDIInstrument_Delete (pMIDIInstrument);</SPAN>
+	pMIDIInstrument = NULL;
+	getchar ();
+	<SPAN CLASS="KEYWORD">return</SPAN> 1;
+}
+</PRE>
+
+<DIV>(5)　コンパイル・リンクをします。</DIV>
+
+
+<H4>Q.Microsoft Visual Basicから使うにはどうしたらよいですか。</H4>
+<P>　MIDIInstrumentライブラリをVisual Basicから使うには、DLLの関数をWindows API関数のように呼び出します。DLLの関数を呼び出すには、Declare宣言を記述する必要がありますが、既に<A HREF="../MIDIInstrument.bas">MIDIInstrument.bas</A>が用意してあります。</P>
+<DIV>(1)　<A HREF="../MIDIInstrument.bas">MIDIInstrument.bas</A>を任意のフォルダに、<A HREF="../Release/MIDIInstrument.dll">MIDIInstrument.dll</A>をc:\windows\System32\内(32bitOSの場合)、c:\windows\SysWOW64\内(64bitOSの場合)にそれぞれ保存します。</DIV>
+<DIV>(2)　Visual Basicでプロジェクトワークスペースを構築します。</DIV>
+<DIV>(3)　Visual Basicの「ファイル」の「インポート」より、先ほど保存した<STRONG>"MIDIInstrument.bas"</STRONG>をインポートします。</DIV>
+<DIV>(4)　フォーム上にCommand1とList1を配置します。</DIV>
+<DIV>(5)　ソースを記述します。以下に簡単な例を示します</DIV>
+<PRE>
+<SPAN CLASS="COMMENT">' インストゥルメント定義ファイルから楽器別に音色名リストを抽出</SPAN>
+<SPAN CLASS="KEYWORD">Option Explicit</SPAN>
+<SPAN CLASS="KEYWORD">Private Sub</SPAN> Command1_Click()
+    <SPAN CLASS="KEYWORD">Dim</SPAN> pMIDIInstrument <SPAN CLASS="KEYWORD">As Long</SPAN>
+    <SPAN CLASS="KEYWORD">Dim</SPAN> pMIDIInstrumentDef <SPAN CLASS="KEYWORD">As Long</SPAN>
+    <SPAN CLASS="KEYWORD">Dim</SPAN> pMIDIPatchNameTable <SPAN CLASS="KEYWORD">As Long</SPAN>
+    <SPAN CLASS="KEYWORD">Dim</SPAN> strTitle <SPAN CLASS="KEYWORD">As String</SPAN> * 256
+    <SPAN CLASS="KEYWORD">Dim</SPAN> strName <SPAN CLASS="KEYWORD">As String</SPAN> * 256
+    <SPAN CLASS="KEYWORD">Dim</SPAN> j <SPAN CLASS="KEYWORD">As Long</SPAN>
+    <SPAN CLASS="KEYWORD">Dim</SPAN> ret <SPAN CLASS="KEYWORD">As Long</SPAN>
+
+    <SPAN CLASS="COMMENT">' MIDIインストゥルメント定義ファイルの読み込み</SPAN>
+    <SPAN CLASS="RED">pMIDIInstrument = MIDIInstrument_Load(<SPAN CLASS="STRING">"SC-8850.ins"</SPAN>)</SPAN>
+    <SPAN CLASS="KEYWORD">If</SPAN> (pMIDIInstrument = 0) <SPAN CLASS="KEYWORD">Then</SPAN>
+        MsgBox (<SPAN CLASS="STRING">"MIDIインストゥルメントファイルが読み込めません。"</SPAN>)
+        <SPAN CLASS="KEYWORD">Exit Sub</SPAN>
+    <SPAN CLASS="KEYWORD">End If</SPAN>
+
+    <SPAN CLASS="COMMENT">' このファイルに含まれるすべてのMIDIインストゥルメント定義ごとに</SPAN>
+    <SPAN CLASS="RED">pMIDIInstrumentDef = MIDIInstrument_GetFirstInstrumentDefinition(pMIDIInstrument)</SPAN>
+    <SPAN CLASS="KEYWORD">Do While</SPAN> (pMIDIInstrumentDef &lt;&gt; 0)
+        <SPAN CLASS="COMMENT">' インストゥルメント定義名の表示</SPAN>
+        <SPAN CLASS="RED">ret = MIDIInstrumentDefinition_GetTitle(pMIDIInstrumentDef, strTitle, 255)</SPAN>
+        List1.AddItem (<SPAN CLASS="STRING">"["</SPAN> &amp; Left$(strTitle, ret) &amp; <SPAN CLASS="STRING">"]"</SPAN>)
+        <SPAN CLASS="COMMENT">' バンク番号0番(CC#0=0,CC#32=0)のパッチ名テーブルを取得する</SPAN>
+        <SPAN CLASS="RED">pMIDIPatchNameTable = MIDIInstrumentDefinition_GetPatchNameTable(pMIDIInstrumentDef, 0)</SPAN>
+        <SPAN CLASS="KEYWORD">If</SPAN> (pMIDIPatchNameTable &lt;&gt; 0) <SPAN CLASS="KEYWORD">Then</SPAN>
+            <SPAN CLASS="COMMENT">' このパッチ名テーブルのタイトルを表示する</SPAN>
+            <SPAN CLASS="RED">ret = MIDIPatchNameTable_GetTitle(pMIDIPatchNameTable, strTitle, 255)</SPAN>
+            List1.AddItem (<SPAN CLASS="STRING">"    PatchNameTable(0)="</SPAN> &amp; Left$(strTitle, ret))
+            <SPAN CLASS="COMMENT">' このパッチ名テーブルの内容をすべて表示する(欠番は除く)</SPAN>
+            <SPAN CLASS="KEYWORD">For</SPAN> j = 0 <SPAN CLASS="KEYWORD">To</SPAN> 127
+                <SPAN CLASS="RED">ret = MIDIPatchNameTable_GetName(pMIDIPatchNameTable, j, strName, 255)</SPAN>
+                <SPAN CLASS="KEYWORD">If</SPAN> (ret &gt; 0) <SPAN CLASS="KEYWORD">Then</SPAN>
+                    List1.AddItem (<SPAN CLASS="STRING">"        "</SPAN> &amp; j &amp; <SPAN CLASS="STRING">"="</SPAN> &amp; Left$(strName, ret))
+                <SPAN CLASS="KEYWORD">End If</SPAN>
+            <SPAN CLASS="KEYWORD">Next</SPAN>
+        <SPAN CLASS="KEYWORD">End If</SPAN>
+        <SPAN CLASS="RED">pMIDIInstrumentDef = _
+            MIDIInstrumentDefinition_GetNextInstrumentDefinition(pMIDIInstrumentDef)</SPAN>
+    <SPAN CLASS="KEYWORD">Loop</SPAN>
+    <SPAN CLASS="RED">MIDIInstrument_Delete (pMIDIInstrument)</SPAN>
+    pMIDIInstrument = 0
+<SPAN CLASS="KEYWORD">End Sub</SPAN>
+</PRE>
+<DIV>(6)　コンパイル・リンクをします。</DIV>
+
+<H4>Q.C++専用のライブラリはないのですか？</H4>
+<P>　C++ではC言語のライブラリを使うことができますので、今のところ用意していません。しかし、オブジェクト指向のC++でCの関数を呼び出すことは、デザイン上奇妙であります。誰かがいつか、C++用のMIDIInstrumentライブラリを作ってくださることを望みます</P>
+
+<H4>Q.Java用のライブラリはないのですか？</H4>
+<P>　はい、ございません。JavaはOSに依存しない利点を生かして普及していますが、大変遅くて重いという弱点をもちます。一方、MIDIクロックを使うアプリケーションは、高いリアルタイム性、レスポンスの速さなどが何よりも求められます。筆者は、Javaはこのような要求に耐えられないものと考えています。ゆえに、Java用のライブラリはあえて製作していないのです。</P>
+
+<H4>Q.Linux用のダイナミックリンクライブラリはないのですか？</H4>
+<P>はい、今のところございません。このソースを元に、誰か作ってくださることを望みます。</P>
+
+<H4>Q.Windows:MIDIInstrument.dllが見つかりません。</H4>
+<P>　Windowsでは、デフォルトの設定ではダイナミックリンクライブラリ(*.dll)を表示しないようになっています。dllファイルを表示するには、エクスプローラー又はマイコンピューターの「ツール」メニューの「フォルダオプション」を選び、「表示」タブにある「すべてのファイルとフォルダを表示する」をONにします。これをしていない場合、検索をかけても表示されないことがありますのでご注意ください。</P>
+<P>　また、アプリケーションの実行開始時にDLLが見つからないというエラーが起こる場合は、dllの設置フォルダを間違えていないかご確認ください。Windows95/98/MEは次の順序でDLLを探索します。</P>
+<DIV>(1) 実行ファイル(*.exe)を含むディレクトリ</DIV>
+<DIV>(2) カレントディレクトリ</DIV>
+<DIV>(3) Windowsの32ビットシステムディレクトリ(通常はc\windows\system32)</DIV>
+<DIV>(4) Windowsの16ビットシステムディレクトリ(通常はc\windows\system)</DIV>
+<DIV>(5) Windowsディレクトリ(通常はc\windows)</DIV>
+<DIV>(6) 環境変数PATHに設定されているディレクトリ</DIV>
+<P>　また、Windows2000/XPでは次の順序でDLLを検索します。</P>
+<DIV>(1) 実行ファイル(*.exe)を含むディレクトリ</DIV>
+<DIV>(2) Windowsの32ビットシステムディレクトリ(通常はc\windows\system32)</DIV>
+<DIV>(3) Windowsの16ビットシステムディレクトリ(通常はc\windows\system)</DIV>
+<DIV>(4) Windowsディレクトリ(通常はc\windows)</DIV>
+<DIV>(5) カレントディレクトリ</DIV>
+<DIV>(6) 環境変数PATHに設定されているディレクトリ</DIV>
+<P>　2つ以上のヴァージョンを持っていると、誤って古い方のDLLを読み込む恐れがあります。また、共用ディレクトリに置く場合、古いDLLを新しいDLLに上書きすると、古いDLLで動いていたアプリケーションが動かなくなることがあります。このため、デバッグなど特殊な場合を除き、DLLは実行ファイル(*.exe)を含むディレクトリに置く方が無難です。</P>
+
+<H4>Q.このライブラリを使ったソフトウェアを、このライブラリを含んだ形で転載・配布してもよろしいですか？</H4>
+<P>　はい、よろしいです。このライブラリは<A HREF="../license.txt">GNU 劣等一般公衆利用許諾契約書(LGPL)</A>に基づいて公開されています。あなたは次の２つの方法にて、あなたのソフトウェアを転載・配布することができます。使用目的や配布価格による制限はございません。作者に許可をとる必要もありません。</P>
+
+<H5>a) ダイナミックリンクをする場合(DLLのみを使用する場合)</H5>
+<P>　あなたのソフトウェアは、どのようなライセンスでも転載・配布ことができます。例えば、ソースを添付するかしないか、コピーや再配布を許可するかしないは、あなたが自由に決めることができます。あなたがしなければならないことは、作品はMIDIInstrumentライブラリを使用していること、及びMIDIInstrumentライブラリはLGPLの下で配布されているということを、明示しておくことです。</P>
+
+<H5>b) ソースをプログラムに埋め込む場合、又はスタティックリンクをする場合</H5>
+<P>　あなたのソフトウェアは、LGPLかGPLの下で転載・配布することができます。すなわち、少なくともソースを公開し、コピーや再配布をすることをユーザーに許可しなければなりません。(ソースは同梱されている必要はなく、ネットワーク上からダウンロードできるようにしていても構いません。) あなたがしなければならないことは、あなたのソフトウェア全体がLGPLかGPLの下で配布されていること、及びそれらの本体又はライブラリが入手できる場所(このサイトのアドレスを含む)を明示しておくことです。この方法では、より積極的にソフトウェアを普及させることができるでしょう。もしあなたがソースを公開したくなかったり、誰かに無断転載されることを望まないのであれば、a)の方法を使うことをお勧めします。</P>
+
+<H4>Q.このライブラリのサポートはしていないのですか？</H4>
+<P>　このライブラリのサポートは、<A HREF="http://openmidiproject.sourceforge.jp/index.html">おーぷんMIDIぷろじぇくと</A>の掲示板にてしております。ただし、必ずしも返答があることを保証するものではありません。また、「まじめなソフト開発を始めるので、有料でもいいからきちんとサポートしてほしい」と言われましても、そもそも筆者は会社に行っていて音信不通なので、きちんとサポートをすることができません。どうしても連絡をとりたい場合は、<A HREF="mailto:ee65051@yahoo.co.jp">こちら</A>にメールをしてください。</P>
+
+<H2><A NAME="APPENDIX_B">付録B　キー・ナンバー対応表</A></H2>
+
+<P>ノートキー：ノートオンイベント・ノートオフイベント・キーアフタータッチの2バイト目(key)の値。チャンネル10以外(n!=9)の場合。</P>
+
+<P>ドラムキー：ノートオンイベント・ノートオフイベント・キーアフタータッチの2バイト目(key)の値。チャンネル10(n=9)の場合。ただし、音源によってはチャンネル10以外もドラムにできるものがある。</P>
+
+<P>コントロールチェンジ：コントロールチェンジの2バイト目(num)の値。</P>
+
+<P>プログラムチェンジ：プログラムチェンジの2バイト目(num)の値。</P>
+
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH>値</TH>
+  <TH>16進</TH>
+  <TH>ノートキー</TH>
+  <TH>ドラムキー</TH>
+  <TH>コントロールチェンジ</TH>
+  <TH>プログラムチェンジ</TH>
+ </TR>
+ <TR>
+  <TD>0</TD>
+  <TD>0x00</TD>
+  <TD>C0</TD>
+  <TD>-</TD>
+  <TD>Bank Select MSB</TD>
+  <TD>Acoustic Grand Piano</TD>
+ </TR>
+ <TR>
+  <TD>1</TD>
+  <TD>0x01</TD>
+  <TD>C#0=Db0</TD>
+  <TD>-</TD>
+  <TD>Modulation MSB</TD>
+  <TD>Bright Acoustic Piano</TD>
+ </TR>
+ <TR>
+  <TD>2</TD>
+  <TD>0x02</TD>
+  <TD>D0</TD>
+  <TD>-</TD>
+  <TD>Breath Controller MSB</TD>
+  <TD>Electric Grand Piano</TD>
+ </TR>
+ <TR>
+  <TD>3</TD>
+  <TD>0x03</TD>
+  <TD>D#0=Eb0</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Honky-tonk Piano</TD>
+ </TR>
+ <TR>
+  <TD>4</TD>
+  <TD>0x04</TD>
+  <TD>E0</TD>
+  <TD>-</TD>
+  <TD>Foot Controller MSB</TD>
+  <TD>Electric Piano 1</TD>
+ </TR>
+ <TR>
+  <TD>5</TD>
+  <TD>0x05</TD>
+  <TD>F0</TD>
+  <TD>-</TD>
+  <TD>Portamento Time MSB</TD>
+  <TD>Electric Piano 2</TD>
+ </TR>
+ <TR>
+  <TD>6</TD>
+  <TD>0x06</TD>
+  <TD>F#0=Gb0</TD>
+  <TD>-</TD>
+  <TD>Data Entry MSB</TD>
+  <TD>Harpsichord</TD>
+ </TR>
+ <TR>
+  <TD>7</TD>
+  <TD>0x07</TD>
+  <TD>G0</TD>
+  <TD>-</TD>
+  <TD>Channel Volume MSB</TD>
+  <TD>Clavi</TD>
+ </TR>
+ <TR>
+  <TD>8</TD>
+  <TD>0x08</TD>
+  <TD>G#0=Ab0</TD>
+  <TD>-</TD>
+  <TD>Balance MSB</TD>
+  <TD>Celesta</TD>
+ </TR>
+ <TR>
+  <TD>9</TD>
+  <TD>0x09</TD>
+  <TD>A0</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Glockenspiel</TD>
+ </TR>
+ <TR>
+  <TD>10</TD>
+  <TD>0x0A</TD>
+  <TD>A#0=Bb0</TD>
+  <TD>-</TD>
+  <TD>Pan MSB</TD>
+  <TD>Music Box</TD>
+ </TR>
+ <TR>
+  <TD>11</TD>
+  <TD>0x0B</TD>
+  <TD>B0</TD>
+  <TD>-</TD>
+  <TD>Expression MSB</TD>
+  <TD>Vibraphone</TD>
+ </TR>
+ <TR>
+  <TD>12</TD>
+  <TD>0x0C</TD>
+  <TD>C1</TD>
+  <TD>-</TD>
+  <TD>Effect Control 1 MSB</TD>
+  <TD>Marimba</TD>
+ </TR>
+ <TR>
+  <TD>13</TD>
+  <TD>0x0D</TD>
+  <TD>C#1=Db1</TD>
+  <TD>-</TD>
+  <TD>Effect Control 2 MSB</TD>
+  <TD>Xylophone</TD>
+ </TR>
+ <TR>
+  <TD>14</TD>
+  <TD>0x0E</TD>
+  <TD>D1</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Tubular Bells</TD>
+ </TR>
+ <TR>
+  <TD>15</TD>
+  <TD>0x0F</TD>
+  <TD>D#1=Eb1</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Dulcimer</TD>
+ </TR>
+ <TR>
+  <TD>16</TD>
+  <TD>0x10</TD>
+  <TD>E1</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Drawbar Organ</TD>
+ </TR>
+ <TR>
+  <TD>17</TD>
+  <TD>0x11</TD>
+  <TD>F1</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Percussive Organ</TD>
+ </TR>
+ <TR>
+  <TD>18</TD>
+  <TD>0x12</TD>
+  <TD>F#1=Gb1</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Rock Organ</TD>
+ </TR>
+ <TR>
+  <TD>19</TD>
+  <TD>0x13</TD>
+  <TD>G1</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Church Organ</TD>
+ </TR>
+ <TR>
+  <TD>20</TD>
+  <TD>0x14</TD>
+  <TD>G#1=Ab1</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Reed Organ</TD>
+ </TR>
+ <TR>
+  <TD>21</TD>
+  <TD>0x15</TD>
+  <TD>A1</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Accordion</TD>
+ </TR>
+ <TR>
+  <TD>22</TD>
+  <TD>0x16</TD>
+  <TD>A#1=Bb1</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Harmonica</TD>
+ </TR>
+ <TR>
+  <TD>23</TD>
+  <TD>0x17</TD>
+  <TD>B1</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Tango Accordion</TD>
+ </TR>
+ <TR>
+  <TD>24</TD>
+  <TD>0x18</TD>
+  <TD>C2</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Acoustic Guitar (nylon)</TD>
+ </TR>
+ <TR>
+  <TD>25</TD>
+  <TD>0x19</TD>
+  <TD>C#2=Db2</TD>
+  <TD>Snare Roll</TD>
+  <TD>-</TD>
+  <TD>Acoustic Guitar (steel)</TD>
+ </TR>
+ <TR>
+  <TD>26</TD>
+  <TD>0x1A</TD>
+  <TD>D2</TD>
+  <TD>Finger Snap</TD>
+  <TD>-</TD>
+  <TD>Electric Guitar (jazz)</TD>
+ </TR>
+ <TR>
+  <TD>27</TD>
+  <TD>0x1B</TD>
+  <TD>D#2=Eb2</TD>
+  <TD>High Q</TD>
+  <TD>-</TD>
+  <TD>Electric Guitar (clean)</TD>
+ </TR>
+ <TR>
+  <TD>28</TD>
+  <TD>0x1C</TD>
+  <TD>E2</TD>
+  <TD>Slap</TD>
+  <TD>-</TD>
+  <TD>Electric Guitar (muted)</TD>
+ </TR>
+ <TR>
+  <TD>29</TD>
+  <TD>0x1D</TD>
+  <TD>F2</TD>
+  <TD>Scratch Push</TD>
+  <TD>-</TD>
+  <TD>Overdriven Guitar</TD>
+ </TR>
+ <TR>
+  <TD>30</TD>
+  <TD>0x1E</TD>
+  <TD>F#2=Gb2</TD>
+  <TD>Scratch Pull</TD>
+  <TD>-</TD>
+  <TD>Distortion Guitar</TD>
+ </TR>
+ <TR>
+  <TD>31</TD>
+  <TD>0x1F</TD>
+  <TD>G2</TD>
+  <TD>Sticks</TD>
+  <TD>-</TD>
+  <TD>Guitar Harmonics</TD>
+ </TR>
+ <TR>
+  <TD>32</TD>
+  <TD>0x20</TD>
+  <TD>G#2=Ab2</TD>
+  <TD>Square Click</TD>
+  <TD>Bank Select LSB</TD>
+  <TD>Acoustic Bass</TD>
+ </TR>
+ <TR>
+  <TD>33</TD>
+  <TD>0x21</TD>
+  <TD>A2</TD>
+  <TD>Metronome Click</TD>
+  <TD>Modulation LSB</TD>
+  <TD>Electric Bass (finger)</TD>
+ </TR>
+ <TR>
+  <TD>34</TD>
+  <TD>0x22</TD>
+  <TD>A#2=Bb2</TD>
+  <TD>Metronome Bell</TD>
+  <TD>Breath Controller LSB</TD>
+  <TD>Electric Bass (pick)</TD>
+ </TR>
+ <TR>
+  <TD>35</TD>
+  <TD>0x23</TD>
+  <TD>B2</TD>
+  <TD>Standard Kick 2</TD>
+  <TD>-</TD>
+  <TD>Fretless Bass</TD>
+ </TR>
+ <TR>
+  <TD>36</TD>
+  <TD>0x24</TD>
+  <TD>C3</TD>
+  <TD>Standard Kick 1</TD>
+  <TD>Foot Controller LSB</TD>
+  <TD>Slap Bass 1</TD>
+ </TR>
+ <TR>
+  <TD>37</TD>
+  <TD>0x25</TD>
+  <TD>C#3=Db3</TD>
+  <TD>Side Stick</TD>
+  <TD>Portamento Time LSB</TD>
+  <TD>Slap Bass 2</TD>
+ </TR>
+ <TR>
+  <TD>38</TD>
+  <TD>0x26</TD>
+  <TD>D3</TD>
+  <TD>Standard Snare 1</TD>
+  <TD>Data Entry LSB</TD>
+  <TD>Synth Bass 1</TD>
+ </TR>
+ <TR>
+  <TD>39</TD>
+  <TD>0x27</TD>
+  <TD>D#3=Eb3</TD>
+  <TD>Hand Clap</TD>
+  <TD>Channel Volume LSB</TD>
+  <TD>Synth Bass 2</TD>
+ </TR>
+ <TR>
+  <TD>40</TD>
+  <TD>0x28</TD>
+  <TD>E3</TD>
+  <TD>Standard Snare 2</TD>
+  <TD>Balance LSB</TD>
+  <TD>Violin</TD>
+ </TR>
+ <TR>
+  <TD>41</TD>
+  <TD>0x29</TD>
+  <TD>F3</TD>
+  <TD>Low Tom 2</TD>
+  <TD>-</TD>
+  <TD>Viola</TD>
+ </TR>
+ <TR>
+  <TD>42</TD>
+  <TD>0x2A</TD>
+  <TD>F#3=Gb3</TD>
+  <TD>Closed Hi-hat</TD>
+  <TD>Pan LSB</TD>
+  <TD>Cello</TD>
+ </TR>
+ <TR>
+  <TD>43</TD>
+  <TD>0x2B</TD>
+  <TD>G3</TD>
+  <TD>Low Tom 1</TD>
+  <TD>Expression LSB</TD>
+  <TD>Contrabass</TD>
+ </TR>
+ <TR>
+  <TD>44</TD>
+  <TD>0x2C</TD>
+  <TD>G#3=Ab3</TD>
+  <TD>Pedal Hi-hat</TD>
+  <TD>Effect Control 1 LSB</TD>
+  <TD>Tremolo Strings</TD>
+ </TR>
+ <TR>
+  <TD>45</TD>
+  <TD>0x2D</TD>
+  <TD>A3</TD>
+  <TD>Mid Tom 2</TD>
+  <TD>Effect Control 2 LSB</TD>
+  <TD>Pizzicato Strings</TD>
+ </TR>
+ <TR>
+  <TD>46</TD>
+  <TD>0x2E</TD>
+  <TD>A#3=Bb3</TD>
+  <TD>Open Hi-hat</TD>
+  <TD>-</TD>
+  <TD>Orchestral Harp</TD>
+ </TR>
+ <TR>
+  <TD>47</TD>
+  <TD>0x2F</TD>
+  <TD>B3</TD>
+  <TD>Mid Tom 1</TD>
+  <TD>-</TD>
+  <TD>Timpani</TD>
+ </TR>
+ <TR>
+  <TD>48</TD>
+  <TD>0x30</TD>
+  <TD>C4</TD>
+  <TD>High Tom 2</TD>
+  <TD>-</TD>
+  <TD>String Ensemble 1</TD>
+ </TR>
+ <TR>
+  <TD>49</TD>
+  <TD>0x31</TD>
+  <TD>C#4=Db4</TD>
+  <TD>Crash Cymbal 1</TD>
+  <TD>-</TD>
+  <TD>String Ensemble 2</TD>
+ </TR>
+ <TR>
+  <TD>50</TD>
+  <TD>0x32</TD>
+  <TD>D4</TD>
+  <TD>High Tom 1</TD>
+  <TD>-</TD>
+  <TD>SynthStrings 1</TD>
+ </TR>
+ <TR>
+  <TD>51</TD>
+  <TD>0x33</TD>
+  <TD>D#4=Eb4</TD>
+  <TD>Ride Cymbal 1</TD>
+  <TD>-</TD>
+  <TD>SynthStrings 2</TD>
+ </TR>
+ <TR>
+  <TD>52</TD>
+  <TD>0x34</TD>
+  <TD>E4</TD>
+  <TD>Chinese Cymbal</TD>
+  <TD>-</TD>
+  <TD>Choir Aahs</TD>
+ </TR>
+ <TR>
+  <TD>53</TD>
+  <TD>0x35</TD>
+  <TD>F4</TD>
+  <TD>Ride Bell</TD>
+  <TD>-</TD>
+  <TD>Voice Oohs</TD>
+ </TR>
+ <TR>
+  <TD>54</TD>
+  <TD>0x36</TD>
+  <TD>F#4=Gb4</TD>
+  <TD>Tambourine</TD>
+  <TD>-</TD>
+  <TD>Synth Vox</TD>
+ </TR>
+ <TR>
+  <TD>55</TD>
+  <TD>0x37</TD>
+  <TD>G4</TD>
+  <TD>Splash Cymbal</TD>
+  <TD>-</TD>
+  <TD>Orchestra Hit</TD>
+ </TR>
+ <TR>
+  <TD>56</TD>
+  <TD>0x38</TD>
+  <TD>G#4=Ab4</TD>
+  <TD>Cowbell</TD>
+  <TD>-</TD>
+  <TD>Trumpet</TD>
+ </TR>
+ <TR>
+  <TD>57</TD>
+  <TD>0x39</TD>
+  <TD>A4</TD>
+  <TD>Crash Cymbal 2</TD>
+  <TD>-</TD>
+  <TD>Trombone</TD>
+ </TR>
+ <TR>
+  <TD>58</TD>
+  <TD>0x3A</TD>
+  <TD>A#4=Bb4</TD>
+  <TD>Vibra-slap</TD>
+  <TD>-</TD>
+  <TD>Tuba</TD>
+ </TR>
+ <TR>
+  <TD>59</TD>
+  <TD>0x3B</TD>
+  <TD>B4</TD>
+  <TD>Ride Cymbal 2</TD>
+  <TD>-</TD>
+  <TD>Muted Trumpet</TD>
+ </TR>
+ <TR>
+  <TD>60</TD>
+  <TD>0x3C</TD>
+  <TD>C5</TD>
+  <TD>High Bongo</TD>
+  <TD>-</TD>
+  <TD>French Horn</TD>
+ </TR>
+ <TR>
+  <TD>61</TD>
+  <TD>0x3D</TD>
+  <TD>C#5=Db5</TD>
+  <TD>Low Bongo</TD>
+  <TD>-</TD>
+  <TD>Brass Section</TD>
+ </TR>
+ <TR>
+  <TD>62</TD>
+  <TD>0x3E</TD>
+  <TD>D5</TD>
+  <TD>Mute High Conga</TD>
+  <TD>-</TD>
+  <TD>Synth Brass 1</TD>
+ </TR>
+ <TR>
+  <TD>63</TD>
+  <TD>0x3F</TD>
+  <TD>D#5=Eb5</TD>
+  <TD>Open High Conga</TD>
+  <TD>-</TD>
+  <TD>Synth Brass 2</TD>
+ </TR>
+ <TR>
+  <TD>64</TD>
+  <TD>0x40</TD>
+  <TD>E5</TD>
+  <TD>Low Conga</TD>
+  <TD>Hold Pedal 1</TD>
+  <TD>Soprano Sax</TD>
+ </TR>
+ <TR>
+  <TD>65</TD>
+  <TD>0x41</TD>
+  <TD>F5</TD>
+  <TD>High Timbale</TD>
+  <TD>Portament Pedal</TD>
+  <TD>Alto Sax</TD>
+ </TR>
+ <TR>
+  <TD>66</TD>
+  <TD>0x42</TD>
+  <TD>F#5=Gb5</TD>
+  <TD>Low Timbale</TD>
+  <TD>Sostenuto Pedal</TD>
+  <TD>Tenor Sax</TD>
+ </TR>
+ <TR>
+  <TD>67</TD>
+  <TD>0x43</TD>
+  <TD>G5</TD>
+  <TD>High Agogo</TD>
+  <TD>Soft Pedal</TD>
+  <TD>Baritone Sax</TD>
+ </TR>
+ <TR>
+  <TD>68</TD>
+  <TD>0x44</TD>
+  <TD>G#5=Ab5</TD>
+  <TD>Low Agogo</TD>
+  <TD>Legato Pedal</TD>
+  <TD>Oboe</TD>
+ </TR>
+ <TR>
+  <TD>69</TD>
+  <TD>0x45</TD>
+  <TD>A5</TD>
+  <TD>Cabasa</TD>
+  <TD>Hold Pedal 2</TD>
+  <TD>English Horn</TD>
+ </TR>
+ <TR>
+  <TD>70</TD>
+  <TD>0x46</TD>
+  <TD>A#5=Bb5</TD>
+  <TD>Maracas</TD>
+  <TD>Sound Variation</TD>
+  <TD>Bassoon</TD>
+ </TR>
+ <TR>
+  <TD>71</TD>
+  <TD>0x47</TD>
+  <TD>B5</TD>
+  <TD>Short Hi Whistle</TD>
+  <TD>Harmonic Contents</TD>
+  <TD>Clarinet</TD>
+ </TR>
+ <TR>
+  <TD>72</TD>
+  <TD>0x48</TD>
+  <TD>C6</TD>
+  <TD>Long Low Whistle</TD>
+  <TD>Release Time</TD>
+  <TD>Piccolo</TD>
+ </TR>
+ <TR>
+  <TD>73</TD>
+  <TD>0x49</TD>
+  <TD>C#6=Db6</TD>
+  <TD>Short Gurio</TD>
+  <TD>Attack Time</TD>
+  <TD>Flute</TD>
+ </TR>
+ <TR>
+  <TD>74</TD>
+  <TD>0x4A</TD>
+  <TD>D6</TD>
+  <TD>Long Gurio</TD>
+  <TD>Brightness</TD>
+  <TD>Recorder</TD>
+ </TR>
+ <TR>
+  <TD>75</TD>
+  <TD>0x4B</TD>
+  <TD>D#6=Eb6</TD>
+  <TD>Claves</TD>
+  <TD>Decay Time</TD>
+  <TD>Pan Flute</TD>
+ </TR>
+ <TR>
+  <TD>76</TD>
+  <TD>0x4C</TD>
+  <TD>E6</TD>
+  <TD>High Wood Block</TD>
+  <TD>Vibrato rate</TD>
+  <TD>Blown Bottle</TD>
+ </TR>
+ <TR>
+  <TD>77</TD>
+  <TD>0x4D</TD>
+  <TD>F6</TD>
+  <TD>Low Wood Block</TD>
+  <TD>Vibrato deapth</TD>
+  <TD>Shakuhachi</TD>
+ </TR>
+ <TR>
+  <TD>78</TD>
+  <TD>0x4E</TD>
+  <TD>F#6=Gb6</TD>
+  <TD>Mute Cuica</TD>
+  <TD>Vibrato deray</TD>
+  <TD>Whistle</TD>
+ </TR>
+ <TR>
+  <TD>79</TD>
+  <TD>0x4F</TD>
+  <TD>G6</TD>
+  <TD>Open Cuica</TD>
+  <TD>Sound Controller 10</TD>
+  <TD>Ocarina</TD>
+ </TR>
+ <TR>
+  <TD>80</TD>
+  <TD>0x50</TD>
+  <TD>G#6=Ab6</TD>
+  <TD>Mute Triangle</TD>
+  <TD>-</TD>
+  <TD>Lead 1 (square)</TD>
+ </TR>
+ <TR>
+  <TD>81</TD>
+  <TD>0x51</TD>
+  <TD>A6</TD>
+  <TD>Open Triangle</TD>
+  <TD>-</TD>
+  <TD>Lead 2 (sawtooth)</TD>
+ </TR>
+ <TR>
+  <TD>82</TD>
+  <TD>0x52</TD>
+  <TD>A#6=Bb6</TD>
+  <TD>Shaker</TD>
+  <TD>-</TD>
+  <TD>Lead 3 (calliope)</TD>
+ </TR>
+ <TR>
+  <TD>83</TD>
+  <TD>0x53</TD>
+  <TD>B6</TD>
+  <TD>Jingle Bell</TD>
+  <TD>-</TD>
+  <TD>Lead 4 (chiff)</TD>
+ </TR>
+ <TR>
+  <TD>84</TD>
+  <TD>0x54</TD>
+  <TD>C7</TD>
+  <TD>Bell Tree</TD>
+  <TD>Portament Control</TD>
+  <TD>Lead 5 (charang)</TD>
+ </TR>
+ <TR>
+  <TD>85</TD>
+  <TD>0x55</TD>
+  <TD>C#7=Db7</TD>
+  <TD>Castanets</TD>
+  <TD>-</TD>
+  <TD>Lead 6 (voice)</TD>
+ </TR>
+ <TR>
+  <TD>86</TD>
+  <TD>0x56</TD>
+  <TD>D7</TD>
+  <TD>Mute Surdo</TD>
+  <TD>-</TD>
+  <TD>Lead 7 (fifths)</TD>
+ </TR>
+ <TR>
+  <TD>87</TD>
+  <TD>0x57</TD>
+  <TD>D#7=Eb7</TD>
+  <TD>Open Surdo</TD>
+  <TD>-</TD>
+  <TD>Lead 8 (bass + lead)</TD>
+ </TR>
+ <TR>
+  <TD>88</TD>
+  <TD>0x58</TD>
+  <TD>E7</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Pad 1 (new age)</TD>
+ </TR>
+ <TR>
+  <TD>89</TD>
+  <TD>0x59</TD>
+  <TD>F7</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Pad 2 (warm)</TD>
+ </TR>
+ <TR>
+  <TD>90</TD>
+  <TD>0x5A</TD>
+  <TD>F#7=Gb7</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Pad 3 (polysynth)</TD>
+ </TR>
+ <TR>
+  <TD>91</TD>
+  <TD>0x5B</TD>
+  <TD>G7</TD>
+  <TD>-</TD>
+  <TD>Reverb</TD>
+  <TD>Pad 4 (choir)</TD>
+ </TR>
+ <TR>
+  <TD>92</TD>
+  <TD>0x5C</TD>
+  <TD>G#7=Ab7</TD>
+  <TD>-</TD>
+  <TD>Effect 2 Depth</TD>
+  <TD>Pad 5 (bowed)</TD>
+ </TR>
+ <TR>
+  <TD>93</TD>
+  <TD>0x5D</TD>
+  <TD>A7</TD>
+  <TD>-</TD>
+  <TD>Chorus</TD>
+  <TD>Pad 6 (metallic)</TD>
+ </TR>
+ <TR>
+  <TD>94</TD>
+  <TD>0x5E</TD>
+  <TD>A#7=Bb7</TD>
+  <TD>-</TD>
+  <TD>Effect 4 Depth</TD>
+  <TD>Pad 7 (halo)</TD>
+ </TR>
+ <TR>
+  <TD>95</TD>
+  <TD>0x5F</TD>
+  <TD>B7</TD>
+  <TD>-</TD>
+  <TD>Effect 5 Depth</TD>
+  <TD>Pad 8 (sweep)</TD>
+ </TR>
+ <TR>
+  <TD>96</TD>
+  <TD>0x60</TD>
+  <TD>C8</TD>
+  <TD>-</TD>
+  <TD>Data Increment</TD>
+  <TD>FX 1 (rain)</TD>
+ </TR>
+ <TR>
+  <TD>97</TD>
+  <TD>0x61</TD>
+  <TD>C#8=Db8</TD>
+  <TD>-</TD>
+  <TD>Data Decrement</TD>
+  <TD>FX 2 (soundtrack)</TD>
+ </TR>
+ <TR>
+  <TD>98</TD>
+  <TD>0x62</TD>
+  <TD>D8</TD>
+  <TD>-</TD>
+  <TD>NRPN LSB</TD>
+  <TD>FX 3 (crystal)</TD>
+ </TR>
+ <TR>
+  <TD>99</TD>
+  <TD>0x63</TD>
+  <TD>D#8=Eb8</TD>
+  <TD>-</TD>
+  <TD>NRPN MSB</TD>
+  <TD>FX 4 (atmosphere)</TD>
+ </TR>
+ <TR>
+  <TD>100</TD>
+  <TD>0x64</TD>
+  <TD>E8</TD>
+  <TD>-</TD>
+  <TD>RPN LSB</TD>
+  <TD>FX 5 (brightness)</TD>
+ </TR>
+ <TR>
+  <TD>101</TD>
+  <TD>0x65</TD>
+  <TD>F8</TD>
+  <TD>-</TD>
+  <TD>RPN MSB</TD>
+  <TD>FX 6 (goblins)</TD>
+ </TR>
+ <TR>
+  <TD>102</TD>
+  <TD>0x66</TD>
+  <TD>F#8=Gb8</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>FX 7 (echoes)</TD>
+ </TR>
+ <TR>
+  <TD>103</TD>
+  <TD>0x67</TD>
+  <TD>G8</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>FX 8 (sci-fi)</TD>
+ </TR>
+ <TR>
+  <TD>104</TD>
+  <TD>0x68</TD>
+  <TD>G#8=Ab8</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Sitar</TD>
+ </TR>
+ <TR>
+  <TD>105</TD>
+  <TD>0x69</TD>
+  <TD>A8</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Banjo</TD>
+ </TR>
+ <TR>
+  <TD>106</TD>
+  <TD>0x6A</TD>
+  <TD>A#8=Bb8</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Shamisen</TD>
+ </TR>
+ <TR>
+  <TD>107</TD>
+  <TD>0x6B</TD>
+  <TD>B8</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Koto</TD>
+ </TR>
+ <TR>
+  <TD>108</TD>
+  <TD>0x6C</TD>
+  <TD>C9</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Kalimba</TD>
+ </TR>
+ <TR>
+  <TD>109</TD>
+  <TD>0x6D</TD>
+  <TD>C#9=Db9</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Bag pipe</TD>
+ </TR>
+ <TR>
+  <TD>110</TD>
+  <TD>0x6E</TD>
+  <TD>D9</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Fiddle</TD>
+ </TR>
+ <TR>
+  <TD>111</TD>
+  <TD>0x6F</TD>
+  <TD>D#9=Eb9</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Shanai</TD>
+ </TR>
+ <TR>
+  <TD>112</TD>
+  <TD>0x70</TD>
+  <TD>E9</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Tinkle Bell</TD>
+ </TR>
+ <TR>
+  <TD>113</TD>
+  <TD>0x71</TD>
+  <TD>F9</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Agogo</TD>
+ </TR>
+ <TR>
+  <TD>114</TD>
+  <TD>0x72</TD>
+  <TD>F#9=Gb9</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Steel Drums</TD>
+ </TR>
+ <TR>
+  <TD>115</TD>
+  <TD>0x73</TD>
+  <TD>G9</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Woodblock</TD>
+ </TR>
+ <TR>
+  <TD>116</TD>
+  <TD>0x74</TD>
+  <TD>G#9=Ab9</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Taiko</TD>
+ </TR>
+ <TR>
+  <TD>117</TD>
+  <TD>0x75</TD>
+  <TD>A9</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Melodic Tom</TD>
+ </TR>
+ <TR>
+  <TD>118</TD>
+  <TD>0x76</TD>
+  <TD>A#9=Bb9</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Synth Drum</TD>
+ </TR>
+ <TR>
+  <TD>119</TD>
+  <TD>0x77</TD>
+  <TD>B9</TD>
+  <TD>-</TD>
+  <TD>-</TD>
+  <TD>Reverse Cymbal</TD>
+ </TR>
+ <TR>
+  <TD>120</TD>
+  <TD>0x78</TD>
+  <TD>C10</TD>
+  <TD>-</TD>
+  <TD>All Sound Off</TD>
+  <TD>Guitar Fret Noise</TD>
+ </TR>
+ <TR>
+  <TD>121</TD>
+  <TD>0x79</TD>
+  <TD>C#10=Db10</TD>
+  <TD>-</TD>
+  <TD>Reset All Controller</TD>
+  <TD>Breath Noise</TD>
+ </TR>
+ <TR>
+  <TD>122</TD>
+  <TD>0x7A</TD>
+  <TD>D10</TD>
+  <TD>-</TD>
+  <TD>Local Control</TD>
+  <TD>Seashore</TD>
+ </TR>
+ <TR>
+  <TD>123</TD>
+  <TD>0x7B</TD>
+  <TD>D#10=Eb10</TD>
+  <TD>-</TD>
+  <TD>All Note Off</TD>
+  <TD>Bird Tweet</TD>
+ </TR>
+ <TR>
+  <TD>124</TD>
+  <TD>0x7C</TD>
+  
+  <TD>E10</TD>
+  <TD>-</TD>
+  <TD>Omni Mode Off</TD>
+  <TD>Telephone Ring</TD>
+ </TR>
+ <TR>
+  <TD>125</TD>
+  <TD>0x7D</TD>
+  <TD>F10</TD>
+  <TD>-</TD>
+  <TD>Omni Mode On</TD>
+  <TD>Helicopter</TD>
+ </TR>
+ <TR>
+  <TD>126</TD>
+  <TD>0x7E</TD>
+  <TD>F#10=Gb10</TD>
+  <TD>-</TD>
+  <TD>Mono Mode On</TD>
+  <TD>Applause</TD>
+ </TR>
+ <TR>
+  <TD>127</TD>
+  <TD>0x7F</TD>
+  <TD>G10</TD>
+  <TD>-</TD>
+  <TD>Poly Mode On</TD>
+  <TD>Gunshot</TD>
+ </TR>
+</TABLE>
+
+
+
+<H2><A NAME="APPENDIX_C">付録C　MIDIメッセージ早見表</A></H2>
+
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH VALIGN="MIDDLE">　
+  </TH>
+  <TH WIDTH="20%" VALIGN="MIDDLE">
+   1バイト目<BR>
+   ステータスバイト(0x80以上)
+  </TH>
+  <TH WIDTH="20%" VALIGN="MIDDLE">
+   2バイト目<BR>
+   データバイト(0x7F以下)
+  </TH>
+  <TH WIDTH="20%" VALIGN="MIDDLE">
+   3バイト目<BR>
+   データバイト(0x7F以下)
+  </TH>
+  <TH WIDTH="20%" VALIGN="MIDDLE">
+   特記事項<BR>
+  </TH>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE" ROWSPAN=7>
+   <FONT COLOR="#000000">チャンネルボイスメッセージ</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">ノートオフ：0x8n<BR>(nはチャンネル、以下同様)</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">キー：0x00(C0)～0x7F(G9)</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">ベロシティ：0x00(0)～0x7F(127)</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE" BGCOLOR="#E0E0E0">
+   <FONT COLOR="#000000">指定した音の発音を止める。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">ノートオン：0x9n</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">キー：0x00(C0)～0x7F(G9)</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">ベロシティ：0x00(0)～0x7F(127)</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE" BGCOLOR="#E0E0E0">
+   <FONT COLOR="#000000">指定した音を発音する。ただしベロシティが0の場合はノートオフと解釈する。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#800080">キーアフター：0xAn</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#800080">キー：0x00(C0)～0x7F(G9)</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#800080">値：0x00(0)～0x7F(127)</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE" BGCOLOR="#E0E0E0">
+   <FONT COLOR="#800080">指定した音を発音した後、鍵盤を押さえる圧力を上下左右に変化させると送信され、そのキーの音質が変化する。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#008000">コントローラー：0xBn</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#008000">番号：0x00(CC#0)～0x7F(CC#127)</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#008000">値：0x00(0)～0x7F(127)</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE" BGCOLOR="#E0E0E0">
+   <FONT COLOR="#008000">モジュレーション(CC#1)、ヴォリューム(CC#7)、パン(CC#10)、エクスプレッション(CC#11)、サスティンペダル(CC#64)、リバーブ(CC#91)、コーラス(CC#93)、ディレイ(CC#94)などを設定する。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#808000">ノートチェンジ：0xCn</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#808000">番号：0x00(Piano1)～0x7F(GunShot)</FONT>
+  </TD>
+  <TD WIDTH=400 VALIGN="MIDDLE" COLSPAN=2 BGCOLOR="#E0E0E0">
+   <FONT COLOR="#808000">楽器を選択する。ただし10チャンネル(n=9)の場合は、ドラムセットを選択する。バンクも指定したい場合はこのメッセージの前にバンクセレクト(CC#0とCC#32)を使うことにより、最大2097152種類の音色を選択することができる。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#0000FF">チャンネルアフタータッチ：0xDn</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#0000FF">値：0x00(0)～0x7F(127)</FONT>
+  </TD>
+  <TD WIDTH=400 VALIGN="MIDDLE" BGCOLOR="#E0E0E0" COLSPAN=2>
+   <FONT COLOR="#0000FF">ある音を発音した後、鍵盤を押さえる圧力を上下左右に変化させると送信され、そのチャンネル全体の音質が変化する。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#F000F0">ピッチベンド：0xEn</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#F000F0">LSB(下位7ビット)：0x00～0x7F</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#F000F0">MSB(上位7ビット)：0x00～0x7F</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE" BGCOLOR="#E0E0E0">
+   <FONT COLOR="#F000F0">ピッチを変化させるのに使う。値は0～8192～16383で表す。中央はLSB=0x00, MSB=0x40、最低値はLSB=0x00, MSB=0x00、最高値はLSB=0x7F, MSB=0x7Fである。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD WIDTH=100 VALIGN="MIDDLE">
+   <FONT COLOR="#000000">システムエクスクルーシヴメッセージ</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#800080">スタートオブエクスクルーシヴ：0xF0</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#800080">2バイト目以降には任意の長さのデータ配列(0x00～0x7F)が続く。データはエンドオブエクスクルーシヴ(0xF7)で終了する。</FONT>
+  </TD>
+  <TD WIDTH=400 VALIGN="MIDDLE" BGCOLOR="#E0E0E0" COLSPAN=2>
+   <FONT COLOR="#800080">音源の設定を操作する場合に使う。例えばGMリセットは{0xF0, 0x7E, 0x7F, 0x09, 0x01, 0xF7}である。システムエクスクルーシヴメッセージは、音源により意味が異なるため、互換性が乏しい。また、SMPTE/MTCによる同期を行うためにも使える。{0xF0, 0x7F, 0x7F, 0x01, 0x01, 0xhr, 0xmn, 0xsc, 0xfr, 0xF7}という10バイトのシステムエクスクルーシヴメッセージは、1メッセージで1つの時刻を表すことができる。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD WIDTH=100 VALIGN="MIDDLE" ROWSPAN=4>
+   <FONT COLOR="#000000">システムコモンメッセージ</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">MIDIタイムコードクォーターフレーム：0xF1</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">値：0x00～0x7F</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE" BGCOLOR="#E0E0E0" COLSPAN=2>
+   <FONT COLOR="#000000">SMPTE/MTCによる同期を行うために使う。このMIDIメッセージは8メッセージで1つの時刻を表す。値を2進法で表したものを0abcdefgとすると、abc=0のときdefgはフレームカウント下位4ビット、abc=1のときdefgはフレームカウント上位4ビット、abc=2のときdefgは秒カウント下位4ビット、abc=3のときdefgは秒カウント上位4ビット、abc=4のときdefgは分カウント下位4ビット、nnn=5のときdefgは分カウント上位4ビット、abc=6のときdefgは時カウント下位4ビット、abc=7のときdeは時カウント上位2ビット、fgはフレームレート(00は24fps、01は25fps、02は29.97fps、03は30fps)を、それぞれ意味する。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">ソングポジションセレクタ：0xF2</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">LSB(下位7ビット)：0x00～0x7F</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">MSB(上位7ビット)：0x00～0x7F</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE" BGCOLOR="#E0E0E0">
+   <FONT COLOR="#000000">再生開始位置を指定するのに使う。値は0～16383で、6MIDIタイミングクロックを1(つまり16分音符の長さを1)として計測する。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">ソングセレクト：0xF3</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">ソングナンバー：0x00(0)～0x7F(127)</FONT>
+  </TD>
+  <TD WIDTH=400 VALIGN="MIDDLE" BGCOLOR="#E0E0E0" COLSPAN=2>
+   <FONT COLOR="#000000">受信デバイスが複数のシーケンスやドラムパターンを扱える場合、それらを選択するのに使う。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">チェーンリクエスト</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE" BGCOLOR="#E0E0E0" COLSPAN=3>
+   <FONT COLOR="#000000">アナログシンセサイザーのチューニングのために用いられる。現在ではほとんど使われない。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE" ROWSPAN=6>
+   <FONT COLOR="#000000">システムリアルタイムメッセージ</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">MIDIタイミングクロック：0xF8</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE" BGCOLOR="#E0E0E0" COLSPAN=3>
+   <FONT COLOR="#000000">MIDIタイミングクロックによる同期を行うときに使う。送信間隔はテンポに依存し、4分音符あたり24回の速度で流す。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">スタート：0xFA</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE" BGCOLOR="#E0E0E0" COLSPAN=3 ROWSPAN=3>
+   <FONT COLOR="#000000">MIDIメッセージでシーケンサーの再生／停止を制御するのに使う。スタートは、シーケンスの先頭から再生開始することを意味する。ストップは停止することを意味する。コンティニューは前回停止した位置から再生を開始することを意味する。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">コンティニュー：0xFB</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">ストップ：0xFC</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">アクティブセンシング：0xFE</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE" BGCOLOR="#E0E0E0" COLSPAN=3>
+   <FONT COLOR="#000000">ケーブルの接続をチェックするため、約300ミリ秒毎に断続的に流される。</FONT>
+  </TD>
+ </TR>
+ <TR>
+  <TD VALIGN="MIDDLE">
+   <FONT COLOR="#000000">システムリセット：0xFF</FONT>
+  </TD>
+  <TD VALIGN="MIDDLE" BGCOLOR="#E0E0E0" COLSPAN=3>
+   <FONT COLOR="#000000">音源を初期化するのに使う。めったに使われない。</FONT>
+  </TD>
+ </TR>
+</TABLE>
+
+
+
+<H2><A NAME="APPENDIX_D">付録D　更新履歴</A></H2>
+
+<TABLE WIDTH="100%" BORDER=1 CELLSPACING=1 CELLPADDING=2>
+ <TR>
+  <TH>
+   ヴァージョン番号
+  </TH>
+  <TH>
+   リリース年月日
+  </TH>
+  <TH>
+   修正事項
+  </TH>
+ </TR>
+ <TR>
+  <TD>
+   β0.2
+  </TD>
+  <TD>
+   2008年1月12日
+  </TD>
+  <TD>
+   <UL>
+    <LI>多くのバグを抱えながらもとりあえず初リリース</LI>
+   </UL>
+  </TD>
+ </TR>
+ <TR>
+  <TD>
+   β0.3
+  </TD>
+  <TD>
+   2008年3月31日
+  </TD>
+  <TD>
+   <UL>
+    <LI>プロジェクトホームページを<A HREF="http://openmidiproject.sourceforge.jp/index.html">http://openmidiproject.sourceforge.jp/index.html</A>に変更</LI>
+    <LI>MIN,MAX,CLIPマクロを新たに定義</LI>
+   </UL>
+  </TD>
+ </TR>
+ <TR>
+  <TD>
+   β0.4
+  </TD>
+  <TD>
+   2009年5月04日
+  </TD>
+  <TD>
+   <UL>
+    <LI>実際に取得した文字数[バイト]を返す関数の戻り値は、今までは最後のヌル文字をバイト数に含めてしまっていたが、最後のヌル文字をバイト数に含めないように修正した(いずれにしても、ヌル文字自体は自動的に付加される)。</LI>
+    <LI><A HREF="#MIDIInstrument_GetFirstPatchNameTable">MIDIInstrument_GetFirstPatchNameTable</A>を追加。</LI>
+    <LI><A HREF="#MIDIInstrument_GetLastPatchNameTable">MIDIInstrument_GetLastPatchNameTable</A>を追加。</LI>
+    <LI><A HREF="#MIDIInstrument_GetFirstNoteNameTable">MIDIInstrument_GetFirstNoteNameTable</A>を追加。</LI>
+    <LI><A HREF="#MIDIInstrument_GetLastNoteNameTable">MIDIInstrument_GetLastNoteNameTable</A>を追加。</LI>
+    <LI><A HREF="#MIDIInstrument_GetFirstControllerNameTable">MIDIInstrument_GetFirstControllerNameTable</A>を追加。</LI>
+    <LI><A HREF="#MIDIInstrument_GetLastControllerNameTable">MIDIInstrument_GetLastControllerNameTable</A>を追加。</LI>
+    <LI><A HREF="#MIDIInstrument_GetFirstRPNNameTable">MIDIInstrument_GetFirstRPNNameTable</A>を追加。</LI>
+    <LI><A HREF="#MIDIInstrument_GetLastRPNNameTable">MIDIInstrument_GetLastRPNNameTable</A>を追加。</LI>
+    <LI><A HREF="#MIDIInstrument_GetFirstNRPNNameTable">MIDIInstrument_GetFirstNRPNNameTable</A>を追加。</LI>
+    <LI><A HREF="#MIDIInstrument_GetLastNRPNNameTable">MIDIInstrument_GetLastNRPNNameTable</A>を追加。</LI>
+    <LI><A HREF="#MIDIInstrument_GetFirstInstrumentDefinition">MIDIInstrument_GetFirstInstrumentDefinition</A>を追加。</LI>
+    <LI><A HREF="#MIDIInstrument_GetLastInstrumentDefinition">MIDIInstrument_GetLastInstrumentDefinition</A>を追加。</LI>
+    <LI><A HREF="#MIDIInstrument_GetPatchNameTableFromTitle">MIDIInstrument_GetPatchNameTableFromTitle</A>がstdcall呼び出し規約になっていないのを修正。
+</LI>
+    <LI><A HREF="#MIDIInstrument_GetNoteNameTableFromTitle">MIDIInstrument_GetPatchNoteTableFromTitle</A>がstdcall呼び出し規約になっていないのを修正。
+</LI>
+    <LI><A HREF="#MIDIInstrument_GetControllerNameTableFromTitle">MIDIInstrument_GetControllerNameTableFromTitle</A>がstdcall呼び出し規約になっていないのを修正。
+</LI>
+    <LI><A HREF="#MIDIInstrument_GetRPNNameTableFromTitle">MIDIInstrument_GetRPNNameTableFromTitle</A>がstdcall呼び出し規約になっていないのを修正。
+</LI>
+    <LI><A HREF="#MIDIInstrument_GetNRPNNameTableFromTitle">MIDIInstrument_GetNRPNNameTableFromTitle</A>がstdcall呼び出し規約になっていないのを修正。
+</LI>
+    <LI><A HREF="#MIDIInstrument_GetInstrumentDefinitionFromTitle">MIDIInstrument_GetInstrumentDefinitionFromTitle</A>がstdcall呼び出し規約になっていないのを修正。
+</LI>
+    <LI><A HREF="#MIDIInstrument_Load">MIDIInstrument_Load</A>がstdcall呼び出し規約になっていないのを修正。
+</LI>
+    <LI>公式ガイドブックを初めて公開。</LI>
+    <LI>公式ガイドブックのHTMLタグ不整合訂正、及びW3C HTML4.01の基準に適合化</LI>
+   </UL>
+  </TD>
+ </TR>
+ <TR>
+  <TD>
+   0.5
+  </TD>
+  <TD>
+   2010年2月28日
+  </TD>
+  <TD>
+   <UL>
+    <LI><A HREF="#MIDIInstrumentDefinition_Struct">MIDIInstrumentDefinition構造体</A>のフィールドを一部変更し、メモリの大量消耗を防止した。</LI>
+    <LI>上記に伴い、<A HREF="#MIDIInstrumentDefinition_Create">MIDIInstrumentDefinition_Create</A>のソース変更。</LI>
+    <LI>上記に伴い、<A HREF="#MIDIInstrumentDefinition_Delete">MIDIInstrumentDefinition_Delete</A>のソースを変更。</LI>
+    <LI>上記に伴い、<A HREF="#MIDIInstrumentDefinition_GetPatchNameTable">MIDIInstrumentDefinition_GetPatchNameTable</A>のソース及び動作説明を変更。</LI>
+    <LI>上記に伴い、<A HREF="#MIDIInstrumentDefinition_GetNoteNameTable">MIDIInstrumentDefinition_GetNoteNameTable</A>のソース及び動作説明を変更。</LI>
+    <LI>上記に伴い、<A HREF="#MIDIInstrumentDefinition_SetPatchNameTable">MIDIInstrumentDefinition_SetPatchNameTable</A>のソース及び動作説明を変更。</LI>
+    <LI>上記に伴い、<A HREF="#MIDIInstrumentDefinition_SetNoteNameTable">MIDIInstrumentDefinition_SetNoteNameTable</A>のソース及び動作説明を変更。</LI>
+   </UL>
+  </TD>
+ </TR>
+ <TR>
+  <TD>
+   0.6
+  </TD>
+  <TD>
+   2012年2月19日
+  </TD>
+  <TD>
+   <UL>
+    <LI>文字列がANSI/UNICODEの両方に対応。なお、今までのC/C++ソースコードはそのまま使えるが、再コンパイルは必要である。</LI>
+    <LI>上記に伴い、公式ガイドブックに<A HREF="#MIDIOverview_ANSI_UNICODE">1-5.ANSIとUNICODEの使い分けについて</A>を追加。</LI>
+    <LI>上記に伴い、<A HREF="#MIDIPatchNameTable_Struct">MIDIPatchNameTable構造体</A>のm_pszTitleとm_pszName[128]を<SPAN CLASS="KEYWORD">char</SPAN>*型から<SPAN CLASS="KEYWORD">void</SPAN>*型に変更、m_lTitleLenとm_lNameLen[128]の単位をバイトから文字に変更。</LI>
+    <LI>上記に伴い、<A HREF="#MIDIPatchNameTable_GetTitle">MIDIPatchNameTable_GetTitle</A>のpszTitleを<SPAN CLASS="KEYWORD">char</SPAN>*型からTCHAR*型に変更、lLenと戻り値の単位をバイトから文字に変更。</LI>
+    <LI>上記に伴い、<A HREF="#MIDIPatchNameTable_GetName">MIDIPatchNameTable_GetName</A>のpszNameを<SPAN CLASS="KEYWORD">char</SPAN>*型からTCHAR*型に変更、lLenと戻り値の単位をバイトから文字に変更。</LI>
+    <LI>上記に伴い、<A HREF="#MIDIPatchNameTable_SetTitle">MIDIPatchNameTable_SetTitle</A>のpszTitleを<SPAN CLASS="KEYWORD">const char</SPAN>*型から<SPAN CLASS="KEYWORD">const</SPAN> TCHAR*型に変更。</LI>
+    <LI>上記に伴い、<A HREF="#MIDIPatchNameTable_SetName">MIDIPatchNameTable_SetName</A>のpszNameを<SPAN CLASS="KEYWORD">const char</SPAN>*型から<SPAN CLASS="KEYWORD">const</SPAN> TCHAR*型に変更。</LI>
+
+    <LI>上記に伴い、<A HREF="#MIDINoteNameTable_Struct">MIDINoteNameTable構造体</A>のm_pszTitleとm_pszName[128]を<SPAN CLASS="KEYWORD">char</SPAN>*型から<SPAN CLASS="KEYWORD">void</SPAN>*型に変更、m_lTitleLenとm_lNameLen[128]の単位をバイトから文字に変更。</LI>
+    <LI>上記に伴い、<A HREF="#MIDINoteNameTable_GetTitle">MIDINoteNameTable_GetTitle</A>のpszTitleを<SPAN CLASS="KEYWORD">char</SPAN>*型からTCHAR*型に変更、lLenと戻り値の単位をバイトから文字に変更。</LI>
+    <LI>上記に伴い、<A HREF="#MIDINoteNameTable_GetName">MIDINoteNameTable_GetName</A>のpszNameを<SPAN CLASS="KEYWORD">char</SPAN>*型からTCHAR*型に変更、lLenと戻り値の単位をバイトから文字に変更。</LI>
+    <LI>上記に伴い、<A HREF="#MIDINoteNameTable_SetTitle">MIDINoteNameTable_SetTitle</A>のpszTitleを<SPAN CLASS="KEYWORD">const char</SPAN>*型から<SPAN CLASS="KEYWORD">const</SPAN> TCHAR*型に変更。</LI>
+    <LI>上記に伴い、<A HREF="#MIDINoteNameTable_SetName">MIDINoteNameTable_SetName</A>のpszNameを<SPAN CLASS="KEYWORD">const char</SPAN>*型から<SPAN CLASS="KEYWORD">const</SPAN> TCHAR*型に変更。</LI>
+
+    <LI>上記に伴い、<A HREF="#MIDIControllerNameTable_Struct">MIDIControllerNameTable構造体</A>のm_pszTitleとm_pszName[128]を<SPAN CLASS="KEYWORD">char</SPAN>*型から<SPAN CLASS="KEYWORD">void</SPAN>*型に変更、m_lTitleLenとm_lNameLen[128]の単位をバイトから文字に変更。</LI>
+    <LI>上記に伴い、<A HREF="#MIDIControllerNameTable_GetTitle">MIDIControllerNameTable_GetTitle</A>のpszTitleを<SPAN CLASS="KEYWORD">char</SPAN>*型からTCHAR*型に変更、lLenと戻り値の単位をバイトから文字に変更。</LI>
+    <LI>上記に伴い、<A HREF="#MIDIControllerNameTable_GetName">MIDIControllerNameTable_GetName</A>のpszNameを<SPAN CLASS="KEYWORD">char</SPAN>*型からTCHAR*型に変更、lLenと戻り値の単位をバイトから文字に変更。</LI>
+    <LI>上記に伴い、<A HREF="#MIDIControllerNameTable_SetTitle">MIDIControllerNameTable_SetTitle</A>のpszTitleを<SPAN CLASS="KEYWORD">const char</SPAN>*型から<SPAN CLASS="KEYWORD">const</SPAN> TCHAR*型に変更。</LI>
+    <LI>上記に伴い、<A HREF="#MIDIControllerNameTable_SetName">MIDIControllerNameTable_SetName</A>のpszNameを<SPAN CLASS="KEYWORD">const char</SPAN>*型から<SPAN CLASS="KEYWORD">const</SPAN> TCHAR*型に変更。</LI>
+
+    <LI>上記に伴い、<A HREF="#MIDIRPNNameTable_Struct">MIDIRPNNameTable構造体</A>のm_pszTitleとm_pszName[16384]を<SPAN CLASS="KEYWORD">char</SPAN>*型から<SPAN CLASS="KEYWORD">void</SPAN>*型に変更、m_lTitleLenとm_lNameLen[16384]の単位をバイトから文字に変更。</LI>
+    <LI>上記に伴い、<A HREF="#MIDIRPNNameTable_GetTitle">MIDIRPNNameTable_GetTitle</A>のpszTitleを<SPAN CLASS="KEYWORD">char</SPAN>*型からTCHAR*型に変更、lLenと戻り値の単位をバイトから文字に変更。</LI>
+    <LI>上記に伴い、<A HREF="#MIDIRPNNameTable_GetName">MIDIRPNNameTable_GetName</A>のpszNameを<SPAN CLASS="KEYWORD">char</SPAN>*型からTCHAR*型に変更、lLenと戻り値の単位をバイトから文字に変更。</LI>
+    <LI>上記に伴い、<A HREF="#MIDIRPNNameTable_SetTitle">MIDIRPNNameTable_SetTitle</A>のpszTitleを<SPAN CLASS="KEYWORD">const char</SPAN>*型から<SPAN CLASS="KEYWORD">const</SPAN> TCHAR*型に変更。</LI>
+    <LI>上記に伴い、<A HREF="#MIDIRPNNameTable_SetName">MIDIRPNNameTable_SetName</A>のpszNameを<SPAN CLASS="KEYWORD">const char</SPAN>*型から<SPAN CLASS="KEYWORD">const</SPAN> TCHAR*型に変更。</LI>
+
+    <LI>上記に伴い、<A HREF="#MIDINRPNNameTable_Struct">MIDINRPNNameTable構造体</A>のm_pszTitleとm_pszName[16384]を<SPAN CLASS="KEYWORD">char</SPAN>*型から<SPAN CLASS="KEYWORD">void</SPAN>*型に変更、m_lTitleLenとm_lNameLen[16384]の単位をバイトから文字に変更。</LI>
+    <LI>上記に伴い、<A HREF="#MIDINRPNNameTable_GetTitle">MIDINRPNNameTable_GetTitle</A>のpszTitleを<SPAN CLASS="KEYWORD">char</SPAN>*型からTCHAR*型に変更、lLenと戻り値の単位をバイトから文字に変更。</LI>
+    <LI>上記に伴い、<A HREF="#MIDINRPNNameTable_GetName">MIDINRPNNameTable_GetName</A>のpszNameを<SPAN CLASS="KEYWORD">char</SPAN>*型からTCHAR*型に変更、lLenと戻り値の単位をバイトから文字に変更。</LI>
+    <LI>上記に伴い、<A HREF="#MIDINRPNNameTable_SetTitle">MIDINRPNNameTable_SetTitle</A>のpszTitleを<SPAN CLASS="KEYWORD">const char</SPAN>*型から<SPAN CLASS="KEYWORD">const</SPAN> TCHAR*型に変更。</LI>
+    <LI>上記に伴い、<A HREF="#MIDINRPNNameTable_SetName">MIDINRPNNameTable_SetName</A>のpszNameを<SPAN CLASS="KEYWORD">const char</SPAN>*型から<SPAN CLASS="KEYWORD">const</SPAN> TCHAR*型に変更。</LI>
+
+    <LI>上記に伴い、<A HREF="#MIDIInstrumentDefinition_Struct">MIDIInstrumentDefinition構造体</A>のm_pszTitleを<SPAN CLASS="KEYWORD">char</SPAN>*型から<SPAN CLASS="KEYWORD">void</SPAN>*型に変更、m_lTitleLenの単位をバイトから文字に変更。</LI>
+    <LI>上記に伴い、<A HREF="#MIDIInstrumentDefinition_GetTitle">MIDIInstrumentDefinition_GetTitle</A>のpszTitleを<SPAN CLASS="KEYWORD">char</SPAN>*型からTCHAR*型に変更、lLenと戻り値の単位をバイトから文字に変更。</LI>
+    <LI>上記に伴い、<A HREF="#MIDIInstrumentDefinition_SetTitle">MIDIInstrumentDefinition_SetTitle</A>のpszTitleを<SPAN CLASS="KEYWORD">const char</SPAN>*型から<SPAN CLASS="KEYWORD">const</SPAN> TCHAR*型に変更。</LI>
+
+    <LI>上記に伴い、<A HREF="#MIDIInstrument_GetPatchNameTableFromTitle">MIDIInstrument_GetPatchNameTableFromTitle</A>のpszTitleを<SPAN CLASS="KEYWORD">const char</SPAN>*型から<SPAN CLASS="KEYWORD">const</SPAN> TCHAR*型に変更。</LI>
+    <LI>上記に伴い、<A HREF="#MIDIInstrument_GetNoteNameTableFromTitle">MIDIInstrument_GetNoteNameTableFromTitle</A>のpszTitleを<SPAN CLASS="KEYWORD">const char</SPAN>*型から<SPAN CLASS="KEYWORD">const</SPAN> TCHAR*型に変更。</LI>
+    <LI>上記に伴い、<A HREF="#MIDIInstrument_GetControllerNameTableFromTitle">MIDIInstrument_GetControllerNameTableFromTitle</A>のpszTitleを<SPAN CLASS="KEYWORD">const char</SPAN>*型から<SPAN CLASS="KEYWORD">const</SPAN> TCHAR*型に変更。</LI>
+    <LI>上記に伴い、<A HREF="#MIDIInstrument_GetRPNNameTableFromTitle">MIDIInstrument_GetRPNNameTableFromTitle</A>のpszTitleを<SPAN CLASS="KEYWORD">const char</SPAN>*型から<SPAN CLASS="KEYWORD">const</SPAN> TCHAR*型に変更。</LI>
+    <LI>上記に伴い、<A HREF="#MIDIInstrument_GetNRPNNameTableFromTitle">MIDIInstrument_GetNRPNNameTableFromTitle</A>のpszTitleを<SPAN CLASS="KEYWORD">const char</SPAN>*型から<SPAN CLASS="KEYWORD">const</SPAN> TCHAR*型に変更。</LI>
+    <LI>上記に伴い、<A HREF="#MIDIInstrument_GetInstrumentDefinitionFromTitle">MIDIInstrument_GetInstrumentDefinitionFromTitle</A>のpszTitleを<SPAN CLASS="KEYWORD">const char</SPAN>*型から<SPAN CLASS="KEYWORD">const</SPAN> TCHAR*型に変更。</LI>
+
+    <LI>上記に伴い、<A HREF="#MIDIInstrument_Load">MIDIInstrument_Load</A>のpszFileNameを<SPAN CLASS="KEYWORD">const char</SPAN>*型から<SPAN CLASS="KEYWORD">const</SPAN> TCHAR*型に変更。</LI>
+    <LI>上記に伴い、<A HREF="#MIDIInstrument_LoadAdditional">MIDIInstrument_LoadAdditional</A>のpszFileNameを<SPAN CLASS="KEYWORD">const char</SPAN>*型から<SPAN CLASS="KEYWORD">const</SPAN> TCHAR*型に変更。</LI>
+
+   </UL>
+  </TD>
+ </TR>
+ <TR>
+  <TD>
+   0.7
+  </TD>
+  <TD>
+   2014年4月29日
+  </TD>
+  <TD>
+   <UL>
+    <LI>開発環境を、古いVisualC++ 4.0から新しいVisualC++ 2008 Service Pack1に移行した。</LI>
+   </UL>
+  </TD>
+ </TR>
+</TABLE>
+
+</BODY>
+</HTML>
+
+
+
+
+
+

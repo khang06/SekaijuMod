@@ -1,0 +1,27 @@
+;LIBRARY MIDIClock
+
+EXPORTS
+
+	MIDIClock_Delete
+	MIDIClock_Create 
+	MIDIClock_GetTimeBase
+	MIDIClock_SetTimeBase
+	MIDIClock_GetTempo
+	MIDIClock_SetTempo
+	MIDIClock_GetSpeed
+	MIDIClock_SetSpeed
+	MIDIClock_GetMIDIInSyncMode
+	MIDIClock_SetMIDIInSyncMode
+	MIDIClock_Start
+	MIDIClock_Stop
+	MIDIClock_Reset
+	MIDIClock_IsRunning
+	MIDIClock_GetMillisec
+	MIDIClock_SetMillisec
+	MIDIClock_GetTickCount
+	MIDIClock_SetTickCount
+
+	MIDIClock_PutMIDITimingClock
+	MIDIClock_PutSysExSMPTEMTC
+	MIDIClock_PutSMPTEMTC
+	MIDIClock_PutMIDIMessage
