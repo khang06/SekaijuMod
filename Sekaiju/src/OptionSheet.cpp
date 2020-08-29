@@ -70,7 +70,7 @@ BOOL COptionSheet::OnCommand (WPARAM wParam, LPARAM lParam) {
 }
 
 // DoModal時
-int COptionSheet::DoModal () {
+INT_PTR COptionSheet::DoModal () {
 	// オーバーライドされたコールバック関数を使用するように指示。
 	m_psh.dwFlags |= PSH_USECALLBACK;
 	m_psh.pfnCallback = PropSheetProc;

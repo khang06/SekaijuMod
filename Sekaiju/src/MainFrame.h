@@ -64,7 +64,7 @@ protected:
 	afx_msg int OnCreate (LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnDestroy ();
 	afx_msg void OnClose();
-	afx_msg void OnTimer (UINT nIDEvent);
+	afx_msg void OnTimer (UINT_PTR nIDEvent);
 	afx_msg void OnHScroll (UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	afx_msg void OnMouseWheel40 (UINT nFlags, CPoint point);
 	afx_msg void OnSize (UINT nType, int cx, int cy);
@@ -79,23 +79,23 @@ protected:
 	afx_msg void OnUpdateIndicatorNumTracksUI (CCmdUI* pCmdUI);
 	afx_msg void OnUpdateIndicatorTimeBaseUI (CCmdUI* pCmdUI);
 	
-	afx_msg long OnCommandWakeUp (WPARAM wParam, LPARAM lParam);
-	afx_msg long OnCommandReadShm (WPARAM wParam, LPARAM lParam);
-	afx_msg long OnCommandFileOpen (WPARAM wParam, LPARAM lParam);
-	afx_msg long OnCommandUpdateAllViews (WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnCommandWakeUp (WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnCommandReadShm (WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnCommandFileOpen (WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnCommandUpdateAllViews (WPARAM wParam, LPARAM lParam);
 
-	afx_msg long OnSALPause (WPARAM wParam, LPARAM lParam);
-	afx_msg long OnSALMessage (WPARAM wParam, LPARAM lParam);
-	afx_msg long OnSALGetInt (WPARAM wParam, LPARAM lParam);
-	afx_msg long OnSALGetString (WPARAM wParam, LPARAM lParam);
-	afx_msg long OnSALGetTime (WPARAM wParam, LPARAM lParam);
-	afx_msg long OnSALSendMIDI (WPARAM wParam, LPARAM lParam);
-	afx_msg long OnSALInsert (WPARAM wParam, LPARAM lParam);
-	afx_msg long OnSALDelete (WPARAM wParam, LPARAM lParam);
-	afx_msg long OnSALGetValue (WPARAM wParam, LPARAM lParam);
-	afx_msg long OnSALSetValue (WPARAM wParam, LPARAM lParam);
-	afx_msg long OnSALGetForEachEventArray (WPARAM wParam, LPARAM lParam);
-	afx_msg long OnSALEnd (WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnSALPause (WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnSALMessage (WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnSALGetInt (WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnSALGetString (WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnSALGetTime (WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnSALSendMIDI (WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnSALInsert (WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnSALDelete (WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnSALGetValue (WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnSALSetValue (WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnSALGetForEachEventArray (WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnSALEnd (WPARAM wParam, LPARAM lParam);
 
 	afx_msg void OnDrawItem (int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruct);
 	DECLARE_MESSAGE_MAP ()

@@ -90,7 +90,7 @@ protected:
 	afx_msg void OnMouseMove (UINT nFlags, CPoint point);
 	afx_msg void OnLButtonDblClk (UINT nFlags, CPoint point);
 	afx_msg void OnRButtonDblClk (UINT nFlags, CPoint point);
-	afx_msg void OnTimer (UINT nIDEvent);
+	afx_msg void OnTimer (UINT_PTR nIDEvent);
 	afx_msg void OnMouseWheel40 (UINT nFlags, CPoint point);
 
 	DECLARE_MESSAGE_MAP ();

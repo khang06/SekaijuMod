@@ -1134,7 +1134,7 @@ void CMusicalScoreTrackScaleView::OnRButtonDblClk (UINT nFlags, CPoint point) {
 
 
 // タイマー時
-void CMusicalScoreTrackScaleView::OnTimer (UINT nIDEvent) {	
+void CMusicalScoreTrackScaleView::OnTimer (UINT_PTR nIDEvent) {	
 
 	CMusicalScoreFrame* pMusicalScoreFrame = (CMusicalScoreFrame*)GetParent ();
 	CSekaijuDoc* pSekaijuDoc = GetDocument ();

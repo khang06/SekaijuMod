@@ -624,7 +624,7 @@ void CTrackListTimeScaleView::OnRButtonDblClk (UINT nFlags, CPoint point) {
 
 
 // タイマー時
-void CTrackListTimeScaleView::OnTimer (UINT nIDEvent) {	
+void CTrackListTimeScaleView::OnTimer (UINT_PTR nIDEvent) {	
 	CTrackListFrame* pTrackListFrame = (CTrackListFrame*)GetParent ();
 	CSekaijuDoc* pSekaijuDoc = GetDocument ();
 

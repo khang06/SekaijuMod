@@ -569,7 +569,7 @@ void CMusicalScoreTimeScaleView::OnRButtonDblClk (UINT nFlags, CPoint point) {
 
 
 // タイマー時
-void CMusicalScoreTimeScaleView::OnTimer (UINT nIDEvent) {	
+void CMusicalScoreTimeScaleView::OnTimer (UINT_PTR nIDEvent) {	
 	CMusicalScoreFrame* pMusicalScoreFrame = (CMusicalScoreFrame*)GetParent ();
 	CSekaijuDoc* pSekaijuDoc = GetDocument ();
 

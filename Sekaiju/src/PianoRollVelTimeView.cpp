@@ -449,7 +449,7 @@ void CPianoRollVelTimeView::OnDestroy () {
 }
 
 // タイマー呼び出し時
-void CPianoRollVelTimeView::OnTimer (UINT nIDEvent) {
+void CPianoRollVelTimeView::OnTimer (UINT_PTR nIDEvent) {
 	CSekaijuDoc* pSekaijuDoc = GetDocument ();
 	CPianoRollFrame* pPianoRollFrame = (CPianoRollFrame*)GetParent ();
 	// 現在演奏位置縦線の描画処理

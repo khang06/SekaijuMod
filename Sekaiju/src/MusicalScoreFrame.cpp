@@ -2758,7 +2758,7 @@ void CMusicalScoreFrame::OnSize (UINT nType, int cx, int cy) {
 }
 
 // タイマー呼び出し時
-void CMusicalScoreFrame::OnTimer (UINT nIDEvent) {
+void CMusicalScoreFrame::OnTimer (UINT_PTR nIDEvent) {
 	//if (nIDEvent == 0x11) {
 	//	m_pTrackTimeView->SendMessage (WM_TIMER, 11, NULL);
 	//	m_pVelTimeView->SendMessage (WM_TIMER, 11, NULL);

@@ -3486,7 +3486,7 @@ void CTrackListTrackModeView::OnRButtonDblClk (UINT nFlags, CPoint point) {
 }
 
 // タイマー時
-void CTrackListTrackModeView::OnTimer (UINT nIDEvent) {	
+void CTrackListTrackModeView::OnTimer (UINT_PTR nIDEvent) {	
 	CTrackListFrame* pTrackListFrame = (CTrackListFrame*) GetParent ();
 	CSekaijuApp* pSekaijuApp = (CSekaijuApp*)AfxGetApp ();
 	CSekaijuDoc* pSekaijuDoc = GetDocument ();

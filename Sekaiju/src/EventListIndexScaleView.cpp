@@ -382,7 +382,7 @@ void CEventListIndexScaleView::OnRButtonDblClk (UINT nFlags, CPoint point) {
 
 
 // タイマー時
-void CEventListIndexScaleView::OnTimer (UINT nIDEvent) {	
+void CEventListIndexScaleView::OnTimer (UINT_PTR nIDEvent) {	
 	CEventListFrame* pEventListFrame = (CEventListFrame*)GetParent ();
 	CSekaijuDoc* pSekaijuDoc = GetDocument ();
 	

@@ -477,7 +477,7 @@ void CMainFrame::OnClose() {
 
 
 // タイマー処理時
-void CMainFrame::OnTimer (UINT nIDEvent) {
+void CMainFrame::OnTimer (UINT_PTR nIDEvent) {
 	CSekaijuApp* pSekaijuApp = (CSekaijuApp*)AfxGetApp();
 	// ツールバーのテキスト更新用タイマー(0x03)
 	if (nIDEvent == 0x03) {
@@ -820,7 +820,7 @@ void CMainFrame::OnUpdateIndicatorTimeBaseUI (CCmdUI* pCmdUI) {
 
 
 // このウィンドウを最前面に出すことを要求
-long CMainFrame::OnCommandWakeUp (WPARAM wParam, LPARAM lParam) {
+LRESULT CMainFrame::OnCommandWakeUp (WPARAM wParam, LPARAM lParam) {
 	// メイン・ウィンドウが最小化されていれば元に戻す
 	if (this->IsIconic ()) {
 		::ShowWindowAsync (this->GetSafeHwnd (), SW_RESTORE);
@@ -831,7 +831,7 @@ long CMainFrame::OnCommandWakeUp (WPARAM wParam, LPARAM lParam) {
 }
 
 // 共有メモリが変更されたので読み取ることを要求
-long CMainFrame::OnCommandReadShm (WPARAM wParam, LPARAM lParam) {
+LRESULT CMainFrame::OnCommandReadShm (WPARAM wParam, LPARAM lParam) {
 	CString strMsg;
 	HANDLE hShare = CreateFileMapping
 		(INVALID_HANDLE_VALUE, NULL, FILE_MAP_READ, 0, 1024, AfxGetAppName ());
@@ -856,7 +856,7 @@ long CMainFrame::OnCommandReadShm (WPARAM wParam, LPARAM lParam) {
 }
 
 // ファイルを開くことを要求(開くファイル名はm_strTempFileName)
-long CMainFrame::OnCommandFileOpen (WPARAM wParam, LPARAM lParam) {
+LRESULT CMainFrame::OnCommandFileOpen (WPARAM wParam, LPARAM lParam) {
 	CSekaijuApp* pSekaijuApp = (CSekaijuApp*)AfxGetApp();
 	CDocTemplate* pSekaijuDocTemplate = pSekaijuApp->m_pSekaijuDocTemplate;
 	CSekaijuDoc* pSekaijuDoc = 
@@ -869,7 +869,7 @@ long CMainFrame::OnCommandFileOpen (WPARAM wParam, LPARAM lParam) {
 }
 
 // 指定ドキュメントに対しUpdateAllViewsを要求
-long CMainFrame::OnCommandUpdateAllViews (WPARAM wParam, LPARAM lParam) {
+LRESULT CMainFrame::OnCommandUpdateAllViews (WPARAM wParam, LPARAM lParam) {
 	CSekaijuApp* pSekaijuApp = (CSekaijuApp*)AfxGetApp ();
 	CSekaijuDoc* pSekaijuDoc = (CSekaijuDoc*)wParam;
 	//TODO:ここでpSekaijuDocが存在する又はまだ生きていることをチェックしないと
@@ -883,11 +883,11 @@ long CMainFrame::OnCommandUpdateAllViews (WPARAM wParam, LPARAM lParam) {
 	return 0;
 }
 
-long CMainFrame::OnSALPause (WPARAM wParam, LPARAM lParam) {
+LRESULT CMainFrame::OnSALPause (WPARAM wParam, LPARAM lParam) {
 	return 1;
 }
 
-long CMainFrame::OnSALMessage (WPARAM wParam, LPARAM lParam) {
+LRESULT CMainFrame::OnSALMessage (WPARAM wParam, LPARAM lParam) {
 	CSekaijuApp* pSekaijuApp = (CSekaijuApp*)AfxGetApp ();
 	CSekaijuDoc* pSekaijuDoc = (CSekaijuDoc*)wParam;
 	CString strMessage ((TCHAR*)lParam);
@@ -898,19 +898,19 @@ long CMainFrame::OnSALMessage (WPARAM wParam, LPARAM lParam) {
 	return 0;
 }
 
-long CMainFrame::OnSALGetInt (WPARAM wParam, LPARAM lParam) {
+LRESULT CMainFrame::OnSALGetInt (WPARAM wParam, LPARAM lParam) {
 	return 1;
 }
 
-long CMainFrame::OnSALGetString (WPARAM wParam, LPARAM lParam) {
+LRESULT CMainFrame::OnSALGetString (WPARAM wParam, LPARAM lParam) {
 	return 1;
 }
 
-long CMainFrame::OnSALGetTime (WPARAM wParam, LPARAM lParam) {
+LRESULT CMainFrame::OnSALGetTime (WPARAM wParam, LPARAM lParam) {
 	return 1;
 }
 
-long CMainFrame::OnSALSendMIDI (WPARAM wParam, LPARAM lParam) {
+LRESULT CMainFrame::OnSALSendMIDI (WPARAM wParam, LPARAM lParam) {
 	CSekaijuApp* pSekaijuApp = (CSekaijuApp*)AfxGetApp ();
 	CSekaijuDoc* pSekaijuDoc = (CSekaijuDoc*)wParam;
 	SALSendMIDI* pSALSendMIDI = (SALSendMIDI*)lParam;
@@ -980,7 +980,7 @@ long CMainFrame::OnSALSendMIDI (WPARAM wParam, LPARAM lParam) {
 	return 1;
 }
 
-long CMainFrame::OnSALInsert (WPARAM wParam, LPARAM lParam) {
+LRESULT CMainFrame::OnSALInsert (WPARAM wParam, LPARAM lParam) {
 	CSekaijuApp* pSekaijuApp = (CSekaijuApp*)AfxGetApp ();
 	CSekaijuDoc* pSekaijuDoc = (CSekaijuDoc*)wParam;
 	SALInsert* pSALInsert = (SALInsert*)lParam;
@@ -1117,7 +1117,7 @@ long CMainFrame::OnSALInsert (WPARAM wParam, LPARAM lParam) {
 	return 0;
 }
 
-long CMainFrame::OnSALDelete (WPARAM wParam, LPARAM lParam) {
+LRESULT CMainFrame::OnSALDelete (WPARAM wParam, LPARAM lParam) {
 	CSekaijuApp* pSekaijuApp = (CSekaijuApp*)AfxGetApp ();
 	CSekaijuDoc* pSekaijuDoc = (CSekaijuDoc*)wParam;
 	MIDIEvent* pMIDIEvent = (MIDIEvent*)(lParam);
@@ -1138,7 +1138,7 @@ long CMainFrame::OnSALDelete (WPARAM wParam, LPARAM lParam) {
 	return 0;
 }
 
-long CMainFrame::OnSALGetValue (WPARAM wParam, LPARAM lParam) {
+LRESULT CMainFrame::OnSALGetValue (WPARAM wParam, LPARAM lParam) {
 	CSekaijuApp* pSekaijuApp = (CSekaijuApp*)AfxGetApp ();
 	CSekaijuDoc* pSekaijuDoc = (CSekaijuDoc*)wParam;
 	SALGetValue* pSALGetValue = (SALGetValue*)lParam;
@@ -1358,7 +1358,7 @@ long CMainFrame::OnSALGetValue (WPARAM wParam, LPARAM lParam) {
 	return 0;
 }
 
-long CMainFrame::OnSALSetValue (WPARAM wParam, LPARAM lParam) {
+LRESULT CMainFrame::OnSALSetValue (WPARAM wParam, LPARAM lParam) {
 	CSekaijuApp* pSekaijuApp = (CSekaijuApp*)AfxGetApp ();
 	CSekaijuDoc* pSekaijuDoc = (CSekaijuDoc*)wParam;
 	SALSetValue* pSALSetValue = (SALSetValue*)lParam;
@@ -1686,7 +1686,7 @@ long CMainFrame::OnSALSetValue (WPARAM wParam, LPARAM lParam) {
 	return 0;
 }
 
-long CMainFrame::OnSALGetForEachEventArray (WPARAM wParam, LPARAM lParam) {
+LRESULT CMainFrame::OnSALGetForEachEventArray (WPARAM wParam, LPARAM lParam) {
 	CSekaijuApp* pSekaijuApp = (CSekaijuApp*)AfxGetApp ();
 	CSekaijuDoc* pSekaijuDoc = (CSekaijuDoc*)wParam;
 	void* pSAL = pSekaijuApp->m_pSAL;
@@ -1719,7 +1719,7 @@ long CMainFrame::OnSALGetForEachEventArray (WPARAM wParam, LPARAM lParam) {
 
 
 
-long CMainFrame::OnSALEnd (WPARAM wParam, LPARAM lParam) {
+LRESULT CMainFrame::OnSALEnd (WPARAM wParam, LPARAM lParam) {
 	CSekaijuApp* pSekaijuApp = (CSekaijuApp*)AfxGetApp ();
 	CSekaijuDoc* pSekaijuDoc = (CSekaijuDoc*)wParam;
 	SALSetValue* pSALSetValue = (SALSetValue*)lParam;

@@ -1368,7 +1368,7 @@ void CMusicalScoreTrackTimeView::OnDestroy () {
 }
 
 // タイマー呼び出し時
-void CMusicalScoreTrackTimeView::OnTimer (UINT nIDEvent) {
+void CMusicalScoreTrackTimeView::OnTimer (UINT_PTR nIDEvent) {
 	CMusicalScoreFrame* pMusicalScoreFrame = (CMusicalScoreFrame*)GetParent ();
 	CSekaijuDoc* pSekaijuDoc = GetDocument ();
 

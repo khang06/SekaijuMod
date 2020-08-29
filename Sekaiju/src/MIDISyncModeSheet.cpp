@@ -67,7 +67,7 @@ BOOL CMIDISyncModeSheet::OnCommand (WPARAM wParam, LPARAM lParam) {
 }
 
 // DoModal時
-int CMIDISyncModeSheet::DoModal () {
+INT_PTR CMIDISyncModeSheet::DoModal () {
 	// オーバーライドされたコールバック関数を使用するように指示。
 	m_psh.dwFlags |= PSH_USECALLBACK;
 	m_psh.pfnCallback = PropSheetProc;

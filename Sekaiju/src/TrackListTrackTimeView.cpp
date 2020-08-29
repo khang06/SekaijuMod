@@ -397,7 +397,7 @@ void CTrackListTrackTimeView::OnDestroy () {
 }
 
 // タイマー呼び出し時
-void CTrackListTrackTimeView::OnTimer (UINT nIDEvent) {
+void CTrackListTrackTimeView::OnTimer (UINT_PTR nIDEvent) {
 	CTrackListFrame* pTrackListFrame = (CTrackListFrame*)GetParent ();
 	CSekaijuDoc* pSekaijuDoc = GetDocument ();
 	if (nIDEvent == 0x11) {

@@ -4583,7 +4583,7 @@ void CEventListIndexPropertyView::OnRButtonDblClk (UINT nFlags, CPoint point) {
 }
 
 // タイマー時
-void CEventListIndexPropertyView::OnTimer (UINT nIDEvent) {	
+void CEventListIndexPropertyView::OnTimer (UINT_PTR nIDEvent) {	
 
 	CEventListFrame* pEventListFrame = (CEventListFrame*)GetParent ();
 	CSekaijuDoc* pSekaijuDoc = GetDocument ();

@@ -898,7 +898,7 @@ void CTrackListFrame::OnSize (UINT nType, int cx, int cy) {
 }
 
 // タイマー呼び出し時
-void CTrackListFrame::OnTimer (UINT nIDEvent) {
+void CTrackListFrame::OnTimer (UINT_PTR nIDEvent) {
 	;
 }
 

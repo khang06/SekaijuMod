@@ -657,7 +657,7 @@ void CPianoRollTimeScaleView::OnRButtonDblClk (UINT nFlags, CPoint point) {
 
 
 // タイマー時
-void CPianoRollTimeScaleView::OnTimer (UINT nIDEvent) {	
+void CPianoRollTimeScaleView::OnTimer (UINT_PTR nIDEvent) {	
 	CPianoRollFrame* pPianoRollFrame = (CPianoRollFrame*)GetParent ();
 	CSekaijuDoc* pSekaijuDoc = GetDocument ();
 

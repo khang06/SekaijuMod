@@ -379,7 +379,7 @@ void CPianoRollKeyTimeView::OnDestroy () {
 }
 
 // タイマー呼び出し時
-void CPianoRollKeyTimeView::OnTimer (UINT nIDEvent) {
+void CPianoRollKeyTimeView::OnTimer (UINT_PTR nIDEvent) {
 	CPianoRollFrame* pPianoRollFrame = (CPianoRollFrame*)GetParent ();
 	CSekaijuDoc* pSekaijuDoc = GetDocument ();
 	

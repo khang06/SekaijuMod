@@ -1566,7 +1566,7 @@ void CEventListFrame::OnSize (UINT nType, int cx, int cy) {
 }
 
 // タイマー呼び出し時
-void CEventListFrame::OnTimer (UINT nIDEvent) {
+void CEventListFrame::OnTimer (UINT_PTR nIDEvent) {
 	;
 }
 

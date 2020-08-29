@@ -46,7 +46,7 @@ public:
 	//--------------------------------------------------------------------------
 	virtual BOOL OnInitDialog ();
 	virtual BOOL OnCommand (WPARAM wParam, LPARAM lParam);
-	virtual int DoModal ();
+	virtual INT_PTR DoModal ();
 protected:
 	virtual void BuildPropPageArray ();
 	static int CALLBACK PropSheetProc (HWND hwndDlg, UINT uMsg, LPARAM lParam);

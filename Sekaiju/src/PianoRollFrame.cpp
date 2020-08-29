@@ -1749,7 +1749,7 @@ void CPianoRollFrame::OnSize (UINT nType, int cx, int cy) {
 }
 
 // タイマー呼び出し時
-void CPianoRollFrame::OnTimer (UINT nIDEvent) {
+void CPianoRollFrame::OnTimer (UINT_PTR nIDEvent) {
 	//if (nIDEvent == 0x11) {
 	//	m_pKeyTimeView->SendMessage (WM_TIMER, 11, NULL);
 	//	m_pVelTimeView->SendMessage (WM_TIMER, 11, NULL);
