@@ -10161,14 +10161,10 @@ void CSekaijuDoc::OnPopupLoadSysExData () {
 	//    theFileDlg.m_ofn.lStructSize = OPENFILENAME_SIZE_VERSION_400; //=76(Windows95/98/ME style)
 	//#endif
 	
-	#if (_WIN32_WINNT >= 0x0500)
-	    theFileDlg.m_ofn.lStructSize = 88; //=88(With placebar)
-		theFileDlg.m_ofn.pvReserved = NULL;
-		theFileDlg.m_ofn.dwReserved = 0;
-		theFileDlg.m_ofn.FlagsEx = 0;
-	#else
-	    theFileDlg.m_ofn.lStructSize = 76; //=76(Without placebar if OFN_ENABLEHOOK used)
-	#endif
+	theFileDlg.m_ofn.lStructSize = sizeof(theFileDlg.m_ofn);
+	theFileDlg.m_ofn.pvReserved = NULL;
+	theFileDlg.m_ofn.dwReserved = 0;
+	theFileDlg.m_ofn.FlagsEx = 0;
 
 	theFileDlg.m_ofn.nMaxFileTitle = _MAX_PATH;
 
@@ -10340,14 +10336,10 @@ void CSekaijuDoc::OnPopupSaveSysExData () {
 	//    theFileDlg.m_ofn.lStructSize = OPENFILENAME_SIZE_VERSION_400; //=76(Windows95/98/ME style)
 	//#endif
 	
-	#if (_WIN32_WINNT >= 0x0500)
-	    theFileDlg.m_ofn.lStructSize = 88; //=88(With placebar)
-		theFileDlg.m_ofn.pvReserved = NULL;
-		theFileDlg.m_ofn.dwReserved = 0;
-		theFileDlg.m_ofn.FlagsEx = 0;
-	#else
-	    theFileDlg.m_ofn.lStructSize = 76; //=76(Without placebar if OFN_ENABLEHOOK used)
-	#endif
+	theFileDlg.m_ofn.lStructSize = sizeof(theFileDlg.m_ofn);
+	theFileDlg.m_ofn.pvReserved = NULL;
+	theFileDlg.m_ofn.dwReserved = 0;
+	theFileDlg.m_ofn.FlagsEx = 0;
 
 	theFileDlg.m_ofn.nMaxFileTitle = _MAX_PATH;
 	
