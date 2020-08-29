@@ -116,7 +116,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>..\MIDIData\Release\MIDIData.lib;..\MIDIClock\Release\MIDIClock.lib;..\MIDIIO\Release\MIDIIO.lib;..\MIDIStatus\Release\MIDIStatus.lib;..\MIDIInstrument\Release\MIDIInstrument.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>.\ReleaseU/Sekaiju.exe</OutputFile>
+      <OutputFile>$(SolutionDir)bin\Sekaiju.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ProgramDatabaseFile>.\ReleaseU/Sekaiju.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
